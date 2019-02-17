@@ -37,6 +37,7 @@ NTNX_INIT_PASSWORD='nutanix/4u'
        'https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64' \
  )
    QCOW2_REPOS=(\
+    'http://10.42.8.50/images/' \
     'http://10.21.250.221/images/tech-enablement/' \
     'http://10.21.250.221/images/ahv/techsummit/' \
     'http://10.132.128.50:81/share/saved-images/' \
