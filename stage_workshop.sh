@@ -9,8 +9,8 @@ WORKSHOPS=(\
 "Calm Workshop (AOS 5.5+/AHV PC 5.8.x) = Stable (AutoDC1)" \
 "Calm Workshop (AOS 5.8.x/AHV PC 5.10.x) = Stable (AutoDC2)" \
 "Calm Workshop (AOS 5.9+/AHV PC 5.10.x) = Development" \
+"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Development" \
 "Citrix Desktop on AHV Workshop (AOS/AHV 5.6)" \
-#"Tech Summit 2018" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
 
 function stage_clusters() {
@@ -53,8 +53,9 @@ function stage_clusters() {
     _pc_launch='stage_citrixhow_pc.sh'
   fi
   if (( $(echo ${_workshop} | grep -i Summit | wc ${WC_ARG}) > 0 )); then
-    _pe_launch='stage_ts18.sh'
-    _pc_launch='stage_ts18_pc.sh'
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='ts2019.sh'
+    _pc_launch=${_pe_launch}
   fi
 
   dependencies 'install' 'sshpass'

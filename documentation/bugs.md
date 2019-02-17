@@ -22,7 +22,6 @@
 # Bugs #
 
 - BUG = AOS 5.9, 5.10: all calm.sh PC service timeout detect/retry
-  - Notify Nathan and bart.grootzevert when fixed
   - 2018-10-24 21:54:23|14165|Determine_PE|Warning: expect errors on lines 1-2, due to non-JSON outputs by nuclei...
   E1024 21:54:24.142107   14369 jwt.go:35] ZK session is nil
   2018/10/24 21:54:24 Failed to connect to the server: websocket.Dial ws://127.0.0.1:9444/icli: bad status: 403
@@ -34,6 +33,7 @@
     2018-12-26 16:05:26|96508|lcm|PC_VERSION 5.10.0.1 >= 5.9, starting LCM inventory...
     2018-12-26 16:05:26|96508|lcm|inventory _test=|500|```
   - PE> ncli multicluster add-to-multicluster external-ip-address-or-svm-ips=$PC_HOST username=admin password=yaknow
+  - Notify bart.grootzevert when fixed
 
 - ADC2 wonky
   - 2019-02-15 16:12:08|20294|pe_auth|Adjusted directory-url=ldap://10.42.23.40:389 because AOS-5.10.0.1 >= 5.9
