@@ -53,7 +53,8 @@ NTNX_INIT_PASSWORD='nutanix/4u'
    Windows2012R2.iso \
    Windows10.iso \
    Nutanix-VirtIO-1.1.3.iso \
-   'https://s3.amazonaws.com/technology-boot-camp/ERA-Server-build-1.0.0-21edfbc990a8f3424fed146d837483cb1a00d56d.qcow2' \
+   SQLServer2014SP3.iso \
+   XenApp_and_XenDesktop_7_18.iso \
    'http://download.nutanix.com/karbon/0.8/acs-centos7.qcow2' \
  )
  # "XenDesktop-7.15.iso" http://10.21.250.221/images/ahv/techsummit/XD715.iso
@@ -105,7 +106,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
   10.20 ) #Marketing: us-west = SV
     DNS_SERVERS='10.21.253.10'
     ;;
-  10.21 ) #HPOC: us-west =  (old, moved to PHX)
+  10.21 ) #HPOC: us-west =  SV = old, moved to PHX
     if (( ${OCTET[2]} == 60 )) || (( ${OCTET[2]} == 77 )); then
       log 'GPU cluster, aborting! See https://sewiki.nutanix.com/index.php/Hosted_Proof_of_Concept_(HPOC)#GPU_Clusters'
       exit 0

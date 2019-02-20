@@ -20,10 +20,16 @@ case ${1} in
 
     export PC_DEV_VERSION='5.10.1.1'
     export PC_DEV_METAURL='http://10.42.8.50/images/pcdeploy-5.10.1.1.json'
-    export         PC_URL='http://10.42.8.50/images/x.tar.gz'
-    export  FILES_VERSION='3.2.0'
-    export  FILES_METAURL='http://10.42.8.50/images/afs-3.2.0.json'
-    export      FILES_URL='http://10.42.8.50/images/x.tar.qcow2'
+    export         PC_URL='http://10.42.8.50/images/euphrates-5.10.1.1-stable-prism_central.tar'
+    #export PC_DEV_METAURL='https://s3.amazonaws.com/get-ahv-images/pcdeploy-5.10.1.1.json'
+    #export         PC_URL='https://s3.amazonaws.com/get-ahv-images/euphrates-5.10.1.1-stable-prism_central.tar'
+    export  FILES_VERSION='3.2.0.1'
+    export  FILES_METAURL='http://10.42.8.50/images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
+    export      FILES_URL='http://10.42.8.50/images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
+    #export  FILES_METAURL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
+    #export      FILES_URL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
+    export NW2_DHCP_START="${IPV4_PREFIX}.132"
+    export   NW2_DHCP_END="${IPV4_PREFIX}.229"
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
@@ -68,18 +74,16 @@ case ${1} in
       Windows2012R2.qcow2 \
       Windows10-1709.qcow2 \
       ToolsVM.qcow2 \
-      CentOS7.iso \
       Windows2012R2.iso \
       SQLServer2014SP3.iso \
       Nutanix-VirtIO-1.1.3.iso \
-      acs-centos7.qcow2 \
-      acs-ubuntu1604.qcow2 \
       xtract-vm-2.0.3.qcow2 \
       ERA-Server-build-1.0.1.qcow2 \
       sherlock-k8s-base-image_320.qcow2 \
-      hycu-3.5.0-6138.qcow2 \
+      hycu-3.5.0-6253.qcow2 \
       VeeamAvailability_1.0.457.vmdk \
       VeeamBR_9.5.4.2615.Update4.iso \
+      'http://download.nutanix.com/karbon/0.8/acs-centos7.qcow2' \
     )
 
     dependencies 'install' 'jq' || exit 13
