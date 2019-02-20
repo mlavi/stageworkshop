@@ -16,7 +16,7 @@ PC_STABLE_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.8.2/
 # - Provide "Upgrade Metadata File" URL to FILES_METAURL
     FILES_VERSION='3.2.0.1'
     FILES_METAURL='http://download.nutanix.com/afs/7.3/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
-    # 2019-02-15: override until metadata URL fixed
+    # 2019-02-15: override until metadata URL fixed: https://nutanix.slack.com/archives/C0C7C8D6G/p1550216046141300
         #FILES_URL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
     FILES_VERSION='3.2.0'
     FILES_METAURL='http://download.nutanix.com/afs/3.2.0/v1/afs-3.2.0.json'
@@ -99,13 +99,13 @@ AUTH_ADMIN_GROUP='SSP Admins'
   'http://10.59.103.143:8000/autodc-2.0.qcow2' \
 )
 
-# For Nutanix HPOC/Marketing clusters (10.20, 10.21, 10.55, 10.42)
+# For Nutanix HPOC/Marketing clusters
 # https://sewiki.nutanix.com/index.php/HPOC_IP_Schema
 case "${OCTET[0]}.${OCTET[1]}" in
   10.20 ) #Marketing: us-west = SV
     DNS_SERVERS='10.21.253.10'
     ;;
-  10.21 ) #HPOC: us-west = SV
+  10.21 ) #HPOC: us-west =  (old, moved to PHX)
     if (( ${OCTET[2]} == 60 )) || (( ${OCTET[2]} == 77 )); then
       log 'GPU cluster, aborting! See https://sewiki.nutanix.com/index.php/Hosted_Proof_of_Concept_(HPOC)#GPU_Clusters'
       exit 0
@@ -124,7 +124,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     NW2_DHCP_START="${IPV4_PREFIX}.132"
       NW2_DHCP_END="${IPV4_PREFIX}.253"
     ;;
-  10.55 ) # HPOC us-east = DUR
+  10.55 ) # HPOC us-east = Durham/RTP
        DNS_SERVERS='10.21.253.11'
           NW2_NAME='Secondary'
           NW2_VLAN=$(( ${OCTET[2]} * 10 + 1 ))
