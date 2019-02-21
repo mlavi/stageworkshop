@@ -783,6 +783,16 @@ function repo_source() {
   fi
 }
 
+function run_once() {
+  # TODO: PC dependent
+  if [[ ! -z ${PC_LAUNCH} ]] && (( $(cat ${HOME}/${PC_LAUNCH%%.sh}.log | wc ${WC_ARG}) > 20 )); then
+    finish
+    _error=2
+    log "Warning ${_error}: ${PC_LAUNCH} already ran, exit!"
+    exit ${_error}
+  fi
+}
+
 function ssh_pubkey() {
   local         _dir
   local _directories=(\

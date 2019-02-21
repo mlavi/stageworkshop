@@ -188,6 +188,7 @@ EOF
       echo '  && SOURCE=${_} 'EMAIL=${EMAIL} PE_PASSWORD=${_password}' sh ${_##*/} \'
       echo '  && tail -f ~/*log'
       echo -e "cd stageworkshop-master/scripts/ && \ \n PE_HOST=${PE_HOST} PE_PASSWORD='${_password}' PC_VERSION=${PC_DEV_VERSION} EMAIL=${EMAIL} ./calm.sh 'PE'"
+      echo "ncli multicluster add-to-multicluster external-ip-address-or-svm-ips=10.42.x.39 username=admin password='x'"
       ;;
     AUTH | auth | ldap)
           _host=${AUTH_HOST}

@@ -210,22 +210,61 @@ function network_configure() {
   fi
 }
 
+function cluster_check() {
+  local     _attempts=20
+  local         _loop=0
+  local   _pc_version
+  local        _sleep=60
+  local         _test=1
+  local    _test_exit
+
+  # shellcheck disable=2206
+  _pc_version=(${PC_VERSION//./ })
+
+  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 10 )); then
+    log "PC>=5.10, checking multicluster state..."
+
+    while true ; do
+      (( _loop++ ))
+
+           _test=$(ncli --json=true multicluster get-cluster-state | \
+                   jq -r .data[0].clusterDetails.multicluster)
+      _test_exit=$?
+      log "Cluster status: |${_test}|, exit: ${_test_exit}."
+
+      if [[ ${_test} != 'true' ]]; then
+             _test=$(ncli multicluster add-to-multicluster \
+          external-ip-address-or-svm-ips=${PC_HOST} \
+          username=${PRISM_ADMIN} password=${PE_PASSWORD})
+        _test_exit=$?
+        log "Manual join PE to PC = |${_test}|, exit: ${_test_exit}."
+      fi
+
+           _test=$(ncli --json=true multicluster get-cluster-state | \
+                   jq -r .data[0].clusterDetails.multicluster)
+      _test_exit=$?
+      log "Cluster status: |${_test}|, exit: ${_test_exit}."
+
+      if [[ ${_test} == 'true' ]]; then
+        log "PE to PC = cluster registration: successful."
+        return 0
+      elif (( ${_loop} > ${_attempts} )); then
+        log "Warning ${_error} @${1}: Giving up after ${_loop} tries."
+        return ${_error}
+      else
+        log "@${1} ${_loop}/${_attempts}=${_test}: sleep ${_sleep} seconds..."
+        sleep ${_sleep}
+      fi
+    done
+  fi
+
+}
+
 function pc_configure() {
   args_required 'PC_LAUNCH RELEASE'
   local      _command
   local    _container
   local _dependencies="global.vars.sh lib.common.sh lib.pc.sh ${PC_LAUNCH}"
-  local   _pc_version
-  local         _test
-
-  # shellcheck disable=2206
-  _pc_version=(${PC_VERSION//./ })
-  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 10 )); then
-     _test=$(ncli multicluster add-to-multicluster \
-       external-ip-address-or-svm-ips=${PC_HOST} \
-       username=${PRISM_ADMIN} password=${PE_PASSWORD})
-     log "PC>=5.10, manual join PE to PC = |${_test}|"
-  fi
 
   if [[ -e ${RELEASE} ]]; then
     _dependencies+=" ${RELEASE}"
@@ -249,7 +288,7 @@ function pc_configure() {
 
   _command="EMAIL=${EMAIL} \
     PC_HOST=${PC_HOST} PE_HOST=${PE_HOST} PE_PASSWORD=${PE_PASSWORD} \
-    PC_VERSION=${PC_VERSION} nohup bash ${HOME}/${PC_LAUNCH} PC"
+    PC_LAUNCH=${PC_LAUNCH} PC_VERSION=${PC_VERSION} nohup bash ${HOME}/${PC_LAUNCH} PC"
   log "Remote asynchroneous launch PC configuration script... ${_command}"
   remote_exec 'ssh' 'PC' "${_command} >> ${HOME}/${PC_LAUNCH%%.sh}.log 2>&1 &"
   log "PC Configuration complete: try Validate Staged Clusters now."
@@ -292,7 +331,7 @@ function pc_install() {
 
     # shellcheck disable=2206
     _pc_version=(${PC_VERSION//./ })
-    if (( ${_pc_version[0]} = 5 && ${_pc_version[1]} <= 6 )); then
+    if (( ${_pc_version[0]} == 5 && ${_pc_version[1]} <= 6 )); then
       _should_auto_register='"should_auto_register":true,'
     fi
 

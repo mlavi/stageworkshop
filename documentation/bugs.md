@@ -34,6 +34,8 @@
     2018-12-26 16:05:26|96508|lcm|inventory _test=|500|```
   - PE> ncli multicluster add-to-multicluster external-ip-address-or-svm-ips=$PC_HOST username=admin password=yaknow
   - Notify bart.grootzevert when fixed
+  - 2019-02-20 21:28:12|4424|pc_configure|PC>=5.10, manual join PE to PC = |Cluster registration is currently in progress. This operation may take a while.
+Error: The username or password entered is incorrect.|
 
 - ADC2 wonky
   - 2019-02-15 16:12:08|20294|pe_auth|Adjusted directory-url=ldap://10.42.23.40:389 because AOS-5.10.0.1 >= 5.9

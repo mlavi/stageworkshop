@@ -1,6 +1,30 @@
 #!/usr/bin/env bash
 # -x
+function ts_images() {
+  export QCOW2_REPOS=(\
+   'http://10.42.8.50/images/' \
+   'https://s3.amazonaws.com/get-ahv-images/' \
+  ) # talk to Nathan.C to populate S3, Sharon.S to populate Daisy File Share
+  export QCOW2_IMAGES=(\
+    CentOS7.qcow2 \
+    Windows2016.qcow2 \
+    Windows2012R2.qcow2 \
+    Windows10-1709.qcow2 \
+    ToolsVM.qcow2 \
+    Windows2012R2.iso \
+    SQLServer2014SP3.iso \
+    Nutanix-VirtIO-1.1.3.iso \
+    xtract-vm-2.0.3.qcow2 \
+    ERA-Server-build-1.0.1.qcow2 \
+    sherlock-k8s-base-image_320.qcow2 \
+    hycu-3.5.0-6253.qcow2 \
+    VeeamAvailability_1.0.457.vmdk \
+    VeeamBR_9.5.4.2615.Update4.iso \
+    'http://download.nutanix.com/karbon/0.8/acs-centos7.qcow2' \
+  )
 
+  images && pc_cluster_img_import
+}
 #__main()__________
 
 # Source Nutanix environment (PATH + aliases), then common routines + global variables
@@ -43,17 +67,26 @@ case ${1} in
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
-      && prism_check 'PC' \
-      && pc_configure \
-      && dependencies 'remove' 'sshpass' && dependencies 'remove' 'jq'
+      && prism_check 'PC'
 
-      log "PC Configuration complete: Waiting for PC deployment to complete, API is up!"
-      log "PE = https://${PE_HOST}:9440"
-      log "PC = https://${PC_HOST}:9440"
+      if (( $? == 0 )) ; then
+        _command="EMAIL=${EMAIL} \
+           PC_HOST=${PC_HOST} PE_HOST=${PE_HOST} PE_PASSWORD=${PE_PASSWORD} \
+           PC_LAUNCH=${PC_LAUNCH} PC_VERSION=${PC_VERSION} nohup bash ${HOME}/${PC_LAUNCH} IMAGES"
 
-      files_install & # parallel, optional. Versus: $0 'files' &
+        cluster_check \
+        && log "Remote asynchroneous PC Image import script... ${_command}" \
+        && remote_exec 'ssh' 'PC' "${_command} >> ${HOME}/${PC_LAUNCH%%.sh}.log 2>&1 &" &
 
-      finish
+        pc_configure \
+        && log "PC Configuration complete: Waiting for PC deployment to complete, API is up!"
+        log "PE = https://${PE_HOST}:9440"
+        log "PC = https://${PC_HOST}:9440"
+
+        files_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
+        #dependencies 'remove' 'sshpass'
+        finish
+      fi
     else
       finish
       _error=18
@@ -64,27 +97,7 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
-    export QCOW2_REPOS=(\
-     'http://10.42.8.50/images/' \
-     'https://s3.amazonaws.com/get-ahv-images/' \
-    ) # talk to Nathan.C to populate S3, Sharon.S to populate Daisy File Share
-    export QCOW2_IMAGES=(\
-      CentOS7.qcow2 \
-      Windows2016.qcow2 \
-      Windows2012R2.qcow2 \
-      Windows10-1709.qcow2 \
-      ToolsVM.qcow2 \
-      Windows2012R2.iso \
-      SQLServer2014SP3.iso \
-      Nutanix-VirtIO-1.1.3.iso \
-      xtract-vm-2.0.3.qcow2 \
-      ERA-Server-build-1.0.1.qcow2 \
-      sherlock-k8s-base-image_320.qcow2 \
-      hycu-3.5.0-6253.qcow2 \
-      VeeamAvailability_1.0.457.vmdk \
-      VeeamBR_9.5.4.2615.Update4.iso \
-      'http://download.nutanix.com/karbon/0.8/acs-centos7.qcow2' \
-    )
+    run_once
 
     dependencies 'install' 'jq' || exit 13
 
@@ -102,6 +115,12 @@ case ${1} in
       log "CLUSTER_NAME=|${CLUSTER_NAME}|, PE_HOST=|${PE_HOST}|"
       pe_determine ${1}
       . global.vars.sh # re-populate PE_HOST dependencies
+    else
+      CLUSTER_NAME=$(ncli --json=true multicluster get-cluster-state | \
+                      jq -r .data[0].clusterDetails.clusterName)
+      if [[ ${CLUSTER_NAME} != '' ]]; then
+        log "INFO: ncli multicluster get-cluster-state looks good for ${CLUSTER_NAME}."
+      fi
     fi
 
     if [[ ! -z "${2}" ]]; then # hidden bonus
@@ -121,11 +140,16 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && lcm \
-    && images \
-    && pc_cluster_img_import \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
+    # shellcheck disable=2206
+    _pc_version=(${PC_VERSION//./ })
+
+    if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} <= 8 )); then
+      log "PC<=5.8, Image imports..."
+      ts_images
+    fi
     pc_project
     flow_enable
     pc_admin
@@ -146,5 +170,9 @@ case ${1} in
   ;;
   FILES | files | afs )
     files_install
+  ;;
+  IMAGES | images )
+    . lib.pc.sh
+    ts_images
   ;;
 esac
