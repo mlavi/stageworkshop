@@ -31,7 +31,7 @@ case ${1} in
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
       && prism_check 'PC' \
-      && cluster_check \
+      && cluster_register \
       && pc_configure \
       && dependencies 'remove' 'sshpass' && dependencies 'remove' 'jq'
 

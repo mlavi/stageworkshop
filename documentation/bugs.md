@@ -21,21 +21,17 @@
 
 # Bugs #
 
-- BUG = AOS 5.9, 5.10: all calm.sh PC service timeout detect/retry
+- FIXED via interleave for AOS+PC 5.10:
+  2019-02-20 21:28:12|4424|pc_configure|PC>=5.10, manual join PE to PC = |Cluster registration is currently in progress. This operation may take a while.
+  Error: The username or password entered is incorrect.|
+
+- Confirm fixed = AOS 5.9, 5.10: all calm.sh PC service timeout detect/retry
+  - Notify bart.grootzevert when fixed
   - 2018-10-24 21:54:23|14165|Determine_PE|Warning: expect errors on lines 1-2, due to non-JSON outputs by nuclei...
   E1024 21:54:24.142107   14369 jwt.go:35] ZK session is nil
   2018/10/24 21:54:24 Failed to connect to the server: websocket.Dial ws://127.0.0.1:9444/icli: bad status: 403
   - @Michael workaround: py-nuclei?
     - ssh nutanix@10.21.78.39 'source /etc/profile; py-nuclei -u admin -p "password" image.list | grep acs'
-  - dev :: PC-5.10 bugs: activate Calm, auth, import images
-    - ```2018-12-26 16:05:25|96508|calm_enable|Enable Nutanix Calm...
-    2018-12-26 16:05:26|96508|calm_enable|_test=||
-    2018-12-26 16:05:26|96508|lcm|PC_VERSION 5.10.0.1 >= 5.9, starting LCM inventory...
-    2018-12-26 16:05:26|96508|lcm|inventory _test=|500|```
-  - PE> ncli multicluster add-to-multicluster external-ip-address-or-svm-ips=$PC_HOST username=admin password=yaknow
-  - Notify bart.grootzevert when fixed
-  - 2019-02-20 21:28:12|4424|pc_configure|PC>=5.10, manual join PE to PC = |Cluster registration is currently in progress. This operation may take a while.
-Error: The username or password entered is incorrect.|
 
 - ADC2 wonky
   - 2019-02-15 16:12:08|20294|pe_auth|Adjusted directory-url=ldap://10.42.23.40:389 because AOS-5.10.0.1 >= 5.9
@@ -92,6 +88,11 @@ Error: Directory name NTNXLAB does not exist
   - tail -f $Branch/workshop.log?
   - Email when PC is ready, point to next steps in guidebook
   - Refactor PC_URL to be an array?
+  - dev :: PC-5.10 bugs: activate Calm, auth, import images
+    - ```2018-12-26 16:05:25|96508|calm_enable|Enable Nutanix Calm...
+    2018-12-26 16:05:26|96508|calm_enable|_test=||
+    2018-12-26 16:05:26|96508|lcm|PC_VERSION 5.10.0.1 >= 5.9, starting LCM inventory...
+    2018-12-26 16:05:26|96508|lcm|inventory _test=|500|```
   - LCM inventory (check AOS, PC, and LCM version)
     - Calm 2.6 containers
 - Auth + role mappings

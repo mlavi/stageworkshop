@@ -136,6 +136,23 @@ function dependencies {
   esac
 }
 
+function cluster_check() {
+  local   _exit
+  local _return=10 # default: non-zero = failure
+  local   _test
+
+  _test=$(ncli --json=true multicluster get-cluster-state | \
+          jq -r .data[0].clusterDetails.multicluster)
+  _exit=$?
+
+  if [[ ! -z ${_test} ]]; then
+    _return=0
+  fi
+
+  log "Cluster status: |${_test}|, exit: ${_exit}, return ${_return}."
+  return ${_return}
+}
+
 function dns_check() {
   local    _dns
   local  _error

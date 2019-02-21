@@ -210,13 +210,14 @@ function network_configure() {
   fi
 }
 
-function cluster_check() {
-  local     _attempts=20
-  local         _loop=0
-  local   _pc_version
-  local        _sleep=60
-  local         _test=1
-  local    _test_exit
+function cluster_register() {
+  local      _attempts=20
+  local _cluster_check
+  local          _exit
+  local          _loop=0
+  local    _pc_version
+  local         _sleep=60
+  local          _test
 
   # shellcheck disable=2206
   _pc_version=(${PC_VERSION//./ })
@@ -227,25 +228,19 @@ function cluster_check() {
     while true ; do
       (( _loop++ ))
 
-           _test=$(ncli --json=true multicluster get-cluster-state | \
-                   jq -r .data[0].clusterDetails.multicluster)
-      _test_exit=$?
-      log "Cluster status: |${_test}|, exit: ${_test_exit}."
+      _cluster_check=cluster_check
 
-      if [[ ${_test} != 'true' ]]; then
-             _test=$(ncli multicluster add-to-multicluster \
+      if (( ${_cluster_check} == 0 )); then
+        _test=$(ncli multicluster add-to-multicluster \
           external-ip-address-or-svm-ips=${PC_HOST} \
           username=${PRISM_ADMIN} password=${PE_PASSWORD})
-        _test_exit=$?
-        log "Manual join PE to PC = |${_test}|, exit: ${_test_exit}."
+        _exit=$?
+        log "Manual join PE to PC = |${_test}|, exit: ${_exit}."
       fi
 
-           _test=$(ncli --json=true multicluster get-cluster-state | \
-                   jq -r .data[0].clusterDetails.multicluster)
-      _test_exit=$?
-      log "Cluster status: |${_test}|, exit: ${_test_exit}."
+      _cluster_check=cluster_check
 
-      if [[ ${_test} == 'true' ]]; then
+      if (( ${_cluster_check} == 0 )); then
         log "PE to PC = cluster registration: successful."
         return 0
       elif (( ${_loop} > ${_attempts} )); then

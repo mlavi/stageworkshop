@@ -70,21 +70,13 @@ case ${1} in
       && prism_check 'PC'
 
       if (( $? == 0 )) ; then
-        _command="EMAIL=${EMAIL} \
-           PC_HOST=${PC_HOST} PE_HOST=${PE_HOST} PE_PASSWORD=${PE_PASSWORD} \
-           PC_LAUNCH=${PC_LAUNCH} PC_VERSION=${PC_VERSION} nohup bash ${HOME}/${PC_LAUNCH} IMAGES"
-
-        cluster_check \
-        && log "Remote asynchroneous PC Image import script... ${_command}" \
-        && remote_exec 'ssh' 'PC' "${_command} >> ${HOME}/${PC_LAUNCH%%.sh}.log 2>&1 &" &
-
         pc_configure \
         && log "PC Configuration complete: Waiting for PC deployment to complete, API is up!"
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        files_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
-        #dependencies 'remove' 'sshpass'
+        files_install & # parallel, optional. Versus: $0 'files' &
+        #&& sleep 30 && dependencies 'remove' 'jq' && dependencies 'remove' 'sshpass'
         finish
       fi
     else
@@ -115,12 +107,6 @@ case ${1} in
       log "CLUSTER_NAME=|${CLUSTER_NAME}|, PE_HOST=|${PE_HOST}|"
       pe_determine ${1}
       . global.vars.sh # re-populate PE_HOST dependencies
-    else
-      CLUSTER_NAME=$(ncli --json=true multicluster get-cluster-state | \
-                      jq -r .data[0].clusterDetails.clusterName)
-      if [[ ${CLUSTER_NAME} != '' ]]; then
-        log "INFO: ncli multicluster get-cluster-state looks good for ${CLUSTER_NAME}."
-      fi
     fi
 
     if [[ ! -z "${2}" ]]; then # hidden bonus
@@ -146,10 +132,37 @@ case ${1} in
     # shellcheck disable=2206
     _pc_version=(${PC_VERSION//./ })
 
-    if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} <= 8 )); then
-      log "PC<=5.8, Image imports..."
-      ts_images
+    if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 10 )); then
+      CLUSTER_NAME=$(ncli --json=true multicluster get-cluster-state | \
+                      jq -r .data[0].clusterDetails.clusterName)
+      if [[ ${CLUSTER_NAME} != '' ]]; then
+        log "INFO: ncli multicluster get-cluster-state looks good for ${CLUSTER_NAME}."
+      fi
+
+            _attempts=20
+       _cluster_check=0
+                _loop=0
+               _sleep=60
+
+      while true ; do
+        (( _loop++ ))
+        _cluster_check=cluster_check
+
+        if (( ${_cluster_check} == 0 )); then
+          log "PE to PC = cluster registration: successful."
+          return 0
+        elif (( ${_loop} > ${_attempts} )); then
+          log "Warning ${_error} @${1}: Giving up after ${_loop} tries."
+          return ${_error}
+        else
+          log "@${1} ${_loop}/${_attempts}=${_cluster_check}: sleep ${_sleep} seconds..."
+          sleep ${_sleep}
+        fi
+      done
+
     fi
+    ts_images
+
     pc_project
     flow_enable
     pc_admin
