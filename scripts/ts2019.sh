@@ -1,6 +1,40 @@
 #!/usr/bin/env bash
 # -x
 function ts_images() {
+  local      _attempts=20
+  local _cluster_check=0
+  local          _loop=0
+  local    _pc_version
+  local         _sleep=60
+
+  # shellcheck disable=2206
+  _pc_version=(${PC_VERSION//./ })
+
+  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 10 )); then
+    CLUSTER_NAME=$(ncli --json=true multicluster get-cluster-state | \
+                    jq -r .data[0].clusterDetails.clusterName)
+    if [[ ${CLUSTER_NAME} != '' ]]; then
+      log "INFO: ncli multicluster get-cluster-state looks good for ${CLUSTER_NAME}."
+    fi
+
+    while true ; do
+      (( _loop++ ))
+      _cluster_check=cluster_check
+
+      if (( ${_cluster_check} == 0 )); then
+        log "PE to PC = cluster registration: successful."
+        break
+      elif (( ${_loop} > ${_attempts} )); then
+        log "Warning ${_error}: Giving up after ${_loop} tries."
+        break
+      else
+        log "${_loop}/${_attempts}=${_cluster_check}: sleep ${_sleep} seconds..."
+        sleep ${_sleep}
+      fi
+    done
+
+  fi
+
   export QCOW2_REPOS=(\
    'http://10.42.8.50/images/' \
    'https://s3.amazonaws.com/get-ahv-images/' \
@@ -88,7 +122,7 @@ case ${1} in
   ;;
   PC | pc )
     . lib.pc.sh
-
+    ts_images
     run_once
 
     dependencies 'install' 'jq' || exit 13
@@ -129,38 +163,6 @@ case ${1} in
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
-    # shellcheck disable=2206
-    _pc_version=(${PC_VERSION//./ })
-
-    if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 10 )); then
-      CLUSTER_NAME=$(ncli --json=true multicluster get-cluster-state | \
-                      jq -r .data[0].clusterDetails.clusterName)
-      if [[ ${CLUSTER_NAME} != '' ]]; then
-        log "INFO: ncli multicluster get-cluster-state looks good for ${CLUSTER_NAME}."
-      fi
-
-            _attempts=20
-       _cluster_check=0
-                _loop=0
-               _sleep=60
-
-      while true ; do
-        (( _loop++ ))
-        _cluster_check=cluster_check
-
-        if (( ${_cluster_check} == 0 )); then
-          log "PE to PC = cluster registration: successful."
-          return 0
-        elif (( ${_loop} > ${_attempts} )); then
-          log "Warning ${_error} @${1}: Giving up after ${_loop} tries."
-          return ${_error}
-        else
-          log "@${1} ${_loop}/${_attempts}=${_cluster_check}: sleep ${_sleep} seconds..."
-          sleep ${_sleep}
-        fi
-      done
-
-    fi
     ts_images
 
     pc_project
@@ -183,9 +185,5 @@ case ${1} in
   ;;
   FILES | files | afs )
     files_install
-  ;;
-  IMAGES | images )
-    . lib.pc.sh
-    ts_images
   ;;
 esac

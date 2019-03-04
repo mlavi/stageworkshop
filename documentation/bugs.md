@@ -20,7 +20,8 @@
 ---
 
 # Bugs #
-
+- test on poc23
+- kIso not properly detected/set: .iso uploaded as DiskImage
 - FIXED via interleave for AOS+PC 5.10:
   2019-02-20 21:28:12|4424|pc_configure|PC>=5.10, manual join PE to PC = |Cluster registration is currently in progress. This operation may take a while.
   Error: The username or password entered is incorrect.|
@@ -279,6 +280,20 @@ I've looked into some server testing frameworks.
   - BATS https://github.com/bats-core/bats-core
   - https://invent.life/project/bash-infinity-framework
   - Runit/rundeck? http://bashdb.sourceforge.net/
+  - https://secure.phabricator.com/book/phabricator/article/installation_guide/
+  - https://yetus.apache.org/documentation/0.9.0/precommit-basic/ can do shellcheck pecommit
+    - https://github.com/koalaman/shellcheck/wiki/JUnit XMLST output
+  - https://microsoft.github.io/language-server-protocol/implementors/servers/
+    - https://www.eclipse.org/che/
+    - https://www.openproject.org/#wiki
+    - https://www.redmine.org/
+    - https://launchpad.net/
+    - https://kallithea-scm.org/
+    - https://en.wikipedia.org/wiki/Comparison_of_project_management_software
+    - https://allura.apache.org/
+    - https://www.fusionforge.org/
+    - https://www.tuleap.org/what-is-tuleap
+
   - Tests:
     - external URLs working (PC x, sshpass, jq, autodc, etc.)
     - userX login to PE, PC

@@ -591,7 +591,7 @@ function prism_check {
   local     _host
   local     _loop=0
   local _password="${PE_PASSWORD}"
-  local  _pw_init='Nutanix/4u'
+  local  _pw_init='Nutanix/4u' # https://portal.nutanix.com/#/page/docs/details?targetId=Prism-Central-Guide-Prism-v510:mul-login-pc-t.html
   local    _sleep=${SLEEP}
   local     _test=0
 

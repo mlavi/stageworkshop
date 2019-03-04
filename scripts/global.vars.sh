@@ -6,8 +6,9 @@
 # Browse to: https://portal.nutanix.com/#/page/releases/prismDetails
 # - Find ${PC_VERSION} in the Additional Releases section on the lower right side
 # - Provide the metadata URL for the "PC 1-click deploy from PE" option to PC_*_METAURL
-   PC_DEV_VERSION='5.10.1.1'
-   PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.1.1/pcdeploy-5.10.1.1.json'
+#   PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.1.1/pcdeploy-5.10.1.1.json'
+   PC_DEV_VERSION='5.10.2'
+   PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.2/pcdeploy-5.10.2.json'
 PC_STABLE_VERSION='5.8.2'
 PC_STABLE_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.8.2/v1/pc_deploy-5.8.2.json'
 # Sync the following to lib.common.sh::ntnx_download-Case=FILES
@@ -17,9 +18,8 @@ PC_STABLE_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.8.2/
     FILES_VERSION='3.2.0.1'
     FILES_METAURL='http://download.nutanix.com/afs/7.3/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
     # 2019-02-15: override until metadata URL fixed: https://nutanix.slack.com/archives/C0C7C8D6G/p1550216046141300
-        #FILES_URL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
-    FILES_VERSION='3.2.0'
-    FILES_METAURL='http://download.nutanix.com/afs/3.2.0/v1/afs-3.2.0.json'
+#    FILES_VERSION='3.2.0'
+#    FILES_METAURL='http://download.nutanix.com/afs/3.2.0/v1/afs-3.2.0.json'
 
 NTNX_INIT_PASSWORD='nutanix/4u'
        PRISM_ADMIN='admin'
@@ -90,7 +90,7 @@ SMTP_SERVER_ADDRESS='nutanix-com.mail.protection.outlook.com'
       AUTH_FQDN='ntnxlab.local'
     AUTH_DOMAIN='NTNXLAB'
 AUTH_ADMIN_USER='administrator@'${AUTH_FQDN}
-AUTH_ADMIN_PASS='nutanix/4u'
+AUTH_ADMIN_PASS='nutanix/4u' #  KB 1661 lists default cluster credentials.
 AUTH_ADMIN_GROUP='SSP Admins'
    AUTODC_REPOS=(\
   'http://10.21.250.221/images/ahv/techsummit/AutoDC.qcow2' \
@@ -140,6 +140,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
         NW2_SUBNET="${IPV4_PREFIX}.129/25"
     NW2_DHCP_START="${IPV4_PREFIX}.132"
       NW2_DHCP_END="${IPV4_PREFIX}.253"
+    SMTP_SERVER_ADDRESS='phx-it-mailrelay-prod-1.corp.nutanix.com' #10.40.64.35
     ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
        DNS_SERVERS='10.132.71.40'
