@@ -10,6 +10,7 @@ WORKSHOPS=(\
 "Calm Workshop (AOS 5.8.x/AHV PC 5.10.x) = Stable (AutoDC2)" \
 "Calm Workshop (AOS 5.9+/AHV PC 5.10.x) = Development" \
 "Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Development" \
+"Add Files ${FILES_VERSION} to PE" \
 "Citrix Desktop on AHV Workshop (AOS/AHV 5.6)" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
 
@@ -56,6 +57,10 @@ function stage_clusters() {
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='ts2019.sh'
     _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i Files | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh'
+    _pe_launch='files.sh'
   fi
 
   dependencies 'install' 'sshpass'

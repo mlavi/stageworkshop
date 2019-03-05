@@ -39,8 +39,6 @@ case ${1} in
       log "PE = https://${PE_HOST}:9440"
       log "PC = https://${PC_HOST}:9440"
 
-      #files_install & # parallel, optional. Versus: $0 'files' &
-
       finish
     else
       finish
@@ -117,8 +115,5 @@ case ${1} in
       log "Error ${_error}: failed to reach PC!"
       exit ${_error}
     fi
-  ;;
-  FILES | files | afs )
-    files_install
   ;;
 esac
