@@ -131,7 +131,7 @@ cat <<EOM
 Optional: Please consider running ${0} clean.
 
 Watch progress with:
-          tail -f calm.log &
+          tail -f *.log &
 or login to PE to see tasks in flight and eventual PC registration:
           https://${PE_HOST}:9440/
 EOM

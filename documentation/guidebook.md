@@ -7,7 +7,7 @@
 - [How to Do a Calm Bootcamp](#how-to-do-a-calm-bootcamp)   
    - [Extended Enablement](#extended-enablement)   
 - [Bugs, Priorities, Notes](#bugs-priorities-notes)   
-- [Development](#development)   
+- [Development](#development)
    - [Feature Branches](#feature-branches)   
    - [Local Development Strategies and Tactics](#local-development-strategies-and-tactics)   
    - [How to Update or Add a Workshop](#how-to-update-or-add-a-workshop)   
@@ -27,16 +27,16 @@ The entire Global Technical Sales Enablement team has delivered an amazing amoun
 
 ## For the Impatient ##
 
-You can get push button Calm in two ways. It is best to decide by answering this question:<br/> *do you need to set up a single or multiple Nutanix AHV clusters?*
+Use push button Calm in one of two ways, decide which manner by answering this question: *do you need to set up single or multiple Nutanix clusters?*
 
-- __Single:__ the easiest manner is to SSH to the cluster IP address and run the bootstrap script on a CVM:
+- __Single AHV Cluster:__ the easiest manner is to SSH to the cluster IP address and run the bootstrap script on a CVM:
 
-        curl --remote-name --location https://raw.githubusercontent.com/nutanixworkshops/stageworkshop/master/bootstrap.sh && sh ${_##*/}
+      curl --remote-name --location https://raw.githubusercontent.com/nutanixworkshops/stageworkshop/master/bootstrap.sh && sh ${_##*/}
 
-    answer a few questions* and watch the log progress.
-    - The `nutanixworkshops` repository places a premium on stability, not on the bleeding edge of the latest releases; use one of the forked repos for latest development.
+    answer a few questions (see the [Procedure](#procedure) section) and watch the log progress.
+    - The `nutanixworkshops` repository places a premium on stability, not on the bleeding edge of the latest releases (see the [Development](#development) section for more detail).
 
-- __Multiple:__ or to use development branches, satisfy these requirements:
+- __Multiple AHV Clusters:__ or to use development branches, satisfy these requirements:
 
     1. Tested on Ubuntu and Mac, but could work easily on other Linux distributions.
         - Mac requires https://brew.sh installed, which first requires ``xcode-select --install``
@@ -56,7 +56,7 @@ You can get push button Calm in two ways. It is best to decide by answering this
     3. Put settings into a configuration file
     4. Retry for 60 minutes to stage the cluster with the configuration file and Workshop #1.
 
-  Approximately 30 minutes later, you can login to PE to get to PC (or directly to PC) and follow step #7 below to finish push button Calm automation.
+  Approximately 30 minutes later, you can login to PE to get to PC (or directly to PC) and follow step #7 in the [Procedure](#procedure) section to finish push button Calm automation.
 
 ## How to Do a Calm Bootcamp ##
 
@@ -67,8 +67,8 @@ You can get push button Calm in two ways. It is best to decide by answering this
         - Seating with tables and power access
         - Breakfast/Lunch/refreshments
         - Local SEs to help moderate, assist, and troubleshoot each attendee's needs while the leader continues to drive the bootcamp.
-        - *Do not do a 15+ person workshop alone* unless you are comfortable dealing with adverse situations, have back up plans, and can easily adapt to make the most of attendee's valuable time (i.e. videos, presentation decks, and/or print outs).
-    - If appropriate, work with your local field marketing team to make a Bootcamp event landing and registration page, they can also help reserve a marketing cluster.
+        - *Do not do a 15+ person workshop alone* unless you are comfortable dealing with adverse situations, have back up plans, and can easily adapt to make the most of attendee's valuable time (i.e. videos, presentation decks, print outs, or simply demonstrate leading them through lab(s)).
+    - If appropriate, work with your local field marketing team to make a Bootcamp event landing and registration page, they can also reserve marketing cluster(s).
       - You should drive attendees to register.
       - More information and supporting materials are on GDrive in the [Technology Bootcamp](https://drive.google.com/drive/folders/0B_IfSpggJeFVfjdrVUxkZ25tQVRINHFVMkl4TFpWMG1GUUNhOVhaWnJOZ1gtSkJfa2QzSGc) folder.
     - Estimate the count of your audience, reserve a HPOC cluster for every 20 attendees (due to VDI login constraints).
@@ -88,7 +88,7 @@ You can get push button Calm in two ways. It is best to decide by answering this
         - Prism Central and Calm UIs are continually evolving, you may encounter variations that require different feature navigation from the step by step directions.
       - __OS Images:__ *you do not* need to specify images (CentOS, Windows2012, etc.) for your reservation.
       - __Start and End Times:__ It is nice to have the cluster extend to the end of the day in case anyone would like to save their blueprints or work after the bootcamp ends.
-      - The default HPOC reservation comes with 25 VDI user sessions, therefore it is recommended that you reserve a cluster for every 25 attendees.
+      - The default HPOC reservation comes with 20 VDI user sessions, therefore it is recommended that you reserve a cluster for every 20 attendees.
           - For attendees that can install and use Juniper Pulse VPN to access the HPOC, you can consolidate those users to access a single cluster in addition to the VDI users.
 
 3. __Once your HPOC reservation starts:__
