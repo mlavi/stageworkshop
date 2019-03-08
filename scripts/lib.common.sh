@@ -142,11 +142,19 @@ function cluster_check() {
   local   _test
 
   _test=$(ncli --json=true multicluster get-cluster-state | \
-          jq -r .data[0].clusterDetails.multicluster)
+          jq '.data | length')
   _exit=$?
 
-  if [[ ! -z ${_test} ]]; then
-    _return=0
+  if (( $_test > 0)); then
+    _test=$(ncli --json=true multicluster get-cluster-state | \
+            jq -r .data[0].clusterDetails.multicluster)
+    _exit=$?
+
+    if [[ ! -z ${_test} ]]; then
+      _return=0
+    fi
+  else
+    log "get_cluster_state:|${_test}|, exit: ${_exit}, return ${_return}."
   fi
 
   log "Cluster status: |${_test}|, exit: ${_exit}, return ${_return}."

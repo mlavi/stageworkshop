@@ -11,10 +11,10 @@ begin
 # - Calm || Citrix || Files || Summit
 # - PC #.#
 WORKSHOPS=(\
-"Calm Workshop (AOS 5.5+/AHV PC 5.8.x) = Stable (AutoDC1)" \
-"Calm Workshop (AOS 5.8.x/AHV PC 5.10.x) = Stable (AutoDC2)" \
-"Calm Workshop (AOS 5.9+/AHV PC 5.10.x) = Development" \
-"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Development" \
+"Calm Workshop (AOS 5.5+/AHV PC 5.8) = Stable (AutoDC1)" \
+"Calm Workshop (AOS 5.8/AHV PC 5.10) = Stable (AutoDC2)" \
+"Calm Workshop (AOS 5.9+/AHV PC ${PC_DEV_VERSION}) = Development" \
+"Tech Summit 2019 (AOS 5.10/AHV PC 5.10) = Development" \
 "Add Files ${FILES_VERSION} to PE" \
 "Citrix Desktop on AHV Workshop (AOS/AHV 5.6)" \
 ) # Adjust stage_workshop.sh, function stage_clusters, for file/script mappings as needed

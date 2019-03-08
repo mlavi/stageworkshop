@@ -42,12 +42,16 @@ fi
 echo -e "\nFor details, please see: ${BASE_URL}/documentation/guidebook.md"
 
 _ERROR=0
-
 . /etc/profile.d/nutanix_env.sh || _ERROR=1
 
 if (( ${_ERROR} == 1 )); then
   echo "Error ${_ERROR}: This script should be run on a Nutanix CVM!"
   #echo RESTORE:
+  exit ${_ERROR}
+elif [[ $(whoami) != 'nutanix' ]]; then
+  _ERROR=50
+  echo "PBC-50: This guardrail can be relaxed with proper testing for the future."
+  echo "Error ${_ERROR}: This script should be run as user nutanix!"
   exit ${_ERROR}
 fi
 

@@ -21,7 +21,9 @@
 
 # Bugs #
 - test on poc23
+- Mark.A identified user:pass@[blank clustername], [blank clustername],PC-$PC_VERSION in PC UI
 - kIso not properly detected/set: .iso uploaded as DiskImage
+- [PBC-50]: Ryan.H identified pc_launch from ssh://admin@PE not invoked (assumes $HOME, not hardcoded to nutanix)!
 - FIXED via interleave for AOS+PC 5.10:
   2019-02-20 21:28:12|4424|pc_configure|PC>=5.10, manual join PE to PC = |Cluster registration is currently in progress. This operation may take a while.
   Error: The username or password entered is incorrect.|
