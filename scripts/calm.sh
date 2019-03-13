@@ -30,9 +30,13 @@ case ${1} in
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
-      && prism_check 'PC' \
-      && cluster_register \
-      && pc_configure \
+      && prism_check 'PC'
+
+      remote_exec 'SSH' 'PC' \
+        "source /etc/profile.d/nutanix_env.sh ; ncli user reset-password user-name=${PRISM_ADMIN} password=${PE_PASSWORD}"
+      cluster_register
+
+      pc_configure \
       && dependencies 'remove' 'sshpass' && dependencies 'remove' 'jq'
 
       log "PC Configuration complete: Waiting for PC deployment to complete, API is up!"
