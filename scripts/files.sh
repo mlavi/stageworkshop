@@ -15,11 +15,13 @@ case ${1} in
   PE | pe )
     . lib.pe.sh
 
-    args_required 'PE_HOST PC_LAUNCH'
+    args_required 'PE_HOST'
 
-    dependencies 'install' 'sshpass' && dependencies 'install' 'jq' \
-    files_install & # parallel, optional. Versus: $0 'files' &
+    dependencies 'install' 'jq' \
+    && files_install
+
     log "PE = https://${PE_HOST}:9440"
-    finish
   ;;
 esac
+
+finish

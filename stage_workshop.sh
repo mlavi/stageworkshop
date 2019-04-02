@@ -2,30 +2,35 @@
 # use bash -x to debug command substitution and evaluation instead of echo.
 DEBUG=
 
+# Source Workshop common routines + global variables
+. scripts/lib.common.sh
+. scripts/global.vars.sh
+begin
+
 # For WORKSHOPS keyword mappings to scripts and variables, please use:
-# - Calm || Citrix || Summit
+# - Calm || Citrix || Files || Summit
 # - PC #.#
 WORKSHOPS=(\
-"Calm Workshop (AOS 5.5+/AHV PC 5.8.x) = Stable (AutoDC1)" \
-"Calm Workshop (AOS 5.8.x/AHV PC 5.10.x) = Stable (AutoDC2)" \
-"Calm Workshop (AOS 5.9+/AHV PC 5.10.x) = Development" \
-"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Development" \
+"Calm Workshop (AOS 5.5+/AHV PC 5.8) = Stable (AutoDC1)" \
+"Calm Workshop (AOS 5.8/AHV PC 5.10) = Stable (AutoDC2)" \
+"Calm Workshop (AOS 5.9+/AHV PC ${PC_DEV_VERSION}) = Development" \
+"Tech Summit 2019 (AOS 5.10/AHV PC 5.10) = Development" \
 "Add Files ${FILES_VERSION} to PE" \
 "Citrix Desktop on AHV Workshop (AOS/AHV 5.6)" \
-) # Adjust function stage_clusters, below, for file/script mappings as needed
+) # Adjust stage_workshop.sh, function stage_clusters, for file/script mappings as needed
 
 function stage_clusters() {
   # Adjust map below as needed with $WORKSHOPS
-  local      _cluster
-  local    _container
+  local    _cluster
+  local  _container
   local _dependency
-  local       _fields
-  local    _libraries='global.vars.sh lib.common.sh '
-  local    _pe_launch # will be transferred and executed on PE
-  local    _pc_launch # will be transferred and executed on PC
-  local       _sshkey=${SSH_PUBKEY}
-  local       _wc_arg='--lines'
-  local     _workshop=${WORKSHOPS[$((${WORKSHOP_NUM}-1))]}
+  local     _fields
+  local  _libraries='global.vars.sh lib.common.sh '
+  local  _pe_launch # will be transferred and executed on PE
+  local  _pc_launch # will be transferred and executed on PC
+  local     _sshkey=${SSH_PUBKEY}
+  local     _wc_arg=${WC_ARG}
+  local   _workshop=${WORKSHOPS[$((${WORKSHOP_NUM}-1))]}
 
   # Map to latest and greatest of each point release
   # Metadata URLs MUST be specified in lib.common.sh function: ntnx_download
@@ -53,14 +58,14 @@ function stage_clusters() {
     _pe_launch='stage_citrixhow.sh'
     _pc_launch='stage_citrixhow_pc.sh'
   fi
+  if (( $(echo ${_workshop} | grep -i Files | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh'
+    _pe_launch='files.sh'
+  fi
   if (( $(echo ${_workshop} | grep -i Summit | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='ts2019.sh'
     _pc_launch=${_pe_launch}
-  fi
-  if (( $(echo ${_workshop} | grep -i Files | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh'
-    _pe_launch='files.sh'
   fi
 
   dependencies 'install' 'sshpass'
@@ -302,11 +307,6 @@ function select_workshop() {
 }
 
 #__main__
-
-# Source Workshop common routines + global variables
-. scripts/lib.common.sh
-. scripts/global.vars.sh
-begin
 
     _VALIDATE='Validate Staged Clusters'
 _CLUSTER_FILE='Cluster Input File'

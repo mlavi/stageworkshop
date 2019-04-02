@@ -142,11 +142,18 @@ function cluster_check() {
   local   _test
 
   _test=$(ncli --json=true multicluster get-cluster-state | \
-          jq -r .data[0].clusterDetails.multicluster)
+          jq '.data | length')
   _exit=$?
 
-  if [[ ! -z ${_test} ]]; then
-    _return=0
+  if (( $_test > 0)); then
+    _test=$(ncli --json=true multicluster get-cluster-state | \
+            jq -r .data[0].clusterDetails.multicluster)
+    _exit=$?
+
+    if [[ ! -z ${_test} ]]; then
+      log "get-cluster-state: |${_test}|, exit: ${_exit}, return ${_return}."
+      _return=0
+    fi
   fi
 
   log "Cluster status: |${_test}|, exit: ${_exit}, return ${_return}."
@@ -280,8 +287,10 @@ function images() {
 
   which "$_cli"
   if (( $? > 0 )); then
-         _cli='nuclei'
-      _source='source_uri'
+       _cli='nuclei'
+    _source='source_uri'
+
+    pc_cluster_img_import
   fi
 
   for _image in "${QCOW2_IMAGES[@]}" ; do

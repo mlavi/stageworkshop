@@ -228,17 +228,21 @@ function cluster_register() {
     while true ; do
       (( _loop++ ))
 
-      _cluster_check=cluster_check
+      cluster_check
+      _cluster_check=$?
 
-      if (( ${_cluster_check} == 0 )); then
+      if (( ${_cluster_check} == 10 )); then
         _test=$(ncli multicluster add-to-multicluster \
           external-ip-address-or-svm-ips=${PC_HOST} \
           username=${PRISM_ADMIN} password=${PE_PASSWORD})
         _exit=$?
         log "Manual join PE to PC = |${_test}|, exit: ${_exit}."
+
+        pc_configure
       fi
 
-      _cluster_check=cluster_check
+      cluster_check
+      _cluster_check=$?
 
       if (( ${_cluster_check} == 0 )); then
         log "PE to PC = cluster registration: successful."
@@ -251,6 +255,8 @@ function cluster_register() {
         sleep ${_sleep}
       fi
     done
+  else
+    pc_configure
   fi
 
 }
@@ -304,6 +310,8 @@ function pc_install() {
   if (( $? == 0 )) ; then
     log "IDEMPOTENCY: PC API responds, skip."
   else
+    pc_destroy
+
     log "Get cluster network and storage container UUIDs..."
     _nw_uuid=$(acli "net.get ${_nw_name}" \
       | grep "uuid" | cut -f 2 -d ':' | xargs)
@@ -506,7 +514,12 @@ function pc_unregister {
     external-ip-address-or-svm-ips=${PC_HOST} \
     username=${PRISM_ADMIN} password=${PE_PASSWORD} force=true
     # Error: This cluster was never added to Prism Central
-  ncli multicluster get-cluster-state # check for none
+
+  #ncli multicluster get-cluster-state # check for none
+  #    [None]
+  ncli --json=true multicluster get-cluster-state
+  # {"data":"","status":0}
+
   _cluster_uuid=$(ncli cluster info | grep -i uuid | awk -F: '{print $2}' | tr -d '[:space:]')
 
   exit 0

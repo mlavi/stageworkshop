@@ -2,13 +2,12 @@
 
 # shellcheck disable=SC2034
           RELEASE='release.json'
-# Sync the following to lib.common.sh::ntnx_download-Case=PC
 # Browse to: https://portal.nutanix.com/#/page/releases/prismDetails
 # - Find ${PC_VERSION} in the Additional Releases section on the lower right side
 # - Provide the metadata URL for the "PC 1-click deploy from PE" option to PC_*_METAURL
 #   PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.1.1/pcdeploy-5.10.1.1.json'
-   PC_DEV_VERSION='5.10.2'
-   PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.2/pcdeploy-5.10.2.json'
+   PC_DEV_VERSION='5.10.3'
+   PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.3/pcdeploy-5.10.3.json'
 PC_STABLE_VERSION='5.8.2'
 PC_STABLE_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.8.2/v1/pc_deploy-5.8.2.json'
 # Sync the following to lib.common.sh::ntnx_download-Case=FILES
@@ -18,8 +17,8 @@ PC_STABLE_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.8.2/
     FILES_VERSION='3.2.0.1'
     FILES_METAURL='http://download.nutanix.com/afs/7.3/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
     # 2019-02-15: override until metadata URL fixed: https://nutanix.slack.com/archives/C0C7C8D6G/p1550216046141300
-#    FILES_VERSION='3.2.0'
-#    FILES_METAURL='http://download.nutanix.com/afs/3.2.0/v1/afs-3.2.0.json'
+    FILES_VERSION='3.2.0.2'
+    FILES_METAURL='http://download.nutanix.com/afs/7.3/afs-3.2.0.2.json'
 
 NTNX_INIT_PASSWORD='nutanix/4u'
        PRISM_ADMIN='admin'
