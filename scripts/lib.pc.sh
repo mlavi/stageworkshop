@@ -60,14 +60,19 @@ function calm_update() {
 }
 
 function flow_enable() {
-  ## (API; Didn't work. Used nuclei instead)
-  ## https://localhost:9440/api/nutanix/v3/services/microseg
-  ## {"state":"ENABLE"}
-  # To disable flow run the following on PC: nuclei microseg.disable
+  local _http_body
+  local _test
+
+  #log "Enable Nutanix Flow..."
+  #nuclei microseg.enable 2>/dev/null
+  #nuclei microseg.get_status 2>/dev/null
 
   log "Enable Nutanix Flow..."
-  nuclei microseg.enable 2>/dev/null
-  nuclei microseg.get_status 2>/dev/null
+  _http_body='{state":"ENABLE"}'
+  _test=$(curl ${CURL_POST_OPTS} \
+    --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+    https://localhost:9440/api/nutanix/v3/services/microseg)
+  log "_test=|${_test}|"
 }
 
 function lcm() {
