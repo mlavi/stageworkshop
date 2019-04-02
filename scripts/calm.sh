@@ -92,8 +92,12 @@ case ${1} in
 
     ssp_auth \
     && calm_enable \
-    && lcm \
-    && images \
+    && lcm 
+
+    #put sleep in background, to wait lcm inventory complete
+    sleep 900 &
+
+    images \
     && pc_cluster_img_import \
     && prism_check 'PC'
 
@@ -102,6 +106,10 @@ case ${1} in
     flow_enable
     pc_admin
     # ntnx_download 'AOS' # function in lib.common.sh
+
+
+    #move sleep from background to front and run lcm calm upgrade 
+    wait && lcm_calm
 
     unset NUCLEI_SERVER NUCLEI_USERNAME NUCLEI_PASSWORD
 
