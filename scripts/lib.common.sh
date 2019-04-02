@@ -151,10 +151,9 @@ function cluster_check() {
     _exit=$?
 
     if [[ ! -z ${_test} ]]; then
+      log "get-cluster-state: |${_test}|, exit: ${_exit}, return ${_return}."
       _return=0
     fi
-  else
-    log "get_cluster_state:|${_test}|, exit: ${_exit}, return ${_return}."
   fi
 
   log "Cluster status: |${_test}|, exit: ${_exit}, return ${_return}."
@@ -288,8 +287,10 @@ function images() {
 
   which "$_cli"
   if (( $? > 0 )); then
-         _cli='nuclei'
-      _source='source_uri'
+       _cli='nuclei'
+    _source='source_uri'
+
+    pc_cluster_img_import
   fi
 
   for _image in "${QCOW2_IMAGES[@]}" ; do

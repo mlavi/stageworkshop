@@ -32,12 +32,13 @@ case ${1} in
       pc_install "${NW1_NAME}" \
       && prism_check 'PC' \
       && cluster_register \
-      && pc_configure \
-      && dependencies 'remove' 'sshpass' && dependencies 'remove' 'jq'
+      #&& dependencies 'remove' 'sshpass' && dependencies 'remove' 'jq'
 
       log "PC Configuration complete: Waiting for PC deployment to complete, API is up!"
       log "PE = https://${PE_HOST}:9440"
       log "PC = https://${PC_HOST}:9440"
+
+      images &
 
       finish
     else
@@ -73,6 +74,8 @@ case ${1} in
                       jq -r .data[0].clusterDetails.clusterName)
       if [[ ${CLUSTER_NAME} != '' ]]; then
         log "INFO: ncli multicluster get-cluster-state looks good for ${CLUSTER_NAME}."
+      else
+        log "INFO: couldn't determine CLUSTER_NAME."
       fi
     fi
 

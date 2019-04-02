@@ -231,12 +231,14 @@ function cluster_register() {
       cluster_check
       _cluster_check=$?
 
-      if (( ${_cluster_check} == 0 )); then
+      if (( ${_cluster_check} == 10 )); then
         _test=$(ncli multicluster add-to-multicluster \
           external-ip-address-or-svm-ips=${PC_HOST} \
           username=${PRISM_ADMIN} password=${PE_PASSWORD})
         _exit=$?
         log "Manual join PE to PC = |${_test}|, exit: ${_exit}."
+
+        pc_configure
       fi
 
       cluster_check
@@ -253,6 +255,8 @@ function cluster_register() {
         sleep ${_sleep}
       fi
     done
+  else
+    pc_configure
   fi
 
 }
@@ -307,7 +311,7 @@ function pc_install() {
     log "IDEMPOTENCY: PC API responds, skip."
   else
     pc_destroy
-    
+
     log "Get cluster network and storage container UUIDs..."
     _nw_uuid=$(acli "net.get ${_nw_name}" \
       | grep "uuid" | cut -f 2 -d ':' | xargs)
