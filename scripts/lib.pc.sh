@@ -102,7 +102,12 @@ function lcm_calm() {
   _pc_version=(${PC_VERSION//./ })
 
   if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
-    log "PC_VERSION ${PC_VERSION} >= 5.9, starting LCM inventory..."
+    log "PC_VERSION ${PC_VERSION} >= 5.9, LCM upgrade calm to 2.6.0.4 ..."
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"generate_plan\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"686c3c65-014e-41e6-9f97-bcf99d1a2869\",\"2.6.0.4\"],[\"f5231086-79a4-4bd5-a5ab-e93ad747028c\",\"2.6.0.4\"]]]}}"}'
+    _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+      https://localhost:9440/PrismGateway/services/rest/v1/genesis)
+    log "inventory _test=|${_test}|"
+
     _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"perform_update\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"686c3c65-014e-41e6-9f97-bcf99d1a2869\",\"2.6.0.4\"],[\"f5231086-79a4-4bd5-a5ab-e93ad747028c\",\"2.6.0.4\"]]]}}"}'
     _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
       https://localhost:9440/PrismGateway/services/rest/v1/genesis)
