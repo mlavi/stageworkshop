@@ -102,9 +102,15 @@ case ${1} in
     && calm_enable
 
     # if calm is enabling, lcm will failed due to epilson service failed
-    # sleep another 5 mins to ensure calm enable complete
-    sleep 300
-
+    # wait to ensure calm enable complete
+    source /etc/profile.d/nutanix_env.sh
+    while true ; do
+      sleep 60
+      result=$(ecli -o json task.list operation_type_list=kEnableNucalm |jq -r '.data[] | .status')
+      if [[ ${result} != "kRunning" ]]; then
+        break
+      fi
+    done
     lcm 
 
     #put sleep in background, to wait lcm inventory complete
