@@ -93,12 +93,22 @@ case ${1} in
     && pc_auth \
     && pc_smtp
 
+    # when func cluster_register called, script will run this part in PC
+    # but at that time, register not complete, will cause calm_enable failed, also import image failed
+    # put here sleep 5 mins to ensure cluster_register success
+    sleep 300
+
     ssp_auth \
-    && calm_enable \
-    && lcm 
+    && calm_enable
+
+    # if calm is enabling, lcm will failed due to epilson service failed
+    # sleep another 5 mins to ensure calm enable complete
+    sleep 300
+
+    lcm 
 
     #put sleep in background, to wait lcm inventory complete
-    sleep 900 &
+    #sleep 900 &
 
     images \
     && pc_cluster_img_import \
@@ -112,7 +122,7 @@ case ${1} in
 
 
     #move sleep from background to front and run lcm calm upgrade 
-    wait && lcm_calm
+    #wait && lcm_calm
 
     unset NUCLEI_SERVER NUCLEI_USERNAME NUCLEI_PASSWORD
 
