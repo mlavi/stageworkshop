@@ -97,22 +97,46 @@ function lcm_calm() {
   local  _http_body
   local _pc_version
   local       _test
+  local _model_name
+  local       _uuid
 
   # shellcheck disable=2206
   _pc_version=(${PC_VERSION//./ })
 
-  #still try to fingure out how to get entities uuid from lcm and then following script could work
   if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
-    log "PC_VERSION ${PC_VERSION} >= 5.9, LCM upgrade calm to 2.6.0.4 ..."
-    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"generate_plan\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"686c3c65-014e-41e6-9f97-bcf99d1a2869\",\"2.6.0.4\"],[\"f5231086-79a4-4bd5-a5ab-e93ad747028c\",\"2.6.0.4\"]]]}}"}'
-    _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
-      https://localhost:9440/PrismGateway/services/rest/v1/genesis)
-    log "inventory _test=|${_test}|"
+    # get lcm entity uuid of Calm and Epsilon
+    i=0
+    for _model_name in Calm Epsilon; do
+      _http_body='{
+        "entity_type": "lcm_entity",
+        "grouping_attribute": "entity_class",
+        "group_member_count": 1000,
+        "group_member_attributes": [
+          {
+            "attribute": "uuid"
+          }
+        ],
+        "query_name": "prism:LCMQueryModel",
+        "filter_criteria": "entity_model=='"${_model_name}"'"
+      }'
+      _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+        https://localhost:9440/api/nutanix/v3/groups)
+      _uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .entity_id')
+      log "${_model_name} uuid[$i]=${_uuid[${i}]}"
+      i=$((i+1))
+    done
 
-    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"perform_update\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"686c3c65-014e-41e6-9f97-bcf99d1a2869\",\"2.6.0.4\"],[\"f5231086-79a4-4bd5-a5ab-e93ad747028c\",\"2.6.0.4\"]]]}}"}'
+    log "PC_VERSION ${PC_VERSION} >= 5.9, LCM upgrade calm to 2.6.0.4 ..."
+    #generate_plan (this step maybe optional)
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"generate_plan\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_uuid[0]}"'\",\"2.6.0.4\"],[\"'"${_uuid[1]}"'\",\"2.6.0.4\"]]]}}"}'
     _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
       https://localhost:9440/PrismGateway/services/rest/v1/genesis)
-    log "inventory _test=|${_test}|"
+    log "generate_plan _test=|${_test}|"
+    #perform_update
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"perform_update\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_uuid[0]}"'\",\"2.6.0.4\"],[\"'"${_uuid[1]}"'\",\"2.6.0.4\"]]]}}"}'
+    _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+      https://localhost:9440/PrismGateway/services/rest/v1/genesis)
+    log "perform_update _test=|${_test}|"
   fi
 }
 
