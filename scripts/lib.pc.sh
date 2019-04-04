@@ -134,6 +134,7 @@ function lcm_calm() {
   local _model_name
   local       _uuid
   local  _task_uuid
+  local      _sleep=60
 
   # shellcheck disable=2206
   _pc_version=(${PC_VERSION//./ })
