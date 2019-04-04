@@ -98,23 +98,12 @@ case ${1} in
     # put here sleep 5 mins to ensure cluster_register success
     sleep 300
 
-    ssp_auth \
-    && calm_enable
 
     # if calm is enabling, lcm will failed due to epilson service failed
-    # wait to ensure calm enable complete
-    source /etc/profile.d/nutanix_env.sh
-    while true ; do
-      sleep 60
-      result=$(ecli -o json task.list operation_type_list=kEnableNucalm |jq -r '.data[] | .status')
-      if [[ ${result} != "kRunning" ]]; then
-        break
-      fi
-    done
-    lcm 
-
-    #put sleep in background, to wait lcm inventory complete
-    #sleep 900 &
+    # added some codes in calm_enable() to wait task complete
+    ssp_auth \
+    && calm_enable \
+    && lcm
 
     images \
     && pc_cluster_img_import \
@@ -126,9 +115,15 @@ case ${1} in
     pc_admin
     # ntnx_download 'AOS' # function in lib.common.sh
 
-
-    #move sleep from background to front and run lcm calm upgrade 
-    #wait && lcm_calm
+    # wait any lcm ops complete
+    while true ; do
+      lcm_running
+      if [[ $? -eq 0 ]]; then
+        lcm_calm
+      else
+        sleep 60
+      fi
+    done
 
     unset NUCLEI_SERVER NUCLEI_USERNAME NUCLEI_PASSWORD
 

@@ -75,6 +75,30 @@ function flow_enable() {
   log "_test=|${_test}|"
 }
 
+function lcm_running() {
+  local  _http_body
+  local _pc_version
+  local       _test
+  local     _result
+
+  # shellcheck disable=2206
+  _pc_version=(${PC_VERSION//./ })
+
+  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
+    log "PC_VERSION ${PC_VERSION} >= 5.9, check lcm operation in progress ..."
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"is_lcm_operation_in_progress\"}}"}'
+    _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+      https://localhost:9440/PrismGateway/services/rest/v1/genesis)
+    _result=$(echo ${_test} |awk -F':' '{print $NF}' |egrep -o '[a-zA-Z]\+')
+    log "lcm ops in progress _test=|${_test}|"
+    if [[ ${_result} == "null" ]]; then
+      return 0
+    else
+      return 1
+    fi
+  fi
+}
+
 function lcm() {
   local  _http_body
   local _pc_version
@@ -473,8 +497,11 @@ EOF
 }
 
 function calm_enable() {
+  local  _attempts=10
+  local     _sleep=60
+  local      _loop=0
   local _http_body
-  local _test
+  local      _test
 
   log "Enable Nutanix Calm..."
   _http_body=$(cat <<EOF
@@ -489,6 +516,22 @@ EOF
     --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
     https://localhost:9440/api/nutanix/v3/services/nucalm)
   log "_test=|${_test}|"
+
+  # normally, calm enabling will take 3-4 mins
+  # confirm calm enabling complete, before running other lcm operation
+  source /etc/profile.d/nutanix_env.sh
+  while true ; do
+    log "waiting calm enabling complete ... $((_loop++))/${_attempts} times"
+    sleep ${_sleep} #sleep first, ensure lcm task created
+    result=$(ecli -o json task.list operation_type_list=kEnableNucalm |jq -r '.data[] | .status')
+    if [[ ${_loop} -ge ${_attempts} ]]; then
+      log "waiting calm enabling timeout"
+      break
+    elif [[ ${result} != "kRunning" ]]; then
+      log "waiting calm enabling complete"
+      break
+    fi
+  done
 }
 
 function pc_ui() {
