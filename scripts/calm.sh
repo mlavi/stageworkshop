@@ -103,7 +103,8 @@ case ${1} in
     # added some codes in calm_enable() to wait task complete
     ssp_auth \
     && calm_enable \
-    && lcm
+    && lcm \
+    && lcm_calm
 
     images \
     && pc_cluster_img_import \
@@ -114,16 +115,6 @@ case ${1} in
     flow_enable
     pc_admin
     # ntnx_download 'AOS' # function in lib.common.sh
-
-    # wait any lcm ops complete
-    while true ; do
-      lcm_running
-      if [[ $? -eq 0 ]]; then
-        lcm_calm
-      else
-        sleep 60
-      fi
-    done
 
     unset NUCLEI_SERVER NUCLEI_USERNAME NUCLEI_PASSWORD
 
