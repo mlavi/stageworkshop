@@ -89,7 +89,7 @@ function lcm_running() {
     _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"is_lcm_operation_in_progress\"}}"}'
     _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
       https://localhost:9440/PrismGateway/services/rest/v1/genesis)
-    _result=$(echo ${_test} |awk -F':' '{print $NF}' |egrep -o '[a-zA-Z]\+')
+    _result=$(echo ${_test} |awk -F':' '{print $NF}' |egrep -o '[a-zA-Z]+')
     log "lcm ops in progress _test=|${_test}|"
     if [[ ${_result} == "null" ]]; then
       return 0
