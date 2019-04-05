@@ -51,15 +51,6 @@ function authentication_source() {
         _autodc_restart="sleep 2 && service ${_autodc_service} stop && sleep 5 && service ${_autodc_service} start"
          _autodc_status="service ${_autodc_service} status"
         _autodc_success=' * status: started'
-
-        # REVIEW: override global.vars
-        export AUTODC_REPOS=(\
-         'http://10.132.128.50:81/share/saved-images/autodc-2.0.qcow2' \
-         'nfs://pocfs.nutanixdc.local/images/CorpSE_Calm/autodc-2.0.qcow2' \
-        # 'smb://pocfs.nutanixdc.local/images/CorpSE_Calm/autodc-2.0.qcow2' \
-         'https://s3.amazonaws.com/get-ahv-images/AutoDC2.qcow2' \
-         'http://10.59.103.143:8000/autodc-2.0.qcow2' \
-        )
       fi
 
       dns_check "dc${_autodc_index}.${AUTH_FQDN}"
@@ -232,13 +223,13 @@ function cluster_register() {
       _cluster_check=$?
 
       if (( ${_cluster_check} == 10 )); then
+        remote_exec 'SSH' 'PC' \
+          "source /etc/profile.d/nutanix_env.sh ; ncli user reset-password user-name=${PRISM_ADMIN} password=${PE_PASSWORD}"
         _test=$(ncli multicluster add-to-multicluster \
           external-ip-address-or-svm-ips=${PC_HOST} \
           username=${PRISM_ADMIN} password=${PE_PASSWORD})
         _exit=$?
         log "Manual join PE to PC = |${_test}|, exit: ${_exit}."
-
-        pc_configure
       fi
 
       cluster_check
@@ -255,10 +246,7 @@ function cluster_register() {
         sleep ${_sleep}
       fi
     done
-  else
-    pc_configure
   fi
-
 }
 
 function pc_configure() {

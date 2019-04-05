@@ -32,6 +32,7 @@ case ${1} in
       pc_install "${NW1_NAME}" \
       && prism_check 'PC' \
       && cluster_register \
+      && pc_configure
       #&& dependencies 'remove' 'sshpass' && dependencies 'remove' 'jq'
 
       log "PC Configuration complete: Waiting for PC deployment to complete, API is up!"
@@ -93,10 +94,14 @@ case ${1} in
     && pc_auth \
     && pc_smtp
 
+    # if calm is enabling, lcm will failed due to epilson service failed
+    # added some codes in calm_enable() to wait task complete
     ssp_auth \
     && calm_enable \
     && lcm \
-    && images \
+    && lcm_calm
+
+    images \
     && pc_cluster_img_import \
     && prism_check 'PC'
 

@@ -60,32 +60,130 @@ function calm_update() {
 }
 
 function flow_enable() {
-  ## (API; Didn't work. Used nuclei instead)
-  ## https://localhost:9440/api/nutanix/v3/services/microseg
-  ## {"state":"ENABLE"}
-  # To disable flow run the following on PC: nuclei microseg.disable
+  local _http_body
+  local _test
+
+  #log "Enable Nutanix Flow..."
+  #nuclei microseg.enable 2>/dev/null
+  #nuclei microseg.get_status 2>/dev/null
 
   log "Enable Nutanix Flow..."
-  nuclei microseg.enable 2>/dev/null
-  nuclei microseg.get_status 2>/dev/null
+  _http_body='{"state":"ENABLE"}'
+  _test=$(curl ${CURL_POST_OPTS} \
+    --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+    https://localhost:9440/api/nutanix/v3/services/microseg)
+  log "_test=|${_test}|"
+}
+
+function lcm_running() {
+  local _pc_version
+  local     _result
+  local  _task_uuid=$1
+
+  # shellcheck disable=2206
+  _pc_version=(${PC_VERSION//./ })
+
+  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
+    log "PC_VERSION ${PC_VERSION} >= 5.9, check lcm operation in progress ..."
+    _result=$(ecli -o json task.get ${_task_uuid} |jq -r '.data.status')
+    log "lcm ops in progress _result=|${_result}|"
+    if [[ ${_result} == "kRunning" ]]; then
+      return 1
+    else
+      return 0
+    fi
+  fi
 }
 
 function lcm() {
   local  _http_body
   local _pc_version
   local       _test
+  local  _task_uuid
+  local     _result
+  local      _sleep=60
 
   # shellcheck disable=2206
   _pc_version=(${PC_VERSION//./ })
 
   if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
     log "PC_VERSION ${PC_VERSION} >= 5.9, starting LCM inventory..."
-
-    _http_body='value: "{".oid":"LifeCycleManager",".method":"lcm_framework_rpc",".kwargs":{"method_class":"LcmFramework","method":"perform_inventory","args":["http://download.nutanix.com/lcm/2.0"]}}"'
-
-    _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+    #_http_body='value: "{".oid":"LifeCycleManager",".method":"lcm_framework_rpc",".kwargs":{"method_class":"LcmFramework","method":"perform_inventory","args":["http://download.nutanix.com/lcm/2.0"]}}"'
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"perform_inventory\",\"args\":[\"http://download.nutanix.com/lcm/2.0\"]}}"}'
+    _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
       https://localhost:9440/PrismGateway/services/rest/v1/genesis)
     log "inventory _test=|${_test}|"
+    _task_uuid=$(echo ${_test} |awk -F':' '{print $NF}' |egrep -o '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+
+    #wait task complete
+    while true ; do
+      lcm_running ${_task_uuid}
+      if [[ $? -eq 0 ]]; then
+        return 0
+      else
+        sleep ${_sleep}
+      fi
+    done
+  fi
+}
+
+function lcm_calm() {
+  local  _http_body
+  local _pc_version
+  local       _test
+  local _model_name
+  local       _uuid
+  local  _task_uuid
+  local      _sleep=60
+
+  # shellcheck disable=2206
+  _pc_version=(${PC_VERSION//./ })
+
+  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
+    # get lcm entity uuid of Calm and Epsilon
+    i=0
+    for _model_name in Calm Epsilon; do
+      _http_body='{
+        "entity_type": "lcm_entity",
+        "grouping_attribute": "entity_class",
+        "group_member_count": 1000,
+        "group_member_attributes": [
+          {
+            "attribute": "uuid"
+          }
+        ],
+        "query_name": "prism:LCMQueryModel",
+        "filter_criteria": "entity_model=='"${_model_name}"'"
+      }'
+      _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+        https://localhost:9440/api/nutanix/v3/groups)
+      _uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .entity_id')
+      log "${_model_name} uuid[$i]=${_uuid[${i}]}"
+      i=$((i+1))
+    done
+
+    log "PC_VERSION ${PC_VERSION} >= 5.9, LCM upgrade calm to 2.6.0.4 ..."
+    #generate_plan (this step maybe optional)
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"generate_plan\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_uuid[0]}"'\",\"2.6.0.4\"],[\"'"${_uuid[1]}"'\",\"2.6.0.4\"]]]}}"}'
+    _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+      https://localhost:9440/PrismGateway/services/rest/v1/genesis)
+    log "generate_plan _test=|${_test}|"
+    #perform_update
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"perform_update\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_uuid[0]}"'\",\"2.6.0.4\"],[\"'"${_uuid[1]}"'\",\"2.6.0.4\"]]]}}"}'
+    _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+      https://localhost:9440/PrismGateway/services/rest/v1/genesis)
+    log "perform_update _test=|${_test}|"
+    _task_uuid=$(echo ${_test} |awk -F':' '{print $NF}' |egrep -o '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+
+    #wait task complete
+    while true ; do
+      lcm_running ${_task_uuid}
+      if [[ $? -eq 0 ]]; then
+        return 0
+      else
+        sleep ${_sleep}
+      fi
+    done
   fi
 }
 
@@ -422,8 +520,12 @@ EOF
 }
 
 function calm_enable() {
+  local  _attempts=10
+  local     _sleep=60
+  local      _loop=0
   local _http_body
-  local _test
+  local      _test
+  local    _result
 
   log "Enable Nutanix Calm..."
   _http_body=$(cat <<EOF
@@ -438,6 +540,22 @@ EOF
     --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
     https://localhost:9440/api/nutanix/v3/services/nucalm)
   log "_test=|${_test}|"
+
+  # normally, calm enabling will take 3-4 mins
+  # confirm calm enabling complete, before running other lcm operation
+  source /etc/profile.d/nutanix_env.sh
+  while true ; do
+    log "waiting calm enabling complete ... $((_loop++))/${_attempts} times"
+    sleep ${_sleep} #sleep first, ensure lcm task created
+    _result=$(ecli -o json task.list operation_type_list=kEnableNucalm |jq -r '.data[] | .status')
+    if [[ ${_loop} -ge ${_attempts} ]]; then
+      log "calm enabling timeout"
+      break
+    elif [[ ${_result} != "kRunning" ]]; then
+      log "calm enabling complete"
+      break
+    fi
+  done
 }
 
 function pc_ui() {
