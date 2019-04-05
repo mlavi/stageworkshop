@@ -223,6 +223,8 @@ function cluster_register() {
       _cluster_check=$?
 
       if (( ${_cluster_check} == 10 )); then
+        remote_exec 'SSH' 'PC' \
+          "source /etc/profile.d/nutanix_env.sh ; ncli user reset-password user-name=${PRISM_ADMIN} password=${PE_PASSWORD}"
         _test=$(ncli multicluster add-to-multicluster \
           external-ip-address-or-svm-ips=${PC_HOST} \
           username=${PRISM_ADMIN} password=${PE_PASSWORD})
@@ -235,7 +237,6 @@ function cluster_register() {
 
       if (( ${_cluster_check} == 0 )); then
         log "PE to PC = cluster registration: successful."
-        pc_configure
         return 0
       elif (( ${_loop} > ${_attempts} )); then
         log "Warning ${_error} @${1}: Giving up after ${_loop} tries."
@@ -245,10 +246,7 @@ function cluster_register() {
         sleep ${_sleep}
       fi
     done
-  else
-    pc_configure
   fi
-
 }
 
 function pc_configure() {

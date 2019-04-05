@@ -32,6 +32,7 @@ case ${1} in
       pc_install "${NW1_NAME}" \
       && prism_check 'PC' \
       && cluster_register \
+      && pc_configure
       #&& dependencies 'remove' 'sshpass' && dependencies 'remove' 'jq'
 
       log "PC Configuration complete: Waiting for PC deployment to complete, API is up!"
