@@ -228,8 +228,6 @@ function cluster_register() {
           username=${PRISM_ADMIN} password=${PE_PASSWORD})
         _exit=$?
         log "Manual join PE to PC = |${_test}|, exit: ${_exit}."
-
-        pc_configure
       fi
 
       cluster_check
@@ -237,6 +235,7 @@ function cluster_register() {
 
       if (( ${_cluster_check} == 0 )); then
         log "PE to PC = cluster registration: successful."
+        pc_configure
         return 0
       elif (( ${_loop} > ${_attempts} )); then
         log "Warning ${_error} @${1}: Giving up after ${_loop} tries."

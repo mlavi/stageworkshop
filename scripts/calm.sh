@@ -93,12 +93,6 @@ case ${1} in
     && pc_auth \
     && pc_smtp
 
-    # when func cluster_register called, script will run this part in PC
-    # but at that time, register not complete, will cause calm_enable failed, also import image failed
-    # put here sleep 5 mins to ensure cluster_register success
-    sleep 300
-
-
     # if calm is enabling, lcm will failed due to epilson service failed
     # added some codes in calm_enable() to wait task complete
     ssp_auth \
