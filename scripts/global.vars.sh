@@ -5,18 +5,18 @@
 # Browse to: https://portal.nutanix.com/#/page/releases/prismDetails
 # - Find ${PC_VERSION} in the Additional Releases section on the lower right side
 # - Provide the metadata URL for the "PC 1-click deploy from PE" option to PC_*_METAURL
-#   PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.1.1/pcdeploy-5.10.1.1.json'
+# Alternatively, provide PC_URL to override the location.
    PC_DEV_VERSION='5.10.3'
    PC_DEV_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.10.3/pcdeploy-5.10.3.json'
+   # PC_DEV_VERSION='5.11'
+   #         PC_URL='http://10.42.194.11/images/PC/pc-5.11ea/nutanix_installer_package_pc-release-euphrates-5.11-stable-62e08a08ee06ef55dfd04a254d0311bb12d9099f.tar.gz'
 PC_STABLE_VERSION='5.8.2'
 PC_STABLE_METAURL='http://download.nutanix.com/pc/one-click-pc-deployment/5.8.2/v1/pc_deploy-5.8.2.json'
 # Sync the following to lib.common.sh::ntnx_download-Case=FILES
 # Browse to: https://portal.nutanix.com/#/page/releases/afsDetails?targetVal=GA
 # - Find ${FILES_VERSION} in the Additional Releases section on the lower right side
 # - Provide "Upgrade Metadata File" URL to FILES_METAURL
-    FILES_VERSION='3.2.0.1'
-    FILES_METAURL='http://download.nutanix.com/afs/7.3/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
-    # 2019-02-15: override until metadata URL fixed: https://nutanix.slack.com/archives/C0C7C8D6G/p1550216046141300
+# Alternatively, provide FILES_URL to override.
     FILES_VERSION='3.2.0.2'
     FILES_METAURL='http://download.nutanix.com/afs/7.3/afs-3.2.0.2.json'
 
@@ -37,8 +37,6 @@ NTNX_INIT_PASSWORD='nutanix/4u'
  )
    QCOW2_REPOS=(\
     'http://10.42.8.50/images/' \
-    'http://10.21.250.221/images/tech-enablement/' \
-    'http://10.21.250.221/images/ahv/techsummit/' \
     'http://10.132.128.50:81/share/saved-images/' \
     'https://s3.amazonaws.com/get-ahv-images/' \
  ) # talk to Nathan.C to populate S3, Sharon.S to populate Daisy File Share
@@ -80,6 +78,7 @@ DATA_SERVICE_IP=${IPV4_PREFIX}.$((${OCTET[3]} + 1))
    NW1_DHCP_END="${IPV4_PREFIX}.125"
 # https://sewiki.nutanix.com/index.php/Hosted_POC_FAQ#I.27d_like_to_test_email_alert_functionality.2C_what_SMTP_server_can_I_use_on_Hosted_POC_clusters.3F
 SMTP_SERVER_ADDRESS='nutanix-com.mail.protection.outlook.com'
+SMTP_SERVER_ADDRESS='phx-it-mailrelay-prod-1.corp.nutanix.com' #10.40.64.35
    SMTP_SERVER_FROM='NutanixHostedPOC@nutanix.com'
    SMTP_SERVER_PORT=25
 
@@ -101,45 +100,35 @@ AUTH_ADMIN_GROUP='SSP Admins'
 
 # For Nutanix HPOC/Marketing clusters
 # https://sewiki.nutanix.com/index.php/HPOC_IP_Schema
+# https://sewiki.nutanix.com/index.php/X-Labs_Infrastructure#HPOC_Network_Details
 case "${OCTET[0]}.${OCTET[1]}" in
-  10.20 ) #Marketing: us-west = SV
-    DNS_SERVERS='10.21.253.10'
-    ;;
-  10.21 ) #HPOC: us-west =  SV = old, moved to PHX
+  10.21 ) # obsolete; example overrides...
     if (( ${OCTET[2]} == 60 )) || (( ${OCTET[2]} == 77 )); then
       log 'GPU cluster, aborting! See https://sewiki.nutanix.com/index.php/Hosted_Proof_of_Concept_(HPOC)#GPU_Clusters'
       exit 0
     fi
-
-    # backup cluster; override relative IP addressing
-    if (( ${OCTET[2]} == 249 )); then
-      AUTH_HOST="${IPV4_PREFIX}.118"
-        PC_HOST="${IPV4_PREFIX}.119"
-    fi
-
-       DNS_SERVERS='10.21.253.10,10.21.253.11'
-          NW2_NAME='Secondary'
-          NW2_VLAN=$(( ${OCTET[2]} * 10 + 1 ))
-        NW2_SUBNET="${IPV4_PREFIX}.129/25"
-    NW2_DHCP_START="${IPV4_PREFIX}.132"
-      NW2_DHCP_END="${IPV4_PREFIX}.253"
-    ;;
-  10.55 ) # HPOC us-east = Durham/RTP
-       DNS_SERVERS='10.21.253.11'
-          NW2_NAME='Secondary'
-          NW2_VLAN=$(( ${OCTET[2]} * 10 + 1 ))
-        NW2_SUBNET="${IPV4_PREFIX}.129/25"
-    NW2_DHCP_START="${IPV4_PREFIX}.132"
-      NW2_DHCP_END="${IPV4_PREFIX}.253"
     ;;
   10.42 ) # HPOC us-west = PHX
-       DNS_SERVERS='10.42.196.10'
+       DNS_SERVERS='10.42.196.10,10.42.194.10'
           NW2_NAME='Secondary'
           NW2_VLAN=$(( ${OCTET[2]} * 10 + 1 ))
         NW2_SUBNET="${IPV4_PREFIX}.129/25"
     NW2_DHCP_START="${IPV4_PREFIX}.132"
       NW2_DHCP_END="${IPV4_PREFIX}.253"
-    SMTP_SERVER_ADDRESS='phx-it-mailrelay-prod-1.corp.nutanix.com' #10.40.64.35
+
+    # backup cluster; override relative IP addressing
+    if (( ${OCTET[2]} == 199 )); then
+      AUTH_HOST="${IPV4_PREFIX}.TBD"
+        PC_HOST="${IPV4_PREFIX}.24"
+    fi
+    ;;
+  10.55 ) # HPOC us-east = RTP/Durham
+       DNS_SERVERS='10.55.251.10,10.55.251.11'
+          NW2_NAME='Secondary'
+          NW2_VLAN=$(( ${OCTET[2]} * 10 + 1 ))
+        NW2_SUBNET="${IPV4_PREFIX}.129/25"
+    NW2_DHCP_START="${IPV4_PREFIX}.132"
+      NW2_DHCP_END="${IPV4_PREFIX}.253"
     ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
        DNS_SERVERS='10.132.71.40'

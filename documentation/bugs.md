@@ -1,26 +1,25 @@
-# Bugs, Priorities, and Notes #
 
----
-<!-- MDTOC maxdepth:6 firsth1:0 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+<!-- MDTOC maxdepth:2 firsth1:1 numbering:1 flatten:1 bullets:0 updateOnSave:1 -->
 
-- [Bugs](#bugs)   
-- [Semi-prioritized Backlog with Technical Debt](#semi-prioritized-backlog-with-technical-debt)   
-   - [Improved Software Engineering](#improved-software-engineering)   
-- [Notes](#notes)   
-   - [Push Button Calm](#push-button-calm)   
-   - [Citations for other Calm automation](#citations-for-other-calm-automation)   
-   - [AutoDC](#autodc)   
-   - [NuCLeI](#nuclei)   
-      - [nuclei authconfig (run local from container?)](#nuclei-authconfig-run-local-from-container)   
-   - [Image Uploading](#image-uploading)   
-   - [File servers for container updates](#file-servers-for-container-updates)   
-   - [Git](#git)   
+1. [Bugs](#bugs)   
+2. [Semi-prioritized Backlog with Technical Debt](#semi-prioritized-backlog-with-technical-debt)   
+2.1. [Improved Software Engineering](#improved-software-engineering)   
+3. [Notes](#notes)   
+3.1. [Push Button Calm](#push-button-calm)   
+3.2. [Citations for other Calm automation](#citations-for-other-calm-automation)   
+3.3. [Vision](#vision)   
+3.4. [AutoDC](#autodc)   
+3.5. [NuCLeI](#nuclei)   
+3.6. [Image Uploading](#image-uploading)   
+3.7. [File servers for container updates](#file-servers-for-container-updates)   
+3.8. [Git](#git)   
 
 <!-- /MDTOC -->
 ---
 
 # Bugs #
-- PC-5.10.3 = LCM 2.1.4139, Calm-2.4.0, Karbon-0.8 
+
+- PC-5.10.3 = LCM 2.1.4139, Calm-2.4.0, Karbon-0.8
 - kIso not properly detected/set: .iso uploaded as DiskImage
 - [PBC-50] Ryan.H identified pc_launch from ssh://admin@PE not invoked (assumes $HOME, not hardcoded to nutanix)!
 - [PBC-51] Mark.A identified user:pass@[blank clustername], [blank clustername],PC-$PC_VERSION in PC UI
@@ -348,6 +347,36 @@ I've looked into some server testing frameworks.
   - 326: def validate_cluster(entity):
   - 500: def add_network_to_project(name,directory_uuid):
 - https://github.com/digitalformula/nutanix-cluster-setup
+
+## Vision ##
+
+- In the non-exhaustive [citations for other automation](#citations-for-other-calm-automation) section, there are
+  many efforts to automate workloads on the Nutanix platform. Most are
+  individual led projects with various amounts of adoption,
+  represent different technologies/languages, and have questionable
+  sustainability because they are solo volunteer efforts.
+- To counter these fragmented efforts, there must be some alignment, which
+  could unite collaborative efforts to increase efficiency and adoption.
+- To drive alignment, there should be some achievement goals:
+  - Create a facility that automates workloads on the Nutanix platform,
+  showcasing the products working together to deliver business outcomes.
+  - Make this facility easy to consume:
+    - Deliver as a service
+    - Develop as a standalone, portable, hackable thing
+    - Embed into Foundation and rx.corp.nutanix.com
+  - Distribute the facility across logical, functional environments:
+    - Bootstrap from a CVM to get Prism Central, VM images,
+    Calm, and potentially Karbon up and running.
+    - Load and execute Calm blueprints to bootstrap and orchestrate the
+    remainder of the platform, environments, and operations.
+    - Adopt any other technologies and point solutions that achieve goals,
+    but refactor towards the basic run-time environments (CVM+PCVM+Calm) when possible.
+    - Therefore, it would be ideal to move from Windows+Powershell+database host to:
+      1. Linux VM+Powershell+database host
+      2. Move database to Era, Linux VM, or container
+      3. Powershell container?
+      4. Add APIs, add Python runtime, and refactor?
+      5. Drive all containers to Kubernetes/Karbon
 
 ## AutoDC ##
   - See also: [AutoDC](autodc/README.md)

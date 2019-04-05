@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ./repo_source.sh 2>&1 | grep -v 8181 | grep SOURCE_URL
+# ./repo_source.sh 2>&1 | grep -v 8181 | grep SOURCE_URL | awk -F= '{print $2}'
 
 # PE_HOST='1.1.1.1'
 
