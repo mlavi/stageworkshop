@@ -311,7 +311,7 @@ function pc_install() {
     _test=$(source /etc/profile.d/nutanix_env.sh \
       && ncli --json=true software list \
       | jq -r \
-        '.data[] | select(.softwareType == "'${_ncli_softwaretype}'") | select(.status == "COMPLETED") | .version')
+        '.data[] | select(.softwareType == "'${_ncli_softwaretype}'") | select(.status == "COMPLETED") | select(.version == "'${PC_VERSION}'")| .version')
 
     if [[ ${_test} != "${PC_VERSION}" ]]; then
       log "PC-${PC_VERSION} not completed. ${_test}"
