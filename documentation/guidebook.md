@@ -7,7 +7,9 @@
 - [How to Do a Calm Bootcamp](#how-to-do-a-calm-bootcamp)   
    - [Extended Enablement](#extended-enablement)   
 - [Bugs, Priorities, Notes](#bugs-priorities-notes)   
-- [Development](#development)
+- [Development](#development)   
+   - [Latest Updates, For the Impatient](#latest-updates-for-the-impatient)   
+   - [Current Codebase](#current-codebase)   
    - [Feature Branches](#feature-branches)   
    - [Local Development Strategies and Tactics](#local-development-strategies-and-tactics)   
    - [How to Update or Add a Workshop](#how-to-update-or-add-a-workshop)   
@@ -214,6 +216,12 @@ It is easy to do a full day of enablement on Calm. There are many topics which y
 See [the planning and working document](bugs.md).
 
 ## Development ##
+
+### Latest Updates, For the Impatient ###
+
+      curl --remote-name --location https://raw.githubusercontent.com/mlavi/stageworkshop/master/bootstrap.sh && SOURCE=${_} sh ${_##*/}
+
+### Current Codebase ###
 
 Shell scripting is not a complete computer language, but despite its drawbacks, it is capable. In the limited environment of the CVM, it is the easiest manner to orchestrate other command line tools, including Nutanix CLIs. You will also see RESTful API calls to exercise platform functionality.
 
