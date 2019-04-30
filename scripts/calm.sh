@@ -94,8 +94,10 @@ case ${1} in
     && pc_auth \
     && pc_smtp
 
-    # if calm is enabling, lcm will failed due to epilson service failed
+    # 1. if calm is enabling, lcm will failed due to epilson service failed
     # added some codes in calm_enable() to wait task complete
+    # 2. enable karbon before calm, due to no task uuid return when enabling karbon
+    # but enabling karbon is much quick than enabling calm
     ssp_auth \
     && karbon_enable \
     && calm_enable \

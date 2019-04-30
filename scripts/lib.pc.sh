@@ -92,17 +92,6 @@ function karbon_enable() {
     _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
       https://localhost:9440/PrismGateway/services/rest/v1/genesis)
     log "inventory _test=|${_test}|"
-    _task_uuid=$(echo ${_test} |awk -F':' '{print $NF}' |egrep -o '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
-
-    #wait task complete
-    while true ; do
-      lcm_running ${_task_uuid}
-      if [[ $? -eq 0 ]]; then
-        return 0
-      else
-        sleep ${_sleep}
-      fi
-    done
   fi
 }
 
