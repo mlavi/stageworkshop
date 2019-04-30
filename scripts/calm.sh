@@ -97,9 +97,10 @@ case ${1} in
     # if calm is enabling, lcm will failed due to epilson service failed
     # added some codes in calm_enable() to wait task complete
     ssp_auth \
+    && karbon_enable \
     && calm_enable \
     && lcm \
-    && lcm_calm
+    && lcm_calm_karbon
 
     images \
     && pc_cluster_img_import \
