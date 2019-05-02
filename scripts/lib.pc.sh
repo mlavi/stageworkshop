@@ -180,7 +180,7 @@ function lcm_calm_karbon() {
       _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
         https://localhost:9440/api/nutanix/v3/groups)
       #_entity_uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .entity_id')
-      _entity_uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .data[] | select ( .name=="uuid" ) | .values[] | .values[] ')
+      _entity_uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .data[] | select ( .name=="uuid" ) | .values[] | .values[]')
       log "${_model_name} uuid[$i]=${_entity_uuid[${i}]}"
 
       _http_body='{
@@ -195,7 +195,7 @@ function lcm_calm_karbon() {
       }'
       _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
         https://localhost:9440/api/nutanix/v3/groups)
-      _entity_ver_all=$(echo $_test|jq -r '.group_results[] | .entity_results[] | .data[] | select ( .name=="version" ) | .values[] | .values[] ')
+      _entity_ver_all=$(echo $_test |jq -r '.group_results[] | .entity_results[] | .data[] | select ( .name=="version" ) | .values[] | .values[]' |xargs )
       _entity_ver[${i}]=$(echo ${_entity_ver_all} |xargs -n 1 |sort -t '.' -n -k1,4 |tail -n 1)
       log "${_model_name} _entity_uuid[$i]=${_entity_uuid[${i}]} _entity_ver[${i}]=${_entity_ver[${i}]} (${_entity_ver_all})"
 
