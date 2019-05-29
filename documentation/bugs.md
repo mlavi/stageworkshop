@@ -20,9 +20,11 @@
 # Bugs #
 
 - PC-5.10.3 = LCM 2.1.4139, Calm-2.4.0, Karbon-0.8
+- PC-5.10.4 = ?
 - kIso not properly detected/set: .iso uploaded as DiskImage
 - [PBC-50] Ryan.H identified pc_launch from ssh://admin@PE not invoked (assumes $HOME, not hardcoded to nutanix)!
 - [PBC-51] Mark.A identified user:pass@[blank clustername], [blank clustername],PC-$PC_VERSION in PC UI
+- `ncli software list software-type=Hypervisor`
 - FIXED via interleave for AOS+PC 5.10:
   2019-02-20 21:28:12|4424|pc_configure|PC>=5.10, manual join PE to PC = |Cluster registration is currently in progress. This operation may take a while.
   Error: The username or password entered is incorrect.|
@@ -35,6 +37,8 @@
   - @Michael workaround: py-nuclei?
     - ssh nutanix@10.21.78.39 'source /etc/profile; py-nuclei -u admin -p "password" image.list | grep acs'
 
+- Quick question - If I'm deploying the calm bootcamp from the curl script to an HPOC
+what workbook do i use with it?
 - ADC2 wonky
   - 2019-02-15 16:12:08|20294|pe_auth|Adjusted directory-url=ldap://10.42.23.40:389 because AOS-5.10.0.1 >= 5.9
 2019-02-15 16:12:08|20294|pe_auth|Configure PE external authentication
@@ -76,6 +80,7 @@ Error: Directory name NTNXLAB does not exist
         - https://stackoverflow.com/questions/28320134/how-to-list-all-tags-for-a-docker-image-on-a-remote-registry
     - purge unused container tags
 - Small improvements/bugs:
+  - Check AOS version; validate procedure for PC reg.
   - Check DNS for cluster is set
   - Banner: PC-X bug:,@HPOC #
     - PE banner: PUT /PrismGateway/services/rest/v1/application/system_data
@@ -368,15 +373,17 @@ I've looked into some server testing frameworks.
     - Bootstrap from a CVM to get Prism Central, VM images,
     Calm, and potentially Karbon up and running.
     - Load and execute Calm blueprints to bootstrap and orchestrate the
-    remainder of the platform, environments, and operations.
+    remainder of the platform, environments, and operations because Calm
+    blueprints are portable work artifacts.
     - Adopt any other technologies and point solutions that achieve goals,
     but refactor towards the basic run-time environments (CVM+PCVM+Calm) when possible.
     - Therefore, it would be ideal to move from Windows+Powershell+database host to:
-      1. Linux VM+Powershell+database host
-      2. Move database to Era, Linux VM, or container
-      3. Powershell container?
-      4. Add APIs, add Python runtime, and refactor?
-      5. Drive all containers to Kubernetes/Karbon
+      1. Refactor NTNX Commandlets to SSH and RESTful APIs to reduce OS dependencies
+      2. Move database from MS-SQL to opensource DB, Era, Linux VM, or container
+      3. Linux VM+Powershell+database host
+        1. Powershell container?
+      5. Add APIs, add Python runtime, and refactor?
+      6. Drive all containers to Kubernetes/Karbon
 
 ## AutoDC ##
   - See also: [AutoDC](autodc/README.md)

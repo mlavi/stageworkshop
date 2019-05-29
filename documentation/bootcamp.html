@@ -1,0 +1,92 @@
+<html>
+ <title>lavi.us/bootcamp/</title>
+ <body>
+<!--
+ vi documentation/bootcamp.html
+   :%s/PC_IP/10.x.x.37/g
+   :%s/PASSWORD/nx2Tech!/g
+   :%s/CLUSTER/PHX-MKTGxxx/g
+
+ ssh lavi.us "mkdir /opt/content/friends/lavi.us/bootcamp" && \
+ scp documentation/bootcamp.html lavi.us:/opt/content/friends/lavi.us/bootcamp/index.html
+
+ scp lavi.us:/opt/content/friends/lavi.us/bootcamp/index.html bootcamp2.html && \
+ ssh lavi.us "rm -rf /opt/content/friends/lavi.us/bootcamp/" && diff bootcamp*html
+ -->
+<p>Welcome, please bring your laptop or Wi-Fi enabled device to perform hands-on exercises.</p>
+<h1>Nutanix Calm Bootcamp Agenda:</h1>
+<pre>
+  8:30-9:00 AM	Logistics, Registration, Breakfast, Introductions, and Program Overview
+  9:00-9:30 AM	Nutanix Calm 101 Overview
+ 9:30-12:00 PM	Nutanix Calm Hands-On Exercises
+12:00-12:30 PM	Working Lunch
+ 12:30-1:30 PM	Nutanix Calm Hands-On Exercises Continued
+  1:30-2:00 PM	Question and Answers, Calm Final Wrap Up
+</pre>
+<a target="_blank" href="https://nutanix.handsonworkshops.com/workshops/6070f10d-3aa0-4c7e-b727-dc554cbc2ddf/start/">Calm Bootcamp Registration</a>
+<!--|| Prism Central = <a target="_blank" href="https://PC_IP:9440/">https://PC_IP:9440/</a> admin:PASSWORD -->
+<h3>Hosted PoC Lab Access Insructions</h3>
+<h4>User Credentials</h4>
+<p>20 x VDI/VPN User Accounts with Password: <strong>PASSWORD</strong></p>
+<ul>
+ <li>CLUSTER-User01</li>
+ <li>CLUSTER-User02</li>
+ <li>...</li>
+ <li>CLUSTER-User20</li>
+</ul>
+<h4>Choose your Lab Access Method</h4>
+Access to the Nutanix Hosted POC Lab environment is available via virtual desktop (VDI) or via private network (VPN).
+<table border="1">
+<tr>
+ <th>Parallels VDI</th>
+ <th>Pulse Secure VPN Client</th>
+</tr>
+<tr>
+ <td><ol>
+  <li>Login to <a target="_blank" href="https://xld-uswest1.nutanix.com">https://xld-uswest1.nutanix.com</a> (for PHX)
+  <br/>or <a target="_blank" href="https://xld-useast1.nutanix.com">https://xld-useast1.nutanix.com</a> (for RTP)
+  <br/>using your designated credentials, above.</li>
+  <li>Select HTML5 (web browser)
+   <br/><em>or</em> install the Parallels client.</li>
+  <li>Select a desktop or application of your choice, proceed to open a browser...</li>
+ </ol></td>
+ <td><ol>
+  <li>If client already installed skip to next step, otherwise:</li>
+  <ol>
+    <li>To download the client, login to <a target="_blank" href="https://xlv-uswest1.nutanix.com">https://xlv-uswest1.nutanix.com</a>
+    <br/>or <a target="_blank" href="https://xlv-useast1.nutanix.com">https://xlv-useast1.nutanix.com</a>
+    <br/>using your designated credentials, above.</li>
+    <li>Download and install client</li>
+    <li>Logout of the Web UI</li>
+  </ol>
+  <li>Open client and ADD a connection with the following details:
+   <ul>
+    <li>Type: Policy Secure (UAC) or Connection Server (VPN)</li>
+    <li>Name: X-Labs PHX</li>
+     <ul><li>Server URL: xlv-useast1.nutanix.com</li></ul>
+    <li><em>or:</em> Name: X-Labs RTP</li>
+     <ul><li>Server URL: xlv-uswest1.nutanix.com</li></ul>
+   </ul>
+  </li>
+  <li>Once setup, login with the supplied credentials.</li>
+ </ol></td>
+</tr>
+</table>
+
+<p>Once you have lab network access, open a web browser and login to bootcamp in one tab/browser, login to Prism Central in the other.</p>
+<a target="_blank" href="https://nutanix.handsonworkshops.com/workshops/6070f10d-3aa0-4c7e-b727-dc554cbc2ddf/start/">Calm Bootcamp Registration</a>
+<!--|| Prism Central = <a target="_blank" href="https://PC_IP:9440/">https://PC_IP:9440/</a> admin:PASSWORD -->
+<hr/>
+<p>Please bring your laptop or wi-fi enabled device to perform hands-on demos.</p>
+<h4>Agenda:</h4>
+<pre>
+  8:30-9:00 AM	Registration, Breakfast and Program Overview
+  9:00-9:30 AM	Nutanix Calm 101
+ 9:30-12:00 PM	Nutanix Calm Hands-On Exercises
+12:00-12:30 PM	Working Lunch
+ 12:30-1:30 PM	Nutanix Calm Hands-On Exercises Continued
+  1:30-2:00 PM	Wrap Up + Q&A
+</pre>
+
+ </body>
+</html>

@@ -49,7 +49,20 @@ You may wish to use ````poc_samba_user.sh```` to populate AutoDC past the initia
 1. Modify the hard-coded variables at the top if needed.
 2. ````export DC_IP='10.21.example.40' && scp poc*sh root@${DC_IP}: && ssh root@${DC_IP} "chmod u+x poc*sh; ./poc_samba_users.sh"````
 
+
 ## AutoDC2 ##
+
+### Console Text Menu ###
+
+From PE or PC, browse to your AutoDC VM, then access the VM console. You will see a text status display of the IP, admin name, domain. Type Control+X to bring up small menu which gives options: add user, add group, reboot, etc.
+
+You can hit ^X or ^C a second time to drop out of the menu and land at shell as user root.
+
+### CLI: samba-tool ###
+
+        samba-tool group list
+
+### History ###
 
 @JohnWalker: The new one I have built has an image size of 85MB and is based on Alpine linux.
 I just need to finish the TUI interface for changing the config.

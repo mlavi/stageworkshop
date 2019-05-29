@@ -362,6 +362,7 @@ EOF
         log "batch _test=|${_test}|"
       else
 
+        log "DEBUG: calling|${_cli} image.create ${_command} ${_source}=${SOURCE_URL}|"
         ${_cli} "image.create ${_command}" ${_source}=${SOURCE_URL} 2>&1 &
         if (( $? != 0 )); then
           log "Warning: Image submission: $?. Continuing..."
@@ -630,11 +631,11 @@ function prism_check {
 
       if [[ ${1} == 'PC' && ${_password} != "${_pw_init}" ]]; then
         _password=${_pw_init}
-        log "Warning @${1}: Fallback on ${_host}: try initial password next cycle..."
+        log "NOTE: @${1}: Fallback on ${_host}: try initial password next cycle..."
         #_sleep=0 #break
       elif [[ ${1} == 'PC' && ${_password} == "${_pw_init}" && ${PC_VERSION} == "${PC_DEV_VERSION}" ]]; then
         _password=${PE_PASSWORD}
-        log "Warning @${1}-dev: Fallback on ${_host}: try PE cluster password next cycle..."
+        log "NOTE: @${1}-dev: Fallback on ${_host}: try PE cluster password next cycle..."
         #_sleep=0 #break
       fi
 
@@ -647,6 +648,10 @@ function prism_check {
       log "Warning ${_error} @${1}: Giving up after ${_loop} tries."
       return ${_error}
     else
+      if [[ ${1} == 'PC' && ${_attempts} == "${ATTEMPTS}" ]]; then
+        log "NOTE: Prism Central deployment typically takes AT LEAST 17+ minutes."
+      fi
+
       log "@${1} ${_loop}/${_attempts}=${_test}: sleep ${_sleep} seconds..."
       sleep ${_sleep}
     fi
@@ -659,7 +664,7 @@ function remote_exec() {
 # Argument ${3} = REQUIRED: command configuration
 # Argument ${4} = OPTIONAL: populated with anything = allowed to fail
 
-  local  _account='nutanix'
+  local  _account='nutanix' #TODO: fix hardcoded account name
   local _attempts=3
   local    _error=99
   local     _host
@@ -681,7 +686,7 @@ function remote_exec() {
       _password=${_pw_init}
       ;;
     'AUTH_SERVER' )
-       _account='root'
+       _account='root' #TODO: fix hardcoded account name
           _host=${AUTH_HOST}
       _password=${_pw_init}
          _sleep=7
