@@ -167,10 +167,10 @@ VMNAME='PrismProServer'
 ### Import Image ###
 
 if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${VMNAME} | wc --lines) == 0 )); then
-  log "Import ${VMNAME} image from ${SOURCE_URL}..."
+  log "Import ${VMNAME} image from ${QCOW2_REPOS}..."
   acli image.create ${VMNAME} \
     image_type=kDiskImage wait=true \
-    container=${STORAGE_IMAGES} source_url=${SOURCE_URL}
+    container=${STORAGE_IMAGES} source_url="${QCOW2_REPOS}${VMNAME}.qcow2"
 else
   log "Image found, assuming ready. Skipping ${VMNAME} import."
 fi

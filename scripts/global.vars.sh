@@ -119,7 +119,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     )
     QCOW2_REPOS=(\
        'http://10.55.251.38/workshop_staging/' \
-       'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
+       'https://s3.amazonaws.com/get-ahv-images/' \
     )
     AUTODC_REPOS=(\
      'http://10.55.251.38/workshop_staging/AutoDC2.qcow2' \
@@ -150,7 +150,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     )
     QCOW2_REPOS=(\
        'http://10.42.194.11/workshop_staging/' \
-       'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
+       'https://s3.amazonaws.com/get-ahv-images/' \
     )
     AUTODC_REPOS=(\
      'http://10.42.194.11/workshop_staging/AutoDC2.qcow2' \
@@ -181,7 +181,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
       )
     QCOW2_REPOS=(\
          'http://10.42.194.11/workshop_staging/' \
-         'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
+         'https://s3.amazonaws.com/get-ahv-images/' \
       )
     AUTODC_REPOS=(\
        'http://10.42.194.11/workshop_staging/AutoDC2.qcow2' \
