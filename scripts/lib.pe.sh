@@ -188,13 +188,6 @@ acli "vm.nic_create ${VMNAME} network=${NW1_NAME}"
 log "Power on ${VMNAME} VM..."
 acli "vm.on ${VMNAME}"
 
-_attempts=20
-_loop=0
-_sleep=10
-
-while true ; do
-  (( _loop++ ))
-done
 
 
 }
