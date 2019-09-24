@@ -114,6 +114,7 @@ case ${1} in
     && pc_smtp
 
     ssp_auth \
+    && prism_pro_server_deploy \
     && calm_enable \
     && karbon_enable \
     && lcm \
