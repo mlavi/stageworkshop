@@ -26,6 +26,7 @@ case ${1} in
     && pe_init \
     && network_configure \
     && authentication_source \
+    && prism_pro_server_deploy \
     && pe_auth
 
     if (( $? == 0 )) ; then
@@ -114,7 +115,6 @@ case ${1} in
     && pc_smtp
 
     ssp_auth \
-    && prism_pro_server_deploy \
     && calm_enable \
     && karbon_enable \
     && lcm \
