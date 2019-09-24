@@ -123,7 +123,7 @@ case ${1} in
     && karbon_image_download \
     && images \
     && seedPC \
-    && prismproserver_deploy \
+    && prism_pro_server_deploy \
     && flow_enable \
     && pc_cluster_img_import \
     && prism_check 'PC'
