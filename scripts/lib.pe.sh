@@ -483,8 +483,10 @@ function pc_install() {
     log "Get cluster network and storage container UUIDs..."
     _nw_uuid=$(acli "net.get ${_nw_name}" \
       | grep "uuid" | cut -f 2 -d ':' | xargs)
-    _storage_default_uuid=$(ncli container ls name=${STORAGE_DEFAULT} \
+    _storage_default_uuid=$(ncli container ls name=${STORAGE_IMAGES} \
       | grep Uuid | grep -v Pool | cut -f 2 -d ':' | xargs)
+    #_storage_default_uuid=$(ncli container ls name=${STORAGE_DEFAULT} \
+    #  | grep Uuid | grep -v Pool | cut -f 2 -d ':' | xargs)
     log "${_nw_name} network UUID: ${_nw_uuid}"
     log "${STORAGE_DEFAULT} storage container UUID: ${_storage_default_uuid}"
 
