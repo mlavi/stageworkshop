@@ -162,7 +162,7 @@ function authentication_source() {
 
 function prism_pro_server_deploy() {
 
-VMNAME='PrismProServer'
+VMNAME='PrismProLabUtilityServer'
 
 ### Import Image ###
 
@@ -618,7 +618,7 @@ function pe_init() {
 
     log "Rename default container to ${STORAGE_DEFAULT}"
     default_container=$(ncli container ls | grep -P '^(?!.*VStore Name).*Name' \
-      | cut -d ':' -f 2 | sed s/' '//g | grep 'default-container-')
+      | cut -d ':' -f 2 | sed s/' '//g | grep '^default-container-')
     ncli container edit name="${default_container}" new-name="${STORAGE_DEFAULT}"
 
     log "Rename default storage pool to ${STORAGE_POOL}"
