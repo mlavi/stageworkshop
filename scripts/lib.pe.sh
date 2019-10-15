@@ -602,10 +602,10 @@ function pe_init() {
     STORAGE_DEFAULT STORAGE_POOL STORAGE_IMAGES \
     SLEEP ATTEMPTS'
 
-  if [[ `ncli cluster get-params | grep 'External Data' | \
-         awk -F: '{print $2}' | tr -d '[:space:]'` == "${DATA_SERVICE_IP}" ]]; then
-    log "IDEMPOTENCY: Data Services IP set, skip."
-  else
+  #if [[ `ncli cluster get-params | grep 'External Data' | \
+  #       awk -F: '{print $2}' | tr -d '[:space:]'` == "${DATA_SERVICE_IP}" ]]; then
+  #  log "IDEMPOTENCY: Data Services IP set, skip."
+  #else
     log "Configure SMTP"
     ncli cluster set-smtp-server port=${SMTP_SERVER_PORT} \
       from-email-address=${SMTP_SERVER_FROM} address=${SMTP_SERVER_ADDRESS}
@@ -636,7 +636,7 @@ function pe_init() {
 
     log "Set Data Services IP address to ${DATA_SERVICE_IP}"
     ncli cluster edit-params external-data-services-ip-address=${DATA_SERVICE_IP}
-  fi
+  #fi
 }
 
 ###############################################################################################################################################################################
