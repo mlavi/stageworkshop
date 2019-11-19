@@ -21,8 +21,8 @@ case ${1} in
     ## Export Overrides needed for Single Node Clusters
     export NW1_SUBNET="${IPV4_PREFIX}.$((${OCTET[3]} - 6))/26"
     export NW1_GATEWAY="${IPV4_PREFIX}.$((${OCTET[3]} - 5))"
-    export NW1_DHCP_START=${IPV4_PREFIX}.$((${OCTET[3]} + 33))
-    export NW1_DHCP_END=${IPV4_PREFIX}.$((${OCTET[3]} + 53))
+    export NW1_DHCP_START="${IPV4_PREFIX}.$((${OCTET[3]} + 33))"
+    export NW1_DHCP_END="${IPV4_PREFIX}.$((${OCTET[3]} + 53))"
     export SUBNET_MASK="255.255.255.192"
 
     args_required 'PE_HOST PC_LAUNCH'
