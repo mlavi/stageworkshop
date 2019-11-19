@@ -66,6 +66,7 @@ NTP_SERVERS='0.us.pool.ntp.org,1.us.pool.ntp.org,2.us.pool.ntp.org,3.us.pool.ntp
 NW1_NAME='Primary'
 NW1_VLAN=0
 NW1_SUBNET="${IPV4_PREFIX}.1/25"
+NW1_GATEWAY="${IPV4_PREFIX}.1"
 NW1_DHCP_START="${IPV4_PREFIX}.50"
 NW1_DHCP_END="${IPV4_PREFIX}.125"
 

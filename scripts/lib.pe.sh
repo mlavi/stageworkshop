@@ -525,7 +525,7 @@ function pc_install() {
         "network_configuration":{
           "subnet_mask":"255.255.255.128",
           "network_uuid":"${_nw_uuid}",
-          "default_gateway":"${IPV4_PREFIX}.1"
+          "default_gateway":"${NW1_GATEWAY}"
         },
         "ip_list":["${PC_HOST}"]
       }],
