@@ -523,7 +523,7 @@ function pc_install() {
       "data_disk_size_bytes":536870912000,
       "nic_list":[{
         "network_configuration":{
-          "subnet_mask":"255.255.255.128",
+          "subnet_mask":"${SUBNET_MASK}",
           "network_uuid":"${_nw_uuid}",
           "default_gateway":"${NW1_GATEWAY}"
         },
