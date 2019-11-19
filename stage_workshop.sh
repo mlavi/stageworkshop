@@ -12,6 +12,7 @@ begin
 # - PC #.#
 WORKSHOPS=(\
 "Bootcamp Staging (AOS 5.11+/AHV PC 5.11+) = Current" \
+"SNC Bootcamp Staging (AOS 5.11+/AHV PC 5.11+) = Current" \
 "Previous Bootcamp Staging (AOS 5.10+/AHV PC 5.10+) = Stable" \
 "In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.11.1) = Development" \
 "Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
@@ -51,6 +52,11 @@ function stage_clusters() {
   if (( $(echo ${_workshop} | grep -i Bootcamp | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i SNC Bootcamp | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='snc_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i Calm | wc ${WC_ARG}) > 0 )); then
