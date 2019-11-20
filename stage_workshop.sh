@@ -12,7 +12,7 @@ begin
 # - PC #.#
 WORKSHOPS=(\
 "Bootcamp Staging (AOS 5.11+/AHV PC 5.11+) = Current" \
-"SNC Bootcamp Staging (AOS 5.11+/AHV PC 5.11+) = Current" \
+"SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.11+) = Current" \
 "Previous Bootcamp Staging (AOS 5.10+/AHV PC 5.10+) = Stable" \
 "In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.11.1) = Development" \
 "Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
