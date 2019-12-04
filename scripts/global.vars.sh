@@ -35,6 +35,7 @@ QCOW2_IMAGES=(\
    Windows2012R2.qcow2 \
    Windows10-1709.qcow2 \
    ToolsVM.qcow2 \
+   Linux_ToolsVM.qcow2 \
    ERA-Server-build-1.1.1.qcow2 \
    MSSQL-2016-VM.qcow2 \
    hycu-3.5.0-6253.qcow2 \
