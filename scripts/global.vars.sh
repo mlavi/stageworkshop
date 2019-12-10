@@ -2,11 +2,11 @@
 
 # shellcheck disable=SC2034
 RELEASE='release.json'
-PC_DEV_VERSION='5.11.1'
+PC_DEV_VERSION='5.11.2'
 PC_CURRENT_VERSION='5.11'
 PC_STABLE_VERSION='5.10.5'
-FILES_VERSION='3.5.2'
-FILE_ANALYTICS_VERSION='2.0.0'
+FILES_VERSION='3.6.0'
+FILE_ANALYTICS_VERSION='2.0.1'
 NTNX_INIT_PASSWORD='nutanix/4u'
 PRISM_ADMIN='admin'
 SSH_PUBKEY="${HOME}/.ssh/id_rsa.pub"
@@ -36,7 +36,7 @@ QCOW2_IMAGES=(\
    Windows10-1709.qcow2 \
    ToolsVM.qcow2 \
    Linux_ToolsVM.qcow2 \
-   ERA-Server-build-1.1.1.qcow2 \
+   ERA-Server-build-1.1.1.3.qcow2 \
    MSSQL-2016-VM.qcow2 \
    hycu-3.5.0-6253.qcow2 \
    VeeamAvailability_1.0.457.vmdk \
@@ -47,7 +47,7 @@ ISO_IMAGES=(\
    Windows2016.iso \
    Windows2012R2.iso \
    Windows10.iso \
-   Nutanix-VirtIO-1.1.3.iso \
+   Nutanix-VirtIO-1.1.5.iso \
    SQLServer2014SP3.iso \
    XenApp_and_XenDesktop_7_18.iso \
    VeeamBR_9.5.4.2615.Update4.iso \
@@ -99,16 +99,16 @@ AUTH_ADMIN_GROUP='SSP Admins'
 case "${OCTET[0]}.${OCTET[1]}" in
 
   10.55 ) # HPOC us-east = DUR
-    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.11.1.json'
-    PC_DEV_URL='http://10.55.251.38/workshop_staging/euphrates-5.11.1-stable-prism_central.tar'
+    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.11.2.json'
+    PC_DEV_URL='http://10.55.251.38/workshop_staging/euphrates-5.11.2-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.55.251.38/workshop_staging/euphrates-5.11-stable-prism_central-metadata.json'
     PC_CURRENT_URL='http://10.55.251.38/workshop_staging/euphrates-5.11-stable-prism_central.tar'
     PC_STABLE_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.10.5.json'
     PC_STABLE_URL='http://10.55.251.38/workshop_staging/euphrates-5.10.5-stable-prism_central.tar'
-    FILES_METAURL='http://10.55.251.38/workshop_staging/afs-3.5.2.json'
-    FILES_URL='http://10.55.251.38/workshop_staging/nutanix-afs-el7.3-release-afs-3.5.2-stable.qcow2'
-    FILE_ANALYTICS_METAURL='http://10.55.251.38/workshop_staging/fileanalytics-2.0.0.json'
-    FILE_ANALYTICS_URL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.0.qcow2'
+    FILES_METAURL='http://10.55.251.38/workshop_staging/afs-3.6.0.json'
+    FILES_URL='http://10.55.251.38/workshop_staging/nutanix-afs-el7.3-release-afs-3.6.0-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.1-metadata.json'
+    FILE_ANALYTICS_URL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.1.qcow2'
     JQ_REPOS=(\
          'http://10.55.251.38/workshop_staging/jq-linux64.dms' \
          'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
@@ -130,16 +130,16 @@ case "${OCTET[0]}.${OCTET[1]}" in
     DNS_SERVERS='10.55.251.10,10.55.251.11'
     ;;
   10.42 ) # HPOC us-west = PHX
-    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.1.json'
-    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.1-stable-prism_central.tar'
+    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.json'
+    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/euphrates-5.11-stable-prism_central-metadata.json'
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.11-stable-prism_central.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.10.5.json'
     PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.10.5-stable-prism_central.tar'
-    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.5.2.json'
-    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.5.2-stable.qcow2'
-    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/fileanalytics-2.0.0.json'
-    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.0.qcow2'
+    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.6.0.json'
+    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.6.0-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.1-metadata.json'
+    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.1.qcow2'
     JQ_REPOS=(\
          'http://10.42.194.11/workshop_staging/jq-linux64.dms' \
          'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
@@ -161,16 +161,16 @@ case "${OCTET[0]}.${OCTET[1]}" in
     DNS_SERVERS='10.42.196.10,10.42.194.10'
     ;;
   10.38 ) # HPOC us-west = PHX 1-Node Clusters
-    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.1.json'
-    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.1-stable-prism_central.tar'
+    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.json'
+    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/euphrates-5.11-stable-prism_central-metadata.json'
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.11-stable-prism_central.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.10.5.json'
     PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.10.5-stable-prism_central.tar'
-    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.5.2.json'
-    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.5.2-stable.qcow2'
-    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/fileanalytics-2.0.0.json'
-    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.0.qcow2'
+    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.6.0.json'
+    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.6.0-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.1-metadata.json'
+    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.0.1.qcow2'
     JQ_REPOS=(\
            'http://10.42.194.11/workshop_staging/jq-linux64.dms' \
            'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
