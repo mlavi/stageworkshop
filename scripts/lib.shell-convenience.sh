@@ -128,7 +128,9 @@ function stageworkshop_cluster() {
   export NTNX_USER=nutanix
 
   if [[ -n ${1} || ${1} == '' ]]; then
-    _filespec=~/Documents/github.com/mlavi/stageworkshop/example_pocs.txt
+    _filespec=~/Documents/github.com/nutanixworkshops/stageworkshop/example_pocs.txt
+    #_filespec=~/Documents/github.com/nutanixworkshops/stageworkshop/cluster.txt
+    #_filespec=~/Documents/github.com/mlavi/stageworkshop/example_pocs.txt
   else
     _filespec="${1}"
     echo "INFO: Using cluster file: |${1}| ${_filespec}"
@@ -164,8 +166,8 @@ function stageworkshop_ssh() {
       echo "SSHPASS='nutanix/4u' sshpass -e ssh \\
           ${SSH_OPTS} \\
           nutanix@${PC_HOST}"
-      echo 'pkill -f calm ; tail -f *log'
-      echo "PC_VERSION=${PC_VERSION} EMAIL=${EMAIL} PE_PASSWORD='${_password}' ./*.sh 'PC'"
+      echo 'pkill -f calm ; tail -f calm*log'
+      echo "PC_VERSION=${PC_VERSION} EMAIL=${EMAIL} PE_PASSWORD='${_password}' ./calm.sh 'PC'"
           _host=${PC_HOST}
       _password='nutanix/4u'
       ;;
@@ -183,11 +185,11 @@ SSHPASS='${PE_PASSWORD}' sshpass -e ssh \\
 pkill -f calm ; tail -f *log
 EOF
 
-      echo 'rm -rf master.zip *.log stageworkshop-master/ && \'
+      echo 'rm -rf master.zip calm*.log stageworkshop-master/ && \'
       echo '  curl --remote-name --location https://raw.githubusercontent.com/mlavi/stageworkshop/master/bootstrap.sh \'
       echo '  && SOURCE=${_} 'EMAIL=${EMAIL} PE_PASSWORD=${_password}' sh ${_##*/} \'
       echo '  && tail -f ~/*log'
-      echo -e "cd stageworkshop-master/scripts/ && \ \n PE_HOST=${PE_HOST} PE_PASSWORD='${_password}' PC_VERSION=${PC_DEV_VERSION} EMAIL=${EMAIL} ./*.sh 'PE'"
+      echo -e "cd stageworkshop-master/scripts/ && \ \n PE_HOST=${PE_HOST} PE_PASSWORD='${_password}' PC_VERSION=${PC_DEV_VERSION} EMAIL=${EMAIL} ./calm.sh 'PE'"
       echo "ncli multicluster add-to-multicluster external-ip-address-or-svm-ips=10.42.x.39 username=admin password='x'"
       ;;
     AUTH | auth | ldap)

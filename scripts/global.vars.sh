@@ -162,6 +162,7 @@ CURL_POST_OPTS="${CURL_OPTS} --max-time 5 --header Content-Type:application/json
 CURL_POST_OUTPUT_OPTS="${CURL_OPTS} --max-time 5 --header Content-Type:application/json --header Accept:application/json"
 CURL_HTTP_OPTS="${CURL_POST_OPTS} --write-out %{http_code}"
       SSH_OPTS='-o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null'
+     SSH_OPTS+=' -o PasswordAuthentication=yes -o PubkeyAuthentication=no -o BatchMode=no'
      SSH_OPTS+=' -q' # -v'
 
 # Find operating system and set dependencies
