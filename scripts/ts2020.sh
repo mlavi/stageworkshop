@@ -39,7 +39,8 @@ case ${1} in
     && pe_init \
     && network_configure \
     && authentication_source \
-    && pe_auth
+    && pe_auth \
+    && prism_pro_server_deploy
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -59,7 +60,11 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        files_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
+        files_install && sleep 30
+
+        create_file_server "${NW1_NAME}" "${NW2_NAME}" && sleep 30
+
+        file_analytics_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
       fi
@@ -73,29 +78,33 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
-    #export QCOW2_REPOS=(\
-     #'http://10.42.8.50/images/' \
-     #'https://s3.amazonaws.com/get-ahv-images/' \
-    #) # talk to Nathan.C to populate S3, Sharon.S to populate Daisy File Share
     export QCOW2_IMAGES=(\
       CentOS7.qcow2 \
       Windows2016.qcow2 \
       Windows2012R2.qcow2 \
       Windows10-1709.qcow2 \
       ToolsVM.qcow2 \
-      move-3.0.1.qcow2  \
-      ERA-Server-build-1.0.1.qcow2 \
-      sherlock-k8s-base-image_403.qcow2 \
+      Linux_ToolsVM.qcow2 \
+      ERA-Server-build-1.1.1.3.qcow2 \
+      MSSQL-2016-VM.qcow2 \
       hycu-3.5.0-6253.qcow2 \
       VeeamAvailability_1.0.457.vmdk \
-      'http://download.nutanix.com/karbon/0.8/acs-centos7.qcow2' \
+      move3.2.0.qcow2 \
+      AutoXD.qcow2 \
     )
     export ISO_IMAGES=(\
+      CentOS7.iso \
+      Windows2016.iso \
       Windows2012R2.iso \
+      Windows10.iso \
+      Nutanix-VirtIO-1.1.5.iso \
       SQLServer2014SP3.iso \
-      Nutanix-VirtIO-1.1.3.iso \
+      XenApp_and_XenDesktop_7_18.iso \
       VeeamBR_9.5.4.2615.Update4.iso \
     )
+
+
+    run_once
 
     dependencies 'install' 'jq' || exit 13
 
@@ -133,17 +142,17 @@ case ${1} in
     && pc_dns_add \
     && pc_ui \
     && pc_auth \
-
-    # If we run this in a none HPOC we must skip the SMTP config as we have no idea what the SMTP server will be
-    if [[ ! -z ${SMTP_SERVER_ADDRESS}  ]]; then
-      pc_smtp
-    fi
+    && pc_smtp
 
     ssp_auth \
     && calm_enable \
-    && lcm \
-    && images \
     && karbon_enable \
+    && objects_enable \
+    && lcm \
+    && object_store \
+    && karbon_image_download \
+    && images \
+    && seedPC \
     && flow_enable \
     && pc_cluster_img_import \
     && prism_check 'PC'
@@ -169,8 +178,4 @@ case ${1} in
   FILES | files | afs )
     files_install
   ;;
-  #IMAGES | images )
-  #  . lib.pc.sh
-    #ts_images
-  #;;
 esac

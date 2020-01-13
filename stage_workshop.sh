@@ -18,7 +18,7 @@ WORKSHOPS=(\
 "Previous SNC (1-Node) Bootcamp Staging (AOS 5.11/AHV PC 5.11) = Stable" \
 "In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.16 RC2) = Development" \
 "In Development SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.16 RC2) = Development" \
-#"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
+"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2) = Current" \
 #"Era Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
 #"Files Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
 #"Citrix Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
@@ -84,7 +84,7 @@ function stage_clusters() {
   fi
   if (( $(echo ${_workshop} | grep -i Summit | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='ts2019.sh'
+    _pe_launch='ts2020.sh'
     _pc_launch=${_pe_launch}
   fi
 
