@@ -954,7 +954,9 @@ function upload_citrix_calm_blueprint() {
           fi
       fi
 
-      echo "\nFinished uploading Citrix Blueprint and setting Variables!\n"
+    done
+
+    echo "\nFinished uploading Citrix Blueprint and setting Variables!\n"
 
 }
 
@@ -1126,7 +1128,9 @@ function upload_era_calm_blueprint() {
           fi
       fi
 
-      echo "\nFinished uploading Era Blueprint and setting Variables!\n"
+    done
+
+    echo "\nFinished uploading Era Blueprint and setting Variables!\n"
 
 }
 
