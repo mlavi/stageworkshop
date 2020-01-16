@@ -16,7 +16,7 @@ STORAGE_IMAGES='Images'
 ATTEMPTS=40
 SLEEP=60
 ERA_Blueprint='EraServerDeployment.json'
-Citrix_Blueprint=''
+Citrix_Blueprint='CitrixBootcampInfra.json'
 
 # Curl and SSH settings
 CURL_OPTS='--insecure --silent --show-error' # --verbose'
@@ -130,7 +130,11 @@ case "${OCTET[0]}.${OCTET[1]}" in
     AUTODC_REPOS=(\
      'http://10.55.251.38/workshop_staging/AutoDC2.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoDC2.qcow2' \
-   )
+    )
+    AUTOAD_REPOS=(\
+    'http://10.55.251.38/workshop_staging/AutoAD.qcow2' \
+    'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
+    )
     PC_DATA='http://10.55.251.38/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.55.251.38/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.55.251.10,10.55.251.11'
@@ -162,7 +166,11 @@ case "${OCTET[0]}.${OCTET[1]}" in
     AUTODC_REPOS=(\
      'http://10.42.194.11/workshop_staging/AutoDC2.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoDC2.qcow2' \
-   )
+    )
+    AUTOAD_REPOS=(\
+     'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
+     'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
+    )
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.42.196.10,10.42.194.10'
@@ -194,7 +202,11 @@ case "${OCTET[0]}.${OCTET[1]}" in
     AUTODC_REPOS=(\
        'http://10.42.194.11/workshop_staging/AutoDC2.qcow2' \
        'https://s3.amazonaws.com/get-ahv-images/AutoDC2.qcow2' \
-     )
+    )
+    AUTOAD_REPOS=(\
+     'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
+     'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
+    )
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS="10.42.196.10,10.42.194.10"

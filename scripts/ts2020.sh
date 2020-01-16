@@ -31,6 +31,8 @@ case ${1} in
     export NW2_DHCP_START="${IPV4_PREFIX}.132"
     export   NW2_DHCP_END="${IPV4_PREFIX}.229"
 
+    export AUTH_SERVER='AutoAD'
+
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
 
@@ -85,7 +87,7 @@ case ${1} in
       Windows10-1709.qcow2 \
       ToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
-      ERA-Server-build-1.1.1.3.qcow2 \
+      ERA-Server-build-1.2.0.1.qcow2 \
       MSSQL-2016-VM.qcow2 \
       hycu-3.5.0-6253.qcow2 \
       VeeamAvailability_1.0.457.vmdk \
@@ -99,7 +101,7 @@ case ${1} in
       Windows10.iso \
       Nutanix-VirtIO-1.1.5.iso \
       SQLServer2014SP3.iso \
-      XenApp_and_XenDesktop_7_18.iso \
+      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       VeeamBR_9.5.4.2615.Update4.iso \
     )
 
