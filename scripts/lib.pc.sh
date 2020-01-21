@@ -75,6 +75,26 @@ function flow_enable() {
   log "_test=|${_test}|"
 }
 
+function karbon_enable() {
+  local  _http_body
+  local _pc_version
+  local       _test
+  local  _task_uuid
+  local     _result
+  local      _sleep=60
+
+  # shellcheck disable=2206
+  _pc_version=(${PC_VERSION//./ })
+
+  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
+    log "PC_VERSION ${PC_VERSION} >= 5.9, starting Karbon Enable ..."
+    _http_body='{"value":"{\".oid\":\"ClusterManager\",\".method\":\"enable_service_with_prechecks\",\".kwargs\":{\"service_list_json\":\"{\\\"service_list\\\":[\\\"KarbonUIService\\\",\\\"KarbonCoreService\\\"]}\"}}"}'
+    _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+      https://localhost:9440/PrismGateway/services/rest/v1/genesis)
+    log "inventory _test=|${_test}|"
+  fi
+}
+
 function lcm_running() {
   local _pc_version
   local     _result
@@ -127,14 +147,16 @@ function lcm() {
   fi
 }
 
-function lcm_calm() {
-  local  _http_body
-  local _pc_version
-  local       _test
-  local _model_name
-  local       _uuid
-  local  _task_uuid
-  local      _sleep=60
+function lcm_calm_karbon() {
+  local      _http_body
+  local     _pc_version
+  local           _test
+  local     _model_name
+  local    _entity_uuid
+  local     _entity_ver
+  local _entity_ver_all
+  local      _task_uuid
+  local          _sleep=60
 
   # shellcheck disable=2206
   _pc_version=(${PC_VERSION//./ })
@@ -142,7 +164,7 @@ function lcm_calm() {
   if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
     # get lcm entity uuid of Calm and Epsilon
     i=0
-    for _model_name in Calm Epsilon; do
+    for _model_name in Calm Epsilon Karbon; do
       _http_body='{
         "entity_type": "lcm_entity",
         "grouping_attribute": "entity_class",
@@ -157,19 +179,37 @@ function lcm_calm() {
       }'
       _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
         https://localhost:9440/api/nutanix/v3/groups)
-      _uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .entity_id')
-      log "${_model_name} uuid[$i]=${_uuid[${i}]}"
+      #_entity_uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .entity_id')
+      _entity_uuid[${i}]=$(echo ${_test} |jq -r '.group_results[] | .entity_results[] | .data[] | select ( .name=="uuid" ) | .values[] | .values[]')
+      log "${_model_name} uuid[$i]=${_entity_uuid[${i}]}"
+
+      _http_body='{
+        "entity_type": "lcm_available_version",
+        "group_member_attributes": [
+          {
+            "attribute": "version"
+          }
+        ],
+        "query_name": "prism:BaseGroupModel",
+        "filter_criteria": "entity_uuid=='"${_entity_uuid[${i}]}"'"
+      }'
+      _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+        https://localhost:9440/api/nutanix/v3/groups)
+      _entity_ver_all=$(echo $_test |jq -r '.group_results[] | .entity_results[] | .data[] | select ( .name=="version" ) | .values[] | .values[]' |xargs )
+      _entity_ver[${i}]=$(echo ${_entity_ver_all} |xargs -n 1 |sort -t '.' -n -k1,4 |tail -n 1)
+      log "${_model_name} _entity_uuid[$i]=${_entity_uuid[${i}]} _entity_ver[${i}]=${_entity_ver[${i}]} (${_entity_ver_all})"
+
       i=$((i+1))
     done
 
-    log "PC_VERSION ${PC_VERSION} >= 5.9, LCM upgrade calm to 2.6.0.4 ..."
+    log "PC_VERSION ${PC_VERSION} >= 5.9, LCM upgrade Calm to 2.6.0.4, Karbon to 1.0.1 ..."
     #generate_plan (this step maybe optional)
-    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"generate_plan\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_uuid[0]}"'\",\"2.6.0.4\"],[\"'"${_uuid[1]}"'\",\"2.6.0.4\"]]]}}"}'
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"generate_plan\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_entity_uuid[0]}"'\",\"'"${_entity_ver[0]}"'\"],[\"'"${_entity_uuid[1]}"'\",\"'"${_entity_ver[1]}"'\"],[\"'"${_entity_uuid[2]}"'\",\"'"${_entity_ver[2]}"'\"]]]}}"}'
     _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
       https://localhost:9440/PrismGateway/services/rest/v1/genesis)
     log "generate_plan _test=|${_test}|"
     #perform_update
-    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"perform_update\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_uuid[0]}"'\",\"2.6.0.4\"],[\"'"${_uuid[1]}"'\",\"2.6.0.4\"]]]}}"}'
+    _http_body='{"value": "{\".oid\":\"LifeCycleManager\",\".method\":\"lcm_framework_rpc\",\".kwargs\":{\"method_class\":\"LcmFramework\",\"method\":\"perform_update\",\"args\":[\"http://download.nutanix.com/lcm/2.0\",[[\"'"${_entity_uuid[0]}"'\",\"'"${_entity_ver[0]}"'\"],[\"'"${_entity_uuid[1]}"'\",\"'"${_entity_ver[1]}"'\"],[\"'"${_entity_uuid[2]}"'\",\"'"${_entity_ver[2]}"'\"]]]}}"}'
     _test=$(curl ${CURL_POST_OUTPUT_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
       https://localhost:9440/PrismGateway/services/rest/v1/genesis)
     log "perform_update _test=|${_test}|"
