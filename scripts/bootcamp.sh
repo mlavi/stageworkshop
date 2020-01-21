@@ -74,6 +74,11 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
+    export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
+    export BUCKETS_VIP="${IPV4_PREFIX}.17"
+    export OBJECTS_NW_START="${IPV4_PREFIX}.18"
+    export OBJECTS_NW_END="${IPV4_PREFIX}.21"
+
     run_once
 
     dependencies 'install' 'jq' || exit 13
@@ -122,9 +127,9 @@ case ${1} in
     && object_store \
     && karbon_image_download \
     && images \
-    && seedPC \
     && flow_enable \
     && pc_cluster_img_import \
+    && seedPC \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

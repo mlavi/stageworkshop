@@ -24,6 +24,16 @@ case ${1} in
     export NW1_DHCP_START="${IPV4_PREFIX}.$((${OCTET[3]} + 33))"
     export NW1_DHCP_END="${IPV4_PREFIX}.$((${OCTET[3]} + 53))"
     export SUBNET_MASK="255.255.255.192"
+    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.$((${OCTET[3]} + 25))"
+    #export BUCKETS_VIP="${IPV4_PREFIX}.$((${OCTET[3]} + 26))"
+    #export OBJECTS_NW_START="${IPV4_PREFIX}.$((${OCTET[3]} + 27))"
+    #export OBJECTS_NW_END="${IPV4_PREFIX}.$((${OCTET[3]} + 30))"
+
+    export NW2_NAME=''
+    export NW2_VLAN=''
+    export NW2_SUBNET=''
+    export NW2_DHCP_START=''
+    export NW2_DHCP_END=''
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
