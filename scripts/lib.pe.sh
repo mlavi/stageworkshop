@@ -79,7 +79,7 @@ function authentication_source() {
         log "Power on ${AUTH_SERVER} VM..."
         acli "vm.on ${AUTH_SERVER}"
 
-        _attempts=20
+        _attempts=25
             _loop=0
            _sleep=60
 
@@ -429,7 +429,7 @@ echo $HTTP_JSON_BODY
 
 
 ###############################################################################################################################################################################
-# Routine to crerate the networks
+# Routine to create the networks
 ###############################################################################################################################################################################
 function network_configure() {
   local _network_name="${NW1_NAME}"
