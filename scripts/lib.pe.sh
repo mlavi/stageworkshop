@@ -88,7 +88,7 @@ function authentication_source() {
 
         _test=$(curl ${CURL_POST_OPTS} \
           -X GET \
-          https://${AUTH_HOST}:8000/)
+          http://${AUTH_HOST}:8000/)
         if [[ "${_test}" == "${_autoad_success}" ]]; then
           log "${AUTH_SERVER} is ready."
           sleep ${_sleep}
