@@ -43,7 +43,7 @@ function authentication_source() {
       local _autoad_service='samba-ad-dc'
       local _autoad_restart="service ${_autoad_service} restart"
       local  _autoad_status="AD Is Running"
-      local _autoad_success='AD Is Running'
+      local _autoad_success="AD Is Running"
 
 
       dns_check "dc.${AUTH_FQDN}"
@@ -86,19 +86,17 @@ function authentication_source() {
       while true ; do
         (( _loop++ ))
 
-        _test=$(curl ${CURL_POST_OPTS} \
-          -X GET \
-          http://${AUTH_HOST}:8000/)
+        _test=$(curl ${CURL_OPTS} -X GET http://${AUTH_HOST}:8000/ | grep "${_autoad_success}")
         if [[ "${_test}" == "${_autoad_success}" ]]; then
           log "${AUTH_SERVER} is ready."
           sleep ${_sleep}
           break
         elif (( ${_loop} > ${_attempts} )); then
           log "Error ${_error}: ${AUTH_SERVER} VM running: giving up after ${_loop} tries."
-          _result=$(source /etc/profile.d/nutanix_env.sh \
-            && for _vm in $(source /etc/profile.d/nutanix_env.sh && acli vm.list | grep ${AUTH_SERVER}) ; do acli -y vm.delete $_vm; done)
+          #_result=$(source /etc/profile.d/nutanix_env.sh \
+          #  && for _vm in $(source /etc/profile.d/nutanix_env.sh && acli vm.list | grep ${AUTH_SERVER}) ; do acli -y vm.delete $_vm; done)
           # acli image.delete ${AUTH_SERVER}${_autodc_release}
-          log "Remediate by deleting the ${AUTH_SERVER} VM from PE (just attempted by this script: ${_result}) and then running acli $_"
+          #log "Remediate by deleting the ${AUTH_SERVER} VM from PE (just attempted by this script: ${_result}) and then running acli $_"
           exit ${_error}
         else
           log "_test ${_loop}/${_attempts}=|${_test}|: sleep ${_sleep} seconds..."
