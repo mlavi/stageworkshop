@@ -33,6 +33,8 @@ case ${1} in
 
     export AUTH_SERVER='AutoAD'
 
+    export _external_nw_name="${1}"
+
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
 
@@ -157,6 +159,8 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && seedPC \
+    && upload_citrix_calm_blueprint \
+    && upload_era_calm_blueprint \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
