@@ -178,7 +178,6 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && seedPC \
-    && upload_citrix_calm_blueprint \
     && upload_era_calm_blueprint \
     && prism_check 'PC'
 
