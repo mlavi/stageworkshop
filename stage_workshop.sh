@@ -19,6 +19,7 @@ WORKSHOPS=(\
 "In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.16 RC2) = Development" \
 "In Development SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.16 RC2) = Development" \
 "Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2) = Current" \
+"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2) = Current" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
 #"Era Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
 #"Files Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
@@ -88,7 +89,11 @@ function stage_clusters() {
     _pe_launch='ts2020.sh'
     _pc_launch=${_pe_launch}
   fi
-
+  if (( $(echo ${_workshop} | grep -i "^SNC_GTS" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='snc_ts2020.sh'
+    _pc_launch=${_pe_launch}
+  fi
   if (( $(echo ${_workshop} | grep -i "^Frame" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='frame.sh'
