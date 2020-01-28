@@ -91,9 +91,9 @@ case ${1} in
       Linux_ToolsVM.qcow2 \
       ERA-Server-build-1.2.0.1.qcow2 \
       MSSQL-2016-VM.qcow2 \
-      hycu-3.5.0-6253.qcow2 \
+      HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
       VeeamAvailability_1.0.457.vmdk \
-      move3.2.0.qcow2 \
+      move-3.4.1.qcow2 \
       AutoXD.qcow2 \
     )
     export ISO_IMAGES=(\
