@@ -825,7 +825,7 @@ function calm_enable() {
 
 function upload_citrix_calm_blueprint() {
   local DIRECTORY="/home/nutanix/"
-  local CALM_PROJECT="default"
+  local CALM_PROJECT="BootcampInfra"
   local DOMAIN=${AUTH_FQDN}
   local AD_IP=${AUTH_HOST}
   local PE_IP=${PE_HOST}
@@ -1001,7 +1001,7 @@ function upload_citrix_calm_blueprint() {
 
 function upload_era_calm_blueprint() {
   local DIRECTORY="/home/nutanix/"
-  local CALM_PROJECT="default"
+  local CALM_PROJECT="BootcampInfra"
   local ERA_IP=${ERA_HOST}
   local PE_IP=${PE_HOST}
   local CLSTR_NAME="none"
@@ -1235,34 +1235,106 @@ EOF
 ###############################################################################################################################################################################
 
 function pc_project() {
-  local  _name
+  local _name
   local _count
-  local  _uuid
+  local _pc_account_uuid
+  local _nw_name="${1}"
+  local _nw_uuid
 
-   _name=${EMAIL%%@nutanix.com}.test
-  _count=$(. /etc/profile.d/nutanix_env.sh \
-    && nuclei project.list 2>/dev/null | grep ${_name} | wc --lines)
-  if (( ${_count} > 0 )); then
-    nuclei project.delete ${_name} confirm=false 2>/dev/null
-  else
-    log "Warning: _count=${_count}"
-  fi
+log "Get cluster network and PC Account UUIDs..."
+_nw_uuid=$(acli "net.get ${_nw_name}" \
+  | grep "uuid" | cut -f 2 -d ':' | xargs)
 
-  log "Creating ${_name}..."
-  nuclei project.create name=${_name} description='test from NuCLeI!' 2>/dev/null
-  _uuid=$(. /etc/profile.d/nutanix_env.sh \
-    && nuclei project.get ${_name} format=json 2>/dev/null \
-    | jq .metadata.project_reference.uuid | tr -d '"')
-  log "${_name}.uuid = ${_uuid}"
+_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.pc_account_uuid')
 
-    # - project.get mark.lavi.test
-    # - project.update mark.lavi.test
-    #     spec.resources.account_reference_list.kind= or .uuid
-    #     spec.resources.default_subnet_reference.kind=
-    #     spec.resources.environment_reference_list.kind=
-    #     spec.resources.external_user_group_reference_list.kind=
-    #     spec.resources.subnet_reference_list.kind=
-    #     spec.resources.user_reference_list.kind=
+log "Create BootcampInfra Project ..."
+_http_body=$(cat <<EOF
+{
+  "api_version": "3.1",
+  "metadata": {
+	"kind": "project"
+  },
+  "spec": {
+  	"access_control_policy_list": [
+  	{
+  		"operation": "ADD",
+  		"metadata": {
+			"kind": "access_control_policy"
+		},
+  		"acp": {
+  			"name": "BootcampInfra",
+  			"resources": {
+  				"role_reference": {
+  					"kind": "role",
+					  "name": "Project Admin",
+					  "uuid": "bf22a8a7-9162-465e-937b-b5be91427bed"
+  				},
+  				"user_group_reference_list": [
+        		{
+        			"kind": "user_group",
+        			"name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
+        			"uuid": "015456ee-399f-4517-bee8-90b71c5c81a0"
+        		}
+    			]
+  			}
+  		}
+  	}
+  	],
+	"project_detail": {
+  	"name": "BootcampInfra",
+  	"resources": {
+    	"account_reference_list": [
+      	{
+        	"kind": "account",
+			    "name": "nutanix_pc",
+			    "uuid": "${_pc_account_uuid}"
+      	}
+    	],
+    	"subnet_reference_list": [
+      	{
+        	"kind": "subnet",
+        	"name": "Primary",
+        	"uuid": "${_nw_uuid}"
+      	}
+    	],
+    	"external_user_group_reference_list": [
+        {
+          "kind": "user_group",
+          "name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
+          "uuid": "015456ee-399f-4517-bee8-90b71c5c81a0"
+        }
+    	]
+  	}
+	},
+	"user_list": [],
+	"user_group_list": []
+  }
+}
+EOF
+  )
+  _create_project=$(curl ${CURL_POST_OPTS} \
+    --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT --data "${_http_body}" \
+    https://localhost:9440/api/nutanix/v3/projects_internal)
+  log "_ssp_connect=|${_ssp_connect}|"
 
-    # {"spec":{"access_control_policy_list":[],"project_detail":{"name":"mark.lavi.test1","resources":{"external_user_group_reference_list":[],"user_reference_list":[],"environment_reference_list":[],"account_reference_list":[],"subnet_reference_list":[{"kind":"subnet","name":"Primary","uuid":"a4000fcd-df41-42d7-9ffe-f1ab964b2796"},{"kind":"subnet","name":"Secondary","uuid":"4689bc7f-61dd-4527-bc7a-9d737ae61322"}],"default_subnet_reference":{"kind":"subnet","uuid":"a4000fcd-df41-42d7-9ffe-f1ab964b2796"}},"description":"test from NuCLeI!"},"user_list":[],"user_group_list":[]},"api_version":"3.1","metadata":{"creation_time":"2018-06-22T03:54:59Z","spec_version":0,"kind":"project","last_update_time":"2018-06-22T03:55:00Z","uuid":"1be7f66a-5006-4061-b9d2-76caefedd298","categories":{},"owner_reference":{"kind":"user","name":"admin","uuid":"00000000-0000-0000-0000-000000000000"}}}
+}
+
+#   _name=${EMAIL%%@nutanix.com}.test
+#  _count=$(. /etc/profile.d/nutanix_env.sh \
+#    && nuclei project.list 2>/dev/null | grep ${_name} | wc --lines)
+#  if (( ${_count} > 0 )); then
+#    nuclei project.delete ${_name} confirm=false 2>/dev/null
+#  else
+#    log "Warning: _count=${_count}"
+#  fi
+
+#  log "Creating ${_name}..."
+#  nuclei project.create name=${_name} description='test from NuCLeI!' 2>/dev/null
+#  _uuid=$(. /etc/profile.d/nutanix_env.sh \
+#    && nuclei project.get ${_name} format=json 2>/dev/null \
+#    | jq .metadata.project_reference.uuid | tr -d '"')
+#  log "${_name}.uuid = ${_uuid}"
+
+
+
 }

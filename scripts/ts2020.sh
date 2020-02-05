@@ -161,11 +161,12 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && seedPC \
+    && pc_project \
     && upload_era_calm_blueprint \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
-    pc_project
+    #pc_project
     pc_admin
     # ntnx_download 'AOS' # function in lib.common.sh
 
