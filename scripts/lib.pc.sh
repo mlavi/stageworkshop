@@ -843,7 +843,7 @@ function upload_citrix_calm_blueprint() {
   local DOWNLOAD_BLUEPRINTS
 
   # download the blueprint
-  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${CALM_Blueprint} -o ${DIRECTORY}${CALM_Blueprint)
+  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${CALM_Blueprint} -o ${DIRECTORY}${CALM_Blueprint})
   log "Downloading ${CALM_Blueprint} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
 
   # ensure the directory that contains the blueprints to be imported is not empty
