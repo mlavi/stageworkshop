@@ -1249,7 +1249,7 @@ log "Get cluster network and PC Account UUIDs..."
 _nw_uuid=$(acli "net.get ${_nw_name}" \
   | grep "uuid" | cut -f 2 -d ':' | xargs)
 
-_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.pc_account_uuid')
+_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.entities[].status.resources | select (.type=="nutanix_pc") .data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
 
 log "Create BootcampInfra Project ..."
 _http_body=$(cat <<EOF
