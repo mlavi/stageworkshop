@@ -78,7 +78,7 @@ NW1_VLAN=0
 # TODO: Need to make changes to the network configuration if we are running against a single Node Cluster
 # https://confluence.eng.nutanix.com:8443/pages/viewpage.action?spaceKey=SEW&title=Bootcamps%3A+Networking+Scheme
 
-case "${OCTET[4]}" in
+case "${OCTET[3]}" in
 
   7 ) # We are in Partition 1
     NW1_SUBNET="${IPV4_PREFIX}.1/26"
