@@ -117,9 +117,8 @@ case ${1} in
     && calm_enable \
     && karbon_enable \
     && objects_enable \
-    # && lcm \
-    # && lcm \
-    object_store \
+    && lcm \
+    && object_store \
     && karbon_image_download \
     && images \
     && flow_enable \
