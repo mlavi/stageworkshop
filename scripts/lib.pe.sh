@@ -319,7 +319,7 @@ function create_file_server() {
   local     _external_nw_name="${2}"
   local     _external_nw_uuid
   local                 _test
-  local     _maxtries=5
+  local     _maxtries=30
   local     _tries=0
   local _httpURL="https://localhost:9440/PrismGateway/services/rest/v1/vfilers"
   local _ntp_formatted="$(echo $NTP_SERVERS | sed -r 's/[^,]+/'\"'&'\"'/g')"
@@ -404,21 +404,28 @@ EOF
   #_response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d ${HTTP_JSON_BODY} ${_httpURL}| grep "taskUuid" | wc -l)
 echo $HTTP_JSON_BODY
 
+# execute the API call to create the file server
   _response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" ${_httpURL} | grep "taskUuid" | wc -l)
 
 #curl $CURL_HTTP_OPTS --user $PRISM_ADMIN:$PE_PASSWORD -X POST -d $HTTP_JSON_BODY $_httpURL
 
-  # Check if we got a "1" back (start sequence received). If not, retry. If yes, check if enabled...
-  if [[ $_response -lt 1 ]]; then
+  # Check to ensure we get a response back, then start checking for the file server creation
+  if [[ ! -z $_response ]]; then
 #    # Check if Files has been enabled
-    #_response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d ${HTTP_JSON_BODY} ${_httpURL} | grep "taskUuid" | wc -l)
-    #while [[ $_response -ne 1 || $_tries -lt $_maxtries ]]; do
-    #    _response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d ${HTTP_JSON_BODY} ${_httpURL} | grep "taskUuid" | wc -l)
-    #    ((_tries=_tries+1))
-    #done
-    echo "File Server has been created."
+    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_fileserver_name | wc -l)
+    while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
+      log "File Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
+      sleep 1m
+      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_fileserver_name | wc -l)
+      ((_tries++))
+    done
+    if [[ $_checkresponse -eq 1 ]]; then
+      echo "File Server has been created."
+    else
+      echo "File Server creation failed. Check the staging logs."
+    fi
   else
-    echo "File Server is not being created, check the echos."
+    echo "File Server is not being created, check the staging logs."
   fi
 }
 

@@ -16,7 +16,7 @@ STORAGE_IMAGES='Images'
 ATTEMPTS=40
 SLEEP=60
 PrismOpsServer='PrismProLabUtilityServer'
-SeedPC='seedPC.zp'
+SeedPC='seedPC.zip'
 ERA_Blueprint='EraServerDeployment.json'
 Citrix_Blueprint='CitrixBootcampInfra.json'
 Beam_Blueprint=''
@@ -85,6 +85,7 @@ NW2_DHCP_START="${IPV4_PREFIX}.132"
 NW2_DHCP_END="${IPV4_PREFIX}.253"
 
 # Stuff needed for object_store
+# OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
 VLAN=${OCTET[2]}
 NETWORK="${OCTET[0]}.${OCTET[1]}"
 
@@ -141,6 +142,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.55.251.38/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.55.251.38/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.55.251.10,10.55.251.11'
+	OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
     ;;
   10.42 ) # HPOC us-west = PHX
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
@@ -177,6 +179,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.42.196.10,10.42.194.10'
+    OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
     ;;
   10.38 ) # HPOC us-west = PHX 1-Node Clusters
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
@@ -213,6 +216,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS="10.42.196.10,10.42.194.10"
+	OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
       ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
     JQ_REPOS=(\

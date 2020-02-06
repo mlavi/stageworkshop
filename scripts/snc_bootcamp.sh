@@ -75,7 +75,7 @@ case ${1} in
 
         files_install && sleep 30
 
-        create_file_server "${NW1_NAME}" "${NW2_NAME}" && sleep 30
+        create_file_server "${NW1_NAME}" "${NW1_NAME}" && sleep 30
 
         file_analytics_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
@@ -103,6 +103,10 @@ case ${1} in
     export   NUCLEI_SERVER='localhost'
     export NUCLEI_USERNAME="${PRISM_ADMIN}"
     export NUCLEI_PASSWORD="${PE_PASSWORD}"
+    export BUCKETS_DNS_IP="${IPV4_PREFIX}.$((${OCTET[3]} + 25))"
+    export BUCKETS_VIP="${IPV4_PREFIX}.$((${OCTET[3]} + 26))"
+    export OBJECTS_NW_START="${IPV4_PREFIX}.$((${OCTET[3]} + 27))"
+    export OBJECTS_NW_END="${IPV4_PREFIX}.$((${OCTET[3]} + 30))"
     # nuclei -debug -username admin -server localhost -password x vm.list
 
     if [[ -z "${PE_HOST}" ]]; then # -z ${CLUSTER_NAME} || #TOFIX
@@ -134,15 +138,16 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && karbon_enable \
-    && objects_enable \
     && lcm \
+    && objects_enable \
     && object_store \
     && karbon_image_download \
     && images \
     && flow_enable \
     && pc_cluster_img_import \
     && seedPC \
-    && prism_check 'PC'
+    && prism_check 'PC' \
+    && finish_staging
 
     log "Non-blocking functions (in development) follow."
     pc_project
