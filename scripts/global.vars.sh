@@ -70,19 +70,59 @@ DNS_SERVERS='8.8.8.8'
 NTP_SERVERS='0.us.pool.ntp.org,1.us.pool.ntp.org,2.us.pool.ntp.org,3.us.pool.ntp.org'
 SUBNET_MASK="255.255.255.128"
 
+# Getting the network ready
 
 NW1_NAME='Primary'
 NW1_VLAN=0
-NW1_SUBNET="${IPV4_PREFIX}.1/25"
-NW1_GATEWAY="${IPV4_PREFIX}.1"
-NW1_DHCP_START="${IPV4_PREFIX}.50"
-NW1_DHCP_END="${IPV4_PREFIX}.125"
 
-NW2_NAME='Secondary'
-NW2_VLAN=$((OCTET[2]*10+1))
-NW2_SUBNET="${IPV4_PREFIX}.129/25"
-NW2_DHCP_START="${IPV4_PREFIX}.132"
-NW2_DHCP_END="${IPV4_PREFIX}.253"
+# TODO: Need to make changes to the network configuration if we are running against a single Node Cluster
+# https://confluence.eng.nutanix.com:8443/pages/viewpage.action?spaceKey=SEW&title=Bootcamps%3A+Networking+Scheme
+
+case "${OCTET[4]}" in
+
+  7 ) # We are in Partition 1
+    NW1_SUBNET="${IPV4_PREFIX}.1/26"
+    NW1_GATEWAY="${IPV4_PREFIX}.1"
+    NW1_DHCP_START="${IPV4_PREFIX}.38"
+    NW1_DHCP_END="${IPV4_PREFIX}.58"
+    ;;
+
+  71 ) # We are in Partition 2
+    NW1_SUBNET="${IPV4_PREFIX}.65/26"
+    NW1_GATEWAY="${IPV4_PREFIX}.65"
+    NW1_DHCP_START="${IPV4_PREFIX}.102"
+    NW1_DHCP_END="${IPV4_PREFIX}.122"
+    ;;
+
+  135 ) # We are in Partition 3
+    NW1_SUBNET="${IPV4_PREFIX}.129/26"
+    NW1_GATEWAY="${IPV4_PREFIX}.129"
+    NW1_DHCP_START="${IPV4_PREFIX}.166"
+    NW1_DHCP_END="${IPV4_PREFIX}.186"
+    ;;
+
+  199 ) # We are in Partition 4
+    NW1_SUBNET="${IPV4_PREFIX}.193/26"
+    NW1_GATEWAY="${IPV4_PREFIX}.193"
+    NW1_DHCP_START="${IPV4_PREFIX}.230"
+    NW1_DHCP_END="${IPV4_PREFIX}.250"
+    ;;
+
+
+  * ) # For normal clusters
+    NW1_SUBNET="${IPV4_PREFIX}.1/25"
+    NW1_GATEWAY="${IPV4_PREFIX}.1"
+    NW1_DHCP_START="${IPV4_PREFIX}.50"
+    NW1_DHCP_END="${IPV4_PREFIX}.125"
+
+    NW2_NAME='Secondary'
+    NW2_VLAN=$((OCTET[2]*10+1))
+    NW2_SUBNET="${IPV4_PREFIX}.129/25"
+    NW2_DHCP_START="${IPV4_PREFIX}.132"
+    NW2_DHCP_END="${IPV4_PREFIX}.253"
+    ;;
+
+esac
 
 # Stuff needed for object_store
 # OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'

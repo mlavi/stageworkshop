@@ -322,8 +322,13 @@ function create_file_server() {
   local     _maxtries=30
   local     _tries=0
   local _httpURL="https://localhost:9440/PrismGateway/services/rest/v1/vfilers"
+  local _grab_afs_version="https://localhost:9440/PrismGateway/services/rest/v1/upgrade/afs/softwares"
   local _ntp_formatted="$(echo $NTP_SERVERS | sed -r 's/[^,]+/'\"'&'\"'/g')"
 
+  # Get dynamically the version of the AFS that has been installed
+  afs_version=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_grab_afs_version} | jq '.entities[] | select (.status=="COMPLETED") .version' | tr -d \")
+
+  log "Found installed version: $afs_version of Nutanix Files..."
 
   echo "Get cluster network and storage container UUIDs..."
   _internal_nw_uuid=$(acli net.get ${_internal_nw_name} \
@@ -370,7 +375,7 @@ function create_file_server() {
       ${_ntp_formatted}
    ],
    "sizeGib":"1024",
-   "version":"${FILES_VERSION}",
+   "version":"${afs_version}",
    "dnsDomainName":"${AUTH_FQDN}",
    "nameServicesDTO":{
       "adDetails":{
@@ -434,6 +439,8 @@ echo $HTTP_JSON_BODY
 ###############################################################################################################################################################################
 # Routine to create the networks
 ###############################################################################################################################################################################
+
+
 function network_configure() {
   local _network_name="${NW1_NAME}"
 
