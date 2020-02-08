@@ -1241,17 +1241,24 @@ EOF
 function pc_project() {
   local _name
   local _count
+  local _role="Project Admin"
+  local _role_uuid
   local _pc_account_uuid
-  local _nw_name="${1}"
+  local _nw_name="Primary"
   local _nw_uuid
 
 log "Get cluster network and PC Account UUIDs..."
-_nw_uuid=$(acli "net.get ${_nw_name}" \
-  | grep "uuid" | cut -f 2 -d ':' | xargs)
+_nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "{\"kind\": \"subnet\", \"filter\": \"name==${_nw_name}\"}"  "https://localhost:9440/api/nutanix/v3/subnets/list" | jq '.entities[].metadata.uuid' | tr -d \")
+
+_role_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "{\"kind\": \"role\", \"filter\": \"name==${_role}\"}"  "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.entities[].metadata.uuid' | tr -d \")
 
 _pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.entities[].status.resources | select (.type=="nutanix_pc") .data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
 
 log "Create BootcampInfra Project ..."
+log "NW UUID = ${_nw_uuid}"
+log "Role UUID = ${_role_uuid}"
+log "PC Account UUID = ${_pc_account_uuid}"
+
 _http_body=$(cat <<EOF
 {
   "api_version": "3.1",
@@ -1271,7 +1278,7 @@ _http_body=$(cat <<EOF
   				"role_reference": {
   					"kind": "role",
 					  "name": "Project Admin",
-					  "uuid": "bf22a8a7-9162-465e-937b-b5be91427bed"
+					  "uuid": "${_role_uuid}"
   				},
   				"user_group_reference_list": [
         		{
