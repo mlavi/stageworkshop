@@ -70,7 +70,7 @@ function authentication_source() {
         fi
 
         log "Create ${AUTH_SERVER} VM based on ${AUTH_SERVER} image"
-        acli "vm.create ${AUTH_SERVER} num_vcpus=2 num_cores_per_vcpu=1 memory=2G"
+        acli "vm.create ${AUTH_SERVER} num_vcpus=2 num_cores_per_vcpu=1 memory=4G"
         # vmstat --wide --unit M --active # suggests 2G sufficient, was 4G
         #acli "vm.disk_create ${AUTH_SERVER}${_autodc_release} cdrom=true empty=true"
         acli "vm.disk_create ${AUTH_SERVER} clone_from_image=${AUTH_SERVER}"
@@ -434,7 +434,86 @@ echo $HTTP_JSON_BODY
   fi
 }
 
+###############################################################################################################################################################################
+# Create File Analytics Server
+###############################################################################################################################################################################
 
+function create_file_analytics_server() {
+  #local CURL_HTTP_OPTS=' --max-time 25 --silent --show-error --header Content-Type:application/json --header Accept:application/json --insecure '
+  local      _file_analytics_server_name="BootcampFileAnalytics"
+  local     _internal_nw_name="${1}"
+  local     _internal_nw_uuid
+  local     _external_nw_name="${2}"
+  local     _external_nw_uuid
+  local                 _test
+  local     _maxtries=30
+  local     _tries=0
+  local _httpURL="https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform"
+  local _ntp_formatted="$(echo $NTP_SERVERS | sed -r 's/[^,]+/'\"'&'\"'/g')"
+
+  log "Installing File Analytics version: ${FILE_ANALYTICS_VERSION}"
+
+  echo "Get cluster network and storage container UUIDs..."
+  _internal_nw_uuid=$(acli net.get ${_internal_nw_name} \
+    | grep "uuid" | cut -f 2 -d ':' | xargs)
+  _external_nw_uuid=$(acli net.get ${_external_nw_name} \
+    | grep "uuid" | cut -f 2 -d ':' | xargs)
+  _storage_default_uuid=$(ncli container ls name=${STORAGE_DEFAULT} \
+    | grep Uuid | grep -v Pool | cut -f 2 -d ':' | xargs)
+  echo "${_internal_nw_name} network UUID: ${_internal_nw_uuid}"
+  echo "${_external_nw_name} network UUID: ${_external_nw_uuid}"
+  echo "${STORAGE_DEFAULT} storage container UUID: ${_storage_default_uuid}"
+
+  HTTP_JSON_BODY=$(cat <<EOF
+  {
+   "image_version": "${FILE_ANALYTICS_VERSION}",
+   "name":"${_file_analytics_server_name}",
+   "container_uuid": "${_storage_default_uuid}",
+   "container_name": "${STORAGE_DEFAULT}",
+   "network": {
+                  "uuid": "${_internal_nw_uuid}",
+                  "ip": "${FILE_ANALYTICS_HOST}",
+                  "netmask": "${NW1_SUBNET}",
+                  "gateway": "${NW1_GATEWAY}"
+  },
+  "resource": {
+                  "memory": "24",
+                  "cores": "2",
+                  "vcpu": "4"
+  },
+  "dns_servers": [${AUTH_HOST}],
+  "ntp_servers": [${_ntp_formatted}],
+  "disk_size": "3"
+}
+EOF
+)
+
+  # Start the create process
+  #_response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d ${HTTP_JSON_BODY} ${_httpURL}| grep "taskUuid" | wc -l)
+echo $HTTP_JSON_BODY
+
+# execute the API call to create the file analytics server
+  _response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" ${_httpURL} | grep "taskUuid" | wc -l)
+
+  # Check to ensure we get a response back, then start checking for the file server creation
+  if [[ ! -z $_response ]]; then
+#    # Check if Files has been enabled
+    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_file_analytics_server_name | wc -l)
+    while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
+      log "File Analytics Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
+      sleep 1m
+      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_file_analytics_server_name| wc -l)
+      ((_tries++))
+    done
+    if [[ $_checkresponse -eq 1 ]]; then
+      echo "File Analytics has been created."
+    else
+      echo "File Analytics creation failed. Check the staging logs."
+    fi
+  else
+    echo "File Analytics is not being created, check the staging logs."
+  fi
+}
 
 ###############################################################################################################################################################################
 # Routine to create the networks

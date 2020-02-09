@@ -1239,7 +1239,7 @@ EOF
 ###############################################################################################################################################################################
 
 function pc_project() {
-  local _name
+  local _name="BootcampInfra"
   local _count
   local _role="Project Admin"
   local _role_uuid
@@ -1247,12 +1247,38 @@ function pc_project() {
   local _nw_name="Primary"
   local _nw_uuid
 
-log "Get cluster network and PC Account UUIDs..."
-_nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "{\"kind\": \"subnet\", \"filter\": \"name==${_nw_name}\"}"  "https://localhost:9440/api/nutanix/v3/subnets/list" | jq '.entities[].metadata.uuid' | tr -d \")
+# Get the Network UUIDs
+log "Get cluster network UUID"
+_http_body=$(cat <<EOF
+{
+  "kind":"subnet",
+	"filter": "name==${_nw_name}"
+}
+EOF
+  )
+_nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}"  "https://localhost:9440/api/nutanix/v3/subnets/list" | jq '.entities[].metadata.uuid' | tr -d \")
 
-_role_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "{\"kind\": \"role\", \"filter\": \"name==${_role}\"}"  "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.entities[].metadata.uuid' | tr -d \")
+# Get the Role UUIDs
+log "Get Role UUID"
+_http_body=$(cat <<EOF
+{
+  "kind":"role",
+	"filter": "name==${_role}"
+}
+EOF
+  )
+_role_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}"  "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.entities[].metadata.uuid' | tr -d \")
 
-_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.entities[].status.resources | select (.type=="nutanix_pc") .data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
+# Get the PC Account UUIDs
+log "Get PC Account  UUID"
+_http_body=$(cat <<EOF
+{
+  "kind":"account",
+	"filter": "type==nutanix_pc"
+}
+EOF
+  )
+_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' "https://localhost:9440/api/nutanix/v3/accounts/list" | jq '.entities[].status.resources.data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
 
 log "Create BootcampInfra Project ..."
 log "NW UUID = ${_nw_uuid}"
@@ -1292,7 +1318,7 @@ _http_body=$(cat <<EOF
   	}
   	],
 	"project_detail": {
-  	"name": "BootcampInfra",
+  	"name": "${_name},
   	"resources": {
     	"account_reference_list": [
       	{
@@ -1323,9 +1349,7 @@ _http_body=$(cat <<EOF
 }
 EOF
   )
-  _create_project=$(curl ${CURL_POST_OPTS} \
-    --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT --data "${_http_body}" \
-    https://localhost:9440/api/nutanix/v3/projects_internal)
+  _create_project=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT --data "${_http_body}" https://localhost:9440/api/nutanix/v3/projects_internal)
   log "_ssp_connect=|${_ssp_connect}|"
 
 }
