@@ -440,14 +440,12 @@ echo $HTTP_JSON_BODY
 
 function create_file_analytics_server() {
   #local CURL_HTTP_OPTS=' --max-time 25 --silent --show-error --header Content-Type:application/json --header Accept:application/json --insecure '
-  local      _file_analytics_server_name="BootcampFileAnalytics"
-  local     _internal_nw_name="${NW1_NAME}"
-  local     _internal_nw_uuid
-  local     _external_nw_name="${NW2_NAME}"
-  local     _external_nw_uuid
-  local                 _test
-  local     _maxtries=30
-  local     _tries=0
+  local _file_analytics_server_name="BootcampFileAnalytics"
+  local _nw_name="${NW1_NAME}"
+  local _nw_uuid
+  local _test
+  local _maxtries=30
+  local _tries=0
   local _httpURL="https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform"
   local _ntp_formatted="$(echo $NTP_SERVERS | sed -r 's/[^,]+/'\"'&'\"'/g')"
 
@@ -455,10 +453,18 @@ function create_file_analytics_server() {
 
   echo "Get cluster network and storage container UUIDs..."
 
-  _internal_nw_uuid=$(acli net.get ${_internal_nw_name} | grep "uuid" | cut -f 2 -d ':' | xargs)
+  # Get the Network UUIDs
+  #_internal_nw_uuid=$(acli net.get ${_internal_nw_name} | grep "uuid" | cut -f 2 -d ':' | xargs)
+  log "Get cluster network UUID"
+  _http_body='{"kind":"subnet","filter":"name==${_nw_name}"}'
+  _nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" "https://localhost:9440/api/nutanix/v3/subnets/list" | jq '.entities[0].metadata.uuid' | tr -d \")
+
+
+  # Get the Container UUIDs
+  log "Get ${STORAGE_DEFAULT} Container UUID"
   _storage_default_uuid=$(ncli container ls name=${STORAGE_DEFAULT} | grep Uuid | grep -v Pool | cut -f 2 -d ':' | xargs)
 
-  echo "${_internal_nw_name} network UUID: ${_internal_nw_uuid}"
+  echo "${_nw_name} network UUID: ${_nw_uuid}"
   echo "${STORAGE_DEFAULT} storage container UUID: ${_storage_default_uuid}"
 
   HTTP_JSON_BODY=$(cat <<EOF
@@ -468,7 +474,7 @@ function create_file_analytics_server() {
    "container_uuid": "${_storage_default_uuid}",
    "container_name": "${STORAGE_DEFAULT}",
    "network": {
-                  "uuid": "${_internal_nw_uuid}",
+                  "uuid": "${_nw_uuid}",
                   "ip": "",
                   "netmask": "",
                   "gateway": ""
@@ -490,7 +496,7 @@ EOF
 echo $HTTP_JSON_BODY
 
 # execute the API call to create the file analytics server
-_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" ${_httpURL} | grep "taskUuid" | wc -l)
+_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" "https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform" | grep "taskUuid" | wc -l)
 
   # Check to ensure we get a response back, then start checking for the file server creation
 #  if [[ ! -z $_response ]]; then
