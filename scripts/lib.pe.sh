@@ -454,14 +454,11 @@ function create_file_analytics_server() {
   log "Installing File Analytics version: ${FILE_ANALYTICS_VERSION}"
 
   echo "Get cluster network and storage container UUIDs..."
-  _internal_nw_uuid=$(acli net.get ${_internal_nw_name} \
-    | grep "uuid" | cut -f 2 -d ':' | xargs)
-  _external_nw_uuid=$(acli net.get ${_external_nw_name} \
-    | grep "uuid" | cut -f 2 -d ':' | xargs)
-  _storage_default_uuid=$(ncli container ls name=${STORAGE_DEFAULT} \
-    | grep Uuid | grep -v Pool | cut -f 2 -d ':' | xargs)
+
+  _internal_nw_uuid=$(acli net.get ${_internal_nw_name} | grep "uuid" | cut -f 2 -d ':' | xargs)
+  _storage_default_uuid=$(ncli container ls name=${STORAGE_DEFAULT} | grep Uuid | grep -v Pool | cut -f 2 -d ':' | xargs)
+
   echo "${_internal_nw_name} network UUID: ${_internal_nw_uuid}"
-  echo "${_external_nw_name} network UUID: ${_external_nw_uuid}"
   echo "${STORAGE_DEFAULT} storage container UUID: ${_storage_default_uuid}"
 
   HTTP_JSON_BODY=$(cat <<EOF
@@ -472,9 +469,9 @@ function create_file_analytics_server() {
    "container_name": "${STORAGE_DEFAULT}",
    "network": {
                   "uuid": "${_internal_nw_uuid}",
-                  "ip": "${FILE_ANALYTICS_HOST}",
-                  "netmask": "${NW1_SUBNET}",
-                  "gateway": "${NW1_GATEWAY}"
+                  "ip": "",
+                  "netmask": "",
+                  "gateway": ""
   },
   "resource": {
                   "memory": "24",
