@@ -441,9 +441,9 @@ echo $HTTP_JSON_BODY
 function create_file_analytics_server() {
   #local CURL_HTTP_OPTS=' --max-time 25 --silent --show-error --header Content-Type:application/json --header Accept:application/json --insecure '
   local      _file_analytics_server_name="BootcampFileAnalytics"
-  local     _internal_nw_name="${1}"
+  local     _internal_nw_name="${NW1_NAME}"
   local     _internal_nw_uuid
-  local     _external_nw_name="${2}"
+  local     _external_nw_name="${NW2_NAME}"
   local     _external_nw_uuid
   local                 _test
   local     _maxtries=30
