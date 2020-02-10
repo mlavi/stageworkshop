@@ -1256,29 +1256,29 @@ _http_body=$(cat <<EOF
 }
 EOF
 )
-_nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/subnets/list | jq -r '.entities[].metadata.uuid' | tr -d \")
+_nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/subnets/list | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 # Get the Role UUIDs
 log "Get Role UUID"
 _http_body=$(cat <<EOF
 {
- "kind":"subnet",
+ "kind":"rolet",
  "filter":"name==${_role}"
 }
 EOF
 )
-_role_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/accounts/list | jq -r '.entities[].metadata.uuid' | tr -d \")
+_role_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/accounts/list | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 # Get the PC Account UUIDs
 log "Get PC Account  UUID"
 _http_body=$(cat <<EOF
 {
- "kind":"subnet",
+ "kind":"account",
  "filter":"type==nutanix_pc"
 }
 EOF
 )
-_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' https://localhost:9440/api/nutanix/v3/accounts/list | jq -r '.entities[].status.resources.data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
+_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data '{}' https://localhost:9440/api/nutanix/v3/accounts/list | jq -r '.entities[] | .status.resources.data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
 
 log "Create BootcampInfra Project ..."
 log "NW UUID = ${_nw_uuid}"
