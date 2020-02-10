@@ -483,6 +483,9 @@ EOF
    "container_name": "${STORAGE_DEFAULT}",
    "network": {
                   "uuid": "${_nw_uuid}",
+                  "ip": "",
+                  "netmask": "",
+                  "gateway": ""
   },
   "resource": {
                   "memory": "24",
