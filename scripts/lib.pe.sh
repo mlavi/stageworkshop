@@ -475,9 +475,6 @@ function create_file_analytics_server() {
    "container_name": "${STORAGE_DEFAULT}",
    "network": {
                   "uuid": "${_nw_uuid}",
-                  "ip": "",
-                  "netmask": "",
-                  "gateway": ""
   },
   "resource": {
                   "memory": "24",
@@ -499,23 +496,23 @@ echo $HTTP_JSON_BODY
 _response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform | grep "taskUuid" | wc -l)
 
   # Check to ensure we get a response back, then start checking for the file server creation
-#  if [[ ! -z $_response ]]; then
+  if [[ ! -z $_response ]]; then
 #    # Check if Files has been enabled
-#    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_file_analytics_server_name | wc -l)
-#    while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
-#      log "File Analytics Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
-#      sleep 1m
-#      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_file_analytics_server_name| wc -l)
-#      ((_tries++))
-#    done
-#    if [[ $_checkresponse -eq 1 ]]; then
-#      echo "File Analytics has been created."
-#    else
-#      echo "File Analytics creation failed. Check the staging logs."
-#    fi
-#  else
-#    echo "File Analytics is not being created, check the staging logs."
-#  fi
+    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_file_analytics_server_name | wc -l)
+    while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
+      log "File Analytics Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
+      sleep 1m
+      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET ${_httpURL}| grep $_file_analytics_server_name| wc -l)
+      ((_tries++))
+    done
+    if [[ $_checkresponse -eq 1 ]]; then
+      echo "File Analytics has been created."
+    else
+      echo "File Analytics creation failed. Check the staging logs."
+    fi
+  else
+    echo "File Analytics is not being created, check the staging logs."
+  fi
 }
 
 ###############################################################################################################################################################################
