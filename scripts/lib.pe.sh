@@ -454,10 +454,18 @@ function create_file_analytics_server() {
   echo "Get cluster network and storage container UUIDs..."
 
   # Get the Network UUIDs
-  _nw_uuid=$(acli net.get ${_nw_name} | grep "uuid" | cut -f 2 -d ':' | xargs)
+  #_nw_uuid=$(acli net.get ${_nw_name} | grep "uuid" | cut -f 2 -d ':' | xargs)
   log "Get cluster network UUID"
-  _http_body='{"kind":"subnet","filter":"name==${_nw_name}"}'
-  #_nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/subnets/list | jq -r '.entities[].metadata.uuid' | tr -d \")
+
+  _http_body=$(cat <<EOF
+  {
+   "kind":"subnet",
+   "filter":"name==${_nw_name}"
+}
+EOF
+)
+
+  _nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/subnets/list | jq -r '.entities[].metadata.uuid' | tr -d \")
 
 
   # Get the Container UUIDs
@@ -493,7 +501,7 @@ EOF
 echo $HTTP_JSON_BODY
 
 # execute the API call to create the file analytics server
-_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform | grep "taskUuid" | wc -l)
+_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" ${_httpURL} | grep "taskUuid" | wc -l)
 
   # Check to ensure we get a response back, then start checking for the file server creation
   if [[ ! -z $_response ]]; then
