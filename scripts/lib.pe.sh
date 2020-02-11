@@ -470,7 +470,7 @@ function create_file_analytics_server() {
   HTTP_JSON_BODY=$(cat <<EOF
   {
    "image_version": "${FILE_ANALYTICS_VERSION}",
-   "name":"${_file_analytics_server_name}",
+   "vm_name":"${_file_analytics_server_name}",
    "container_uuid": "${_storage_default_uuid}",
    "container_name": "${STORAGE_DEFAULT}",
    "network": {
@@ -489,7 +489,7 @@ function create_file_analytics_server() {
   "disk_size": "3"
 }
 EOF
-)
+  )
 
   # Start the create process
   #_response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d ${HTTP_JSON_BODY} ${_httpURL}| grep "taskUuid" | wc -l)
@@ -499,7 +499,7 @@ echo $HTTP_JSON_BODY
 #_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
 echo "Creating File Anlytics Server Now"
 
-_response=$(curl --location --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --insecure -s --data '{"image_version": "${FILE_ANALYTICS_VERSION}","name":"${_file_analytics_server_name}","container_uuid": "${_storage_default_uuid}", "container_name": "${STORAGE_DEFAULT}","network": {"uuid": "${_nw_uuid}","ip": "","netmask": "","gateway": ""},"resource": {"memory": "24","cores": "2","vcpu": "4"},"dns_servers": [${AUTH_HOST}],"ntp_servers": [${_ntp_formatted}],"disk_size": "3"}'  | grep "taskUuid" | wc -l)
+_response=$(curl --location --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --insecure -s --data "${HTTP_JSON_BODY}")
 
   # Check to ensure we get a response back, then start checking for the file server creation
   if [[ ! -z $_response ]]; then
