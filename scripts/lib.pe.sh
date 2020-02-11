@@ -457,15 +457,9 @@ function create_file_analytics_server() {
   #_nw_uuid=$(acli net.get ${_nw_name} | grep "uuid" | cut -f 2 -d ':' | xargs)
   log "Get cluster network UUID"
 
-  _http_body=$(cat <<EOF
-  {
-   "kind":"subnet",
-   "filter":"name==${_nw_name}"
-}
-EOF
-)
+  _nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"subnet","filter": "name==Primary"}' 'https://localhost:9440/api/nutanix/v3/subnets/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
-  _nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD}  -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/subnets/list | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  #_nw_uuid=$(curl --location --request POST 'https://10.42.7.37:9440/api/nutanix/v3/subnets/list' --header 'Content-Type: application/json' --user 'admin:techX2019!' --insecure -s --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   # Get the Container UUIDs
   log "Get ${STORAGE_DEFAULT} Container UUID"
