@@ -467,29 +467,30 @@ function create_file_analytics_server() {
   echo "${_nw_name} network UUID: ${_nw_uuid}"
   echo "${STORAGE_DEFAULT} storage container UUID: ${_storage_default_uuid}"
 
-  HTTP_JSON_BODY=$(cat <<EOF
-  {
-   "image_version": "${FILE_ANALYTICS_VERSION}",
-   "vm_name":"${_file_analytics_server_name}",
-   "container_uuid": "${_storage_default_uuid}",
-   "container_name": "${STORAGE_DEFAULT}",
-   "network": {
-                  "uuid": "${_nw_uuid}",
-                  "ip": "",
-                  "netmask": "",
-                  "gateway": ""
-  },
-  "resource": {
-                  "memory": "24",
-                  "cores": "2",
-                  "vcpu": "4"
-  },
-  "dns_servers": [${AUTH_HOST}],
-  "ntp_servers": [${_ntp_formatted}],
-  "disk_size": "3"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+                "image_version": "${FILE_ANALYTICS_VERSION}",
+                "vm_name": "${_file_analytics_server_name}",
+                "container_uuid": "${_storage_default_uuid}",
+                "container_name": "${STORAGE_DEFAULT}",
+                "network": {
+                                "uuid": "${_nw_uuid}",
+                                "ip": "",
+                                "netmask": "",
+                                "gateway": ""
+                },
+                "resource": {
+                                "memory": "24",
+                                "cores": "2",
+                                "vcpu": "4"
+                },
+                "dns_servers": [${AUTH_HOST}],
+                "ntp_servers": [${_ntp_formatted}],
+                "disk_size": "3"
 }
 EOF
-  )
+)
 
   # Start the create process
   #_response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d ${HTTP_JSON_BODY} ${_httpURL}| grep "taskUuid" | wc -l)
@@ -504,11 +505,11 @@ _response=$(curl --location --request POST 'https://localhost:9440/PrismGateway/
   # Check to ensure we get a response back, then start checking for the file server creation
   if [[ ! -z $_response ]]; then
 #    # Check if Files has been enabled
-    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $_file_analytics_server_name | wc -l)
+    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
     while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
       log "File Analytics Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
       sleep 1m
-      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $_file_analytics_server_name| wc -l)
+      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
       ((_tries++))
     done
     if [[ $_checkresponse -eq 1 ]]; then
