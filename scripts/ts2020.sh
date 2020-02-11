@@ -107,7 +107,7 @@ case ${1} in
       Nutanix-VirtIO-1.1.5.iso \
       SQLServer2014SP3.iso \
       Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
-      FrameCCA-2.1.0 \
+      FrameCCA-2.1.6 \
       FrameGuestAgentInstaller_1.0.2.2_7930 \
       VeeamBR_9.5.4.2615.Update4.iso \
     )

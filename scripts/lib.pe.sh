@@ -502,7 +502,7 @@ echo $HTTP_JSON_BODY
 echo "Creating File Anlytics Server Now"
 
 #curl --location --insecure -s --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}"
-_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}")
+_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
 
 # If there has been a reply (task_id) then the URL has accepted by PC
 # Changed (()) to [] so it works....
