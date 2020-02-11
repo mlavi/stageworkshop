@@ -159,13 +159,13 @@ case ${1} in
     && objects_enable \
     && lcm \
     && pc_project \
-    && upload_era_calm_blueprint \
     && object_store \
     && karbon_image_download \
     && images \
     && flow_enable \
     && pc_cluster_img_import \
     && seedPC \
+    && upload_era_calm_blueprint \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

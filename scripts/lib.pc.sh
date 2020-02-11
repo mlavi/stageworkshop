@@ -1249,13 +1249,7 @@ function pc_project() {
 
 # Get the Network UUIDs
 log "Get cluster network UUID"
-_http_body=$(cat <<EOF
-{
- "kind":"subnet",
- "filter":"name==${_nw_name}"
-}
-EOF
-)
+
 _nw_uuid=$(curl --location --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --insecure -s --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 # Get the Role UUIDs
@@ -1336,8 +1330,11 @@ _http_body=$(cat <<EOF
   }
 }
 EOF
-  )
-  _create_project=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT --data "${_http_body}" https://localhost:9440/api/nutanix/v3/projects_internal)
+)
+
+
+  _create_project=$(curl --location --insecure -s --request POST 'https://localhost:9440/api/nutanix/v3/projects_internal' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${_http_body}")
+
   log "_ssp_connect=|${_ssp_connect}|"
 
 }
