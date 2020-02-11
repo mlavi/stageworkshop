@@ -972,3 +972,36 @@ function ssh_pubkey() {
     log "IDEMPOTENCY: found pubkey ${_name}"
   fi
 }
+
+###############################################################################################################################################################################
+# Routine to be run/loop till yes we are ok.
+###############################################################################################################################################################################
+# Need to grab the percentage_complete value including the status to make disissions
+
+# TODO: Also look at the status!!
+
+function loop(){
+
+  local _attempts=45
+  local _loops=0
+  local _sleep=60
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+
+  # What is the progress of the taskid??
+  while true; do
+    (( _loops++ ))
+    # Get the progress of the task
+    _progress=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} ${_url_progress}/${_task_id} | jq '.percentage_complete' 2>nul | tr -d \")
+
+    if (( ${_progress} == 100 )); then
+      log "The step has been succesfuly run"
+      break;
+    elif (( ${_loops} > ${_attempts} )); then
+      log "Warning ${_error} @${1}: Giving up after ${_loop} tries."
+      return ${_error}
+    else
+      log "Still running... loop $_loops/$_attempts. Step is at ${_progress}% ...Sleeping ${_sleep} seconds"
+      sleep ${_sleep}
+    fi
+  done
+}

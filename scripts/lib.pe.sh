@@ -447,6 +447,7 @@ function create_file_analytics_server() {
   local _maxtries=30
   local _tries=0
   local _ntp_formatted="$(echo $NTP_SERVERS | sed -r 's/[^,]+/'\"'&'\"'/g')"
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
   log "Installing File Analytics version: ${FILE_ANALYTICS_VERSION}"
 
@@ -500,25 +501,36 @@ echo $HTTP_JSON_BODY
 #_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
 echo "Creating File Anlytics Server Now"
 
-_response=$(curl --location --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --insecure -s --data "${HTTP_JSON_BODY}")
+#curl --location --insecure -s --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}"
+_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}")
+
+# If there has been a reply (task_id) then the URL has accepted by PC
+# Changed (()) to [] so it works....
+if [ -z "$_task_id" ]; then
+     log "File Analytics Deploy has encountered an eror..."
+else
+     log "File Analytics Deploy started.."
+     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+
+     # Run the progess checker
+     loop
 
   # Check to ensure we get a response back, then start checking for the file server creation
-  if [[ ! -z $_response ]]; then
+#  if [[ ! -z $_response ]]; then
 #    # Check if Files has been enabled
-    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
-    while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
-      log "File Analytics Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
-      sleep 1m
-      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
-      ((_tries++))
-    done
-    if [[ $_checkresponse -eq 1 ]]; then
-      echo "File Analytics has been created."
-    else
-      echo "File Analytics creation failed. Check the staging logs."
-    fi
-  else
-    echo "File Analytics is not being created, check the staging logs."
+#    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
+#    while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
+#      log "File Analytics Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
+#      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
+#      ((_tries++))
+#    done
+#    if [[ $_checkresponse -eq 1 ]]; then
+#      echo "File Analytics has been created."
+#    else
+#      echo "File Analytics creation failed. Check the staging logs."
+#    fi
+#  else
+#    echo "File Analytics is not being created, check the staging logs."
   fi
 }
 
