@@ -501,11 +501,14 @@ echo $HTTP_JSON_BODY
 #_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
 echo "Creating File Anlytics Server Now"
 
-#curl --location --insecure -s --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}"
-_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
+curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" > reply_json_uuid.json
+_task_id=($(jq -r '.task_uuid' reply_json.json | tr -d \"))
+
+#_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
 
 # If there has been a reply (task_id) then the URL has accepted by PC
 # Changed (()) to [] so it works....
+
 if [ -z "$_task_id" ]; then
      log "File Analytics Deploy has encountered an eror..."
 else
@@ -514,7 +517,7 @@ else
 
      # Run the progess checker
      loop
-
+fi
   # Check to ensure we get a response back, then start checking for the file server creation
 #  if [[ ! -z $_response ]]; then
 #    # Check if Files has been enabled
@@ -531,7 +534,7 @@ else
 #    fi
 #  else
 #    echo "File Analytics is not being created, check the staging logs."
-  fi
+
 }
 
 ###############################################################################################################################################################################
