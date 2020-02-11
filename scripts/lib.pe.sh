@@ -497,6 +497,7 @@ echo $HTTP_JSON_BODY
 
 # execute the API call to create the file analytics server
 #_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
+echo "Creating File Anlytics Server Now"
 
 _response=$(curl --location --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --insecure -s --data "${HTTP_JSON_BODY}"  | grep "taskUuid" | wc -l)
 
