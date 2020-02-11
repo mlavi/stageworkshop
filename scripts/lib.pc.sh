@@ -1215,6 +1215,7 @@ function pc_project() {
   local _pc_account_uuid
   local _nw_name="${NW1_NAME}"
   local _nw_uuid
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
 # Get the Network UUIDs
 log "Get cluster network UUID"
@@ -1302,7 +1303,17 @@ EOF
 )
 
 
-  _create_project=$(curl --location --insecure -s --request POST 'https://localhost:9440/api/nutanix/v3/projects_internal' --header 'Content-Type: application/json' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${_http_body}")
+  _task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/projects_internal' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${_http_body}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  if [ -z "$_task_id" ]; then
+       log "Calm Project Create has encountered an error..."
+  else
+       log "Calm Project Create started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+
+       # Run the progess checker
+       loop
+  fi
 
   log "_ssp_connect=|${_ssp_connect}|"
 
@@ -1323,7 +1334,3 @@ EOF
 #    && nuclei project.get ${_name} format=json 2>/dev/null \
 #    | jq .metadata.project_reference.uuid | tr -d '"')
 #  log "${_name}.uuid = ${_uuid}"
-
-
-
-}
