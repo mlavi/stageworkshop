@@ -985,8 +985,10 @@ function loop(){
   local _attempts=45
   local _loops=0
   local _sleep=60
+  local _url_progress='https://localhost:9440/api/nutanix/v3/tasks'
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
+  echo ${_task_id}
   # What is the progress of the taskid??
   while true; do
     (( _loops++ ))
