@@ -501,7 +501,7 @@ echo $HTTP_JSON_BODY
 #_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
 echo "Creating File Anlytics Server Now"
 
-curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" #> reply_json_uuid.json
+curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"image_version": "${FILE_ANALYTICS_VERSION}","vm_name":"${_file_analytics_server_name}","container_uuid": "${_storage_default_uuid}", "container_name": "${STORAGE_DEFAULT}","network": {"uuid": "${_nw_uuid}","ip": "","netmask": "","gateway": ""},"resource": {"memory": "24","cores": "2","vcpu": "4"},"dns_servers": [${AUTH_HOST}],"ntp_servers": [${_ntp_formatted}],"disk_size": "3"}' #> reply_json_uuid.json
 
 sleep 300
 
