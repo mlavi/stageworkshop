@@ -93,7 +93,7 @@ case ${1} in
       CentOS7.qcow2 \
       Windows2016.qcow2 \
       Windows2012R2.qcow2 \
-      Windows10-1709.qcow2 \
+      Windows10v1903.qcow2 \
       ToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
       ERA-Server-build-1.2.0.1.qcow2 \

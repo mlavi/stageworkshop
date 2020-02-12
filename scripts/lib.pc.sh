@@ -1251,7 +1251,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 			"kind": "access_control_policy"
 		},
   		"acp": {
-  			"name": "BootcampInfra",
+  			"name": "${_name}",
   			"resources": {
   				"role_reference": {
   					"kind": "role",
@@ -1270,7 +1270,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   	}
   	],
 	"project_detail": {
-  	"name": "${_name},
+  	"name": "${_name}",
   	"resources": {
     	"account_reference_list": [
       	{
@@ -1302,7 +1302,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  echo "Creating Calm Project Now"
+  echo "Creating Calm Project Create Now"
   echo $HTTP_JSON_BODY
 
   _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/projects_internal' | jq -r '.status.execution_context.task_uuid' | tr -d \")
