@@ -507,7 +507,7 @@ EOF
   
   _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | jq -r '.task_uuid' | tr -d \")
   
-  echo $_task_id
+  log "Task uuid for the FileAnalytics server is " $_task_id " ....."
   
   # If there has been a reply (task_id) then the URL has accepted by PC
   # Changed (()) to [] so it works....
