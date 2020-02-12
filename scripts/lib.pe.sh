@@ -486,7 +486,7 @@ HTTP_JSON_BODY=$(cat <<EOF
                                 "cores": "2",
                                 "vcpu": "4"
                 },
-                "dns_servers": [${AUTH_HOST}],
+                "dns_servers": ["${AUTH_HOST}"],
                 "ntp_servers": [${_ntp_formatted}],
                 "disk_size": "3"
 }
@@ -495,32 +495,31 @@ EOF
 
   # Start the create process
   #_response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d ${HTTP_JSON_BODY} ${_httpURL}| grep "taskUuid" | wc -l)
-echo $HTTP_JSON_BODY
 
-# execute the API call to create the file analytics server
-#_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
-echo "Creating File Anlytics Server Now"
-
-curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"image_version": "${FILE_ANALYTICS_VERSION}","vm_name":"${_file_analytics_server_name}","container_uuid": "${_storage_default_uuid}", "container_name": "${STORAGE_DEFAULT}","network": {"uuid": "${_nw_uuid}","ip": "","netmask": "","gateway": ""},"resource": {"memory": "24","cores": "2","vcpu": "4"},"dns_servers": [${AUTH_HOST}],"ntp_servers": [${_ntp_formatted}],"disk_size": "3"}' #> reply_json_uuid.json
-
-sleep 300
-
-#_task_id=($(jq -r '.task_uuid' reply_json_uuid.json | tr -d \"))
-
-#_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
-
-# If there has been a reply (task_id) then the URL has accepted by PC
-# Changed (()) to [] so it works....
-
-#if [ -z "$_task_id" ]; then
-#     log "File Analytics Deploy has encountered an eror..."
-#else
-#     log "File Analytics Deploy started.."
-#     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-
-     # Run the progess checker
-#     loop
-#fi
+  # execute the API call to create the file analytics server
+  #_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
+  echo "Creating File Anlytics Server Now"
+  echo $HTTP_JSON_BODY
+  
+  #curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}"
+  
+  #sleep 300
+  
+  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | jq -r '.task_uuid' | tr -d \")
+  
+  echo $_task_id
+  
+  # If there has been a reply (task_id) then the URL has accepted by PC
+  # Changed (()) to [] so it works....
+  
+  if [ -z "$_task_id" ]; then
+       log "File Analytics Deploy has encountered an eror..."
+  else
+       log "File Analytics Deploy started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+      # Run the progess checker
+       loop
+  fi
 
 }
 
