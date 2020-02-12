@@ -505,7 +505,7 @@ EOF
   
   #sleep 300
   
-  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | jq -r '.task_uuid' | tr -d \")
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | jq -r '.task_uuid' | tr -d \")
   
   echo $_task_id
   
