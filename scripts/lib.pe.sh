@@ -502,38 +502,25 @@ echo $HTTP_JSON_BODY
 echo "Creating File Anlytics Server Now"
 
 curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" #> reply_json_uuid.json
-_task_id=($(jq -r '.task_uuid' reply_json_uuid.json | tr -d \"))
+
+sleep 300
+
+#_task_id=($(jq -r '.task_uuid' reply_json_uuid.json | tr -d \"))
 
 #_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
 
 # If there has been a reply (task_id) then the URL has accepted by PC
 # Changed (()) to [] so it works....
 
-if [ -z "$_task_id" ]; then
-     log "File Analytics Deploy has encountered an eror..."
-else
-     log "File Analytics Deploy started.."
-     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+#if [ -z "$_task_id" ]; then
+#     log "File Analytics Deploy has encountered an eror..."
+#else
+#     log "File Analytics Deploy started.."
+#     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
 
      # Run the progess checker
-     loop
-fi
-  # Check to ensure we get a response back, then start checking for the file server creation
-#  if [[ ! -z $_response ]]; then
-#    # Check if Files has been enabled
-#    _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
-#    while [[ $_checkresponse -ne 1 && $_tries -lt $_maxtries ]]; do
-#      log "File Analytics Server Not yet created. $_tries/$_maxtries... sleeping 1 minute"
-#      _checkresponse=$(curl ${CURL_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep $FILE_ANALYTICS_VERSION | wc -l)
-#      ((_tries++))
-#    done
-#    if [[ $_checkresponse -eq 1 ]]; then
-#      echo "File Analytics has been created."
-#    else
-#      echo "File Analytics creation failed. Check the staging logs."
-#    fi
-#  else
-#    echo "File Analytics is not being created, check the staging logs."
+#     loop
+#fi
 
 }
 
