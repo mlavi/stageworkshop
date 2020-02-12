@@ -1237,7 +1237,7 @@ log "NW UUID = ${_nw_uuid}"
 log "Role UUID = ${_role_uuid}"
 log "PC Account UUID = ${_pc_account_uuid}"
 
-_http_body=$(cat <<EOF
+HTTP_JSON_BODY=$(cat <<EOF
 {
   "api_version": "3.1",
   "metadata": {
@@ -1302,21 +1302,24 @@ _http_body=$(cat <<EOF
 EOF
 )
 
-  curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/projects_internal' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${_http_body}"
+  echo "Creating Calm Project Now"
+  echo $HTTP_JSON_BODY
 
-  Sleep 60
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/projects_internal' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  log "Task uuid for the Calm Project Create is " $_task_id " ....."
+  #Sleep 60
 
   #_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/projects_internal' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${_http_body}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
-  #if [ -z "$_task_id" ]; then
-  #     log "Calm Project Create has encountered an error..."
-  #else
-  #     log "Calm Project Create started.."
-  #     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-
+  if [ -z "$_task_id" ]; then
+       log "Calm Project Create has encountered an error..."
+  else
+       log "Calm Project Create started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
        # Run the progess checker
-  #     loop
-  #fi
+       loop
+  fi
 
   log "_ssp_connect=|${_ssp_connect}|"
 
