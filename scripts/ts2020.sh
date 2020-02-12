@@ -51,7 +51,7 @@ case ${1} in
     && sleep 30 \
     && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
     && sleep 30 \
-    && file_analytics_install \
+    # && file_analytics_install \
     && sleep 30 \
     && create_file_analytics_server \
     && sleep 30
