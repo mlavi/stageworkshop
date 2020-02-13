@@ -1210,12 +1210,57 @@ EOF
 function pc_project() {
   local _name="BootcampInfra"
   local _count
+  local _user_group_uuid
   local _role="Project Admin"
   local _role_uuid
   local _pc_account_uuid
   local _nw_name="${NW1_NAME}"
   local _nw_uuid
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+
+# Creating User Group
+log "Creating User Group"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "api_version": "3.1.0",
+  "metadata": {
+    "kind": "user_group"
+    },
+  "spec": {
+    "resources": {
+      "directory_service_user_group": {
+        "distinguished_name": "cn=ssp admins,cn=users,dc=ntnxlab,dc=local"
+      }
+    }
+  }
+}
+EOF
+)
+
+  echo "Creating Calm Project Create Now"
+  echo $HTTP_JSON_BODY
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/user_groups' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  log "Task uuid for the Calm Project Create is " $_task_id " ....."
+  #Sleep 60
+
+  #_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/projects_internal' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${_http_body}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  if [ -z "$_task_id" ]; then
+       log "Calm Project Create has encountered an error..."
+  else
+       log "Calm Project Create started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+       # Run the progess checker
+       loop
+  fi
+
+# Get the User Group UUID
+log "Get cluster network UUID"
+
+_user_group_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/accounts/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 # Get the Network UUIDs
 log "Get cluster network UUID"
@@ -1233,9 +1278,11 @@ log "Get PC Account  UUID"
 _pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/accounts/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"account","filter":"type==nutanix_pc"}' | jq -r '.entities[] | .status.resources.data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
 
 log "Create BootcampInfra Project ..."
+log "User Group UUID = ${_user_group_uuid}"
 log "NW UUID = ${_nw_uuid}"
 log "Role UUID = ${_role_uuid}"
 log "PC Account UUID = ${_pc_account_uuid}"
+
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
@@ -1262,7 +1309,7 @@ HTTP_JSON_BODY=$(cat <<EOF
         		{
         			"kind": "user_group",
         			"name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
-        			"uuid": "015456ee-399f-4517-bee8-90b71c5c81a0"
+        			"uuid": "${_user_group_uuid}"
         		}
     			]
   			}
@@ -1290,7 +1337,7 @@ HTTP_JSON_BODY=$(cat <<EOF
         {
           "kind": "user_group",
           "name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
-          "uuid": "015456ee-399f-4517-bee8-90b71c5c81a0"
+          "uuid": "${_user_group_uuid}"
         }
     	]
   	}

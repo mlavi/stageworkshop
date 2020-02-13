@@ -459,7 +459,7 @@ function create_file_analytics_server() {
 
   #_nw_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"subnet","filter": "name==Primary"}' 'https://localhost:9440/api/nutanix/v3/subnets/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
-  _nw_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  _nw_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Secondary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   # Get the Container UUIDs
   log "Get ${STORAGE_DEFAULT} Container UUID"
@@ -500,18 +500,18 @@ EOF
   #_response=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | grep "taskUuid" | wc -l)
   echo "Creating File Anlytics Server Now"
   echo $HTTP_JSON_BODY
-  
+
   #curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}"
-  
+
   #sleep 300
-  
+
   _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/PrismGateway/services/rest/v2.0/analyticsplatform' | jq -r '.task_uuid' | tr -d \")
-  
+
   log "Task uuid for the FileAnalytics server is " $_task_id " ....."
-  
+
   # If there has been a reply (task_id) then the URL has accepted by PC
   # Changed (()) to [] so it works....
-  
+
   if [ -z "$_task_id" ]; then
        log "File Analytics Deploy has encountered an eror..."
   else
