@@ -1238,20 +1238,20 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  echo "Creating Calm Project Create Now"
+  echo "Creating User Group Now"
   echo $HTTP_JSON_BODY
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/user_groups' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/user_groups' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
-  log "Task uuid for the Calm Project Create is " $_task_id " ....."
+  log "Task uuid for the User Group Create is " $_task_id " ....."
   #Sleep 60
 
   #_task_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/projects_internal' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${_http_body}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
   if [ -z "$_task_id" ]; then
-       log "Calm Project Create has encountered an error..."
+       log "User Group Create has encountered an error..."
   else
-       log "Calm Project Create started.."
+       log "User Group Create started.."
        set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
        # Run the progess checker
        loop
