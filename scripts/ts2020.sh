@@ -93,13 +93,12 @@ case ${1} in
       CentOS7.qcow2 \
       Windows2016.qcow2 \
       Windows2012R2.qcow2 \
-      Windows10v1903.qcow2 \
+      Win10v1903.qcow2 \
       ToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
       ERA-Server-build-1.2.0.1.qcow2 \
       MSSQL-2016-VM.qcow2 \
       HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
-      VeeamAvailability_1.0.457.vmdk \
       move-3.4.1.qcow2 \
       AutoXD.qcow2 \
     )
@@ -109,7 +108,7 @@ case ${1} in
       Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       FrameCCA-2.1.6 \
       FrameGuestAgentInstaller_1.0.2.2_7930 \
-      VeeamBR_9.5.4.2615.Update4.iso \
+      VeeamBackup_Replication_10.0.0.4207.BETA2.iso \
     )
 
 
