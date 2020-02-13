@@ -1255,9 +1255,9 @@ EOF
   fi
 
 # Get the User Group UUID
-log "Get cluster network UUID"
+log "Get User Group UUID"
 
-_user_group_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/accounts/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+_user_group_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/user_groups/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 # Get the Network UUIDs
 log "Get cluster network UUID"
