@@ -97,18 +97,14 @@ case ${1} in
       ToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
       ERA-Server-build-1.2.0.1.qcow2 \
-      MSSQL-2016-VM.qcow2 \
       HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
       move-3.4.1.qcow2 \
-      AutoXD.qcow2 \
     )
     export ISO_IMAGES=(\
       Nutanix-VirtIO-1.1.5.iso \
-      SQLServer2014SP3.iso \
       Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       FrameCCA-2.1.6 \
       FrameGuestAgentInstaller_1.0.2.2_7930 \
-      VeeamBackup_Replication_10.0.0.4207.BETA2.iso \
     )
 
 
