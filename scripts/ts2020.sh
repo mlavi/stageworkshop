@@ -91,20 +91,30 @@ case ${1} in
 
     export QCOW2_IMAGES=(\
       CentOS7.qcow2 \
-      Windows2016.qcow2 \
-      Windows2012R2.qcow2 \
-      Win10v1903.qcow2 \
-      ToolsVM.qcow2 \
-      Linux_ToolsVM.qcow2 \
-      ERA-Server-build-1.2.0.1.qcow2 \
-      HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
-      move-3.4.1.qcow2 \
+      #Windows2016.qcow2 \
+      #Windows2012R2.qcow2 \
+      #Win10v1903.qcow2 \
+      #ToolsVM.qcow2 \
+      #Linux_ToolsVM.qcow2 \
+      #ERA-Server-build-1.2.0.1.qcow2 \
+      #HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
+      #move-3.4.1.qcow2 \
+      #GTSOracle/19c-april/19c-bootdisk.qcow2 \
+      #GTSOracle/19c-april/19c-disk1.qcow2 \
+      #GTSOracle/19c-april/19c-disk2.qcow2 \
+      #GTSOracle/19c-april/19c-disk3.qcow2 \
+      #GTSOracle/19c-april/19c-disk4.qcow2 \
+      #GTSOracle/19c-april/19c-disk5.qcow2 \
+      #GTSOracle/19c-april/19c-disk6.qcow2 \
+      #GTSOracle/19c-april/19c-disk7.qcow2 \
+      #GTSOracle/19c-april/19c-disk8.qcow2 \
+      #GTSOracle/19c-april/19c-disk9.qcow2 \
     )
     export ISO_IMAGES=(\
       Nutanix-VirtIO-1.1.5.iso \
-      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
-      FrameCCA-2.1.6 \
-      FrameGuestAgentInstaller_1.0.2.2_7930 \
+      #Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
+      #FrameCCA-2.1.6.iso \
+      #FrameGuestAgentInstaller_1.0.2.2_7930.iso \
     )
 
 
