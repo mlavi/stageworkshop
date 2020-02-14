@@ -95,7 +95,7 @@ case ${1} in
       #Windows2012R2.qcow2 \
       #Win10v1903.qcow2 \
       #ToolsVM.qcow2 \
-      #Linux_ToolsVM.qcow2 \
+      Linux_ToolsVM.qcow2 \
       #ERA-Server-build-1.2.0.1.qcow2 \
       #HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
       #move-3.4.1.qcow2 \
