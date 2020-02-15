@@ -1228,6 +1228,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
 function upload_citrix_calm_blueprint() {
   local DIRECTORY="/home/nutanix/"
+  local BLUEPRINT=${Citrix_Blueprint}
   local CALM_PROJECT="BootcampInfra"
   local DOMAIN=${AUTH_FQDN}
   local AD_IP=${AUTH_HOST}

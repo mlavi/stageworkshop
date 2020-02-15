@@ -20,6 +20,7 @@ SeedPC='seedPC.zip'
 ERA_Blueprint='EraServerDeployment.json'
 Citrix_Blueprint='CitrixBootcampInfra.json'
 Beam_Blueprint=''
+CICDInfra_Blueprint='CICD_Infra.json'
 
 # Curl and SSH settings
 CURL_OPTS='--insecure --silent --show-error' # --verbose'
