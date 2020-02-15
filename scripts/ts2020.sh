@@ -90,8 +90,9 @@ case ${1} in
     . lib.pc.sh
 
     export QCOW2_IMAGES=(\
+      ERA-Server-build-1.2.0.1.qcow2 \
+      Windows2016.qcow2 \
       CentOS7.qcow2 \
-      #Windows2016.qcow2 \
       #Windows2012R2.qcow2 \
       #Win10v1903.qcow2 \
       #ToolsVM.qcow2 \
@@ -111,8 +112,8 @@ case ${1} in
       #GTSOracle/19c-april/19c-disk9.qcow2 \
     )
     export ISO_IMAGES=(\
+      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       Nutanix-VirtIO-1.1.5.iso \
-      #Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       #FrameCCA-2.1.6.iso \
       #FrameGuestAgentInstaller_1.0.2.2_7930.iso \
     )
