@@ -164,13 +164,13 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && karbon_enable \
-    #&& objects_enable \
+    && objects_enable \
     && lcm \
     && pc_project \
     #&& object_store \
     #&& karbon_image_download \
-    && images \
-    #&& flow_enable \
+    images \
+    && flow_enable \
     && pc_cluster_img_import \
     && seedPC \
     && upload_era_calm_blueprint \
