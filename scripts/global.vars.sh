@@ -29,6 +29,24 @@ CURL_HTTP_OPTS="${CURL_POST_OPTS} --write-out %{http_code}"
 SSH_OPTS='-o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null'
 SSH_OPTS+=' -q' # -v'
 
+####################################################
+#
+# 3rd Party images used at GTS or Add-On Labs
+#
+###################################################
+#Peer Software
+PeerMgmtServer='Windows2016-PeerMgmt-14feb20'
+PeerAgentServer='Windows2016-PeerAgent-12feb20'
+PMC="PeerMgmt"
+AGENTA="PeerAgent-Files"
+AGENTB="PeerAgent-Win"
+
+#Hycu
+HycuServer='HYCU-4.0.3-Demo'
+
+#Veeam
+VeeamServer=''
+
 ##################################
 #
 # Look for JQ, AutoDC, and QCOW2 Repos in DC specific below.

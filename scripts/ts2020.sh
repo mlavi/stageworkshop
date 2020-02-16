@@ -74,7 +74,9 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-
+        && deploy_peer_mgmt_server "${PMC}" \
+        && deploy_peer_agent_server "${AGENTA}" \
+        && deploy_peer_agent_server "${AGENTB}"
         #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
@@ -93,13 +95,11 @@ case ${1} in
       ERA-Server-build-1.2.0.1.qcow2 \
       Windows2016.qcow2 \
       CentOS7.qcow2 \
-      #Windows2012R2.qcow2 \
       #Win10v1903.qcow2 \
       #ToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
-      #ERA-Server-build-1.2.0.1.qcow2 \
-      #HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
       #move-3.4.1.qcow2 \
+      #MSSQL-2016-VM.qcow2 \
       #GTSOracle/19c-april/19c-bootdisk.qcow2 \
       #GTSOracle/19c-april/19c-disk1.qcow2 \
       #GTSOracle/19c-april/19c-disk2.qcow2 \
@@ -110,6 +110,8 @@ case ${1} in
       #GTSOracle/19c-april/19c-disk7.qcow2 \
       #GTSOracle/19c-april/19c-disk8.qcow2 \
       #GTSOracle/19c-april/19c-disk9.qcow2 \
+      #Windows2012R2.qcow2 \
+      #HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
     )
     export ISO_IMAGES=(\
       Citrix_Virtual_Apps_and_Desktops_7_1912.iso \

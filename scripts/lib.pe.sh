@@ -896,3 +896,100 @@ function pc_destroy() {
     acli vm.off ${_vm} && acli -y vm.delete ${_vm}
   done
 }
+
+###############################################################################################################################################################################
+# Routine to deploy the Peer Management Center
+###############################################################################################################################################################################
+# MTM TODO When integrating with Nutanix scripts, need to change echo to log and put quotes around text after all acli commands
+deploy_peer_mgmt_server() {
+
+  if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${PeerMgmtServer} | wc --lines) == 0 )); then
+    log "Import ${PeerMgmtServer} image from ${QCOW2_REPOS}..."
+    acli image.create ${PeerMgmtServer} \
+      image_type=kDiskImage wait=true \
+      container=${STORAGE_IMAGES} source_url="${QCOW2_REPOS}peer/${PeerMgmtServer}.qcow2"
+  else
+    log "Image found, assuming ready. Skipping ${PeerMgmtServer} import."
+  fi
+
+  echo "Creating temp folder and applying perms..."
+  mkdir /home/nutanix/peer_staging/
+
+  VMNAME=$1
+
+  ### Get sysyprep config file ready ###
+
+  echo "${VMNAME} - Prepping sysprep config..."
+  # MTM Create a temp folder for sysprep file work as to not clutter up nutanix home
+  #mkdir /home/nutanix/peer_staging/
+
+  #MTM todo have unattend.xml staged somewhere else
+  wget http://10.42.194.11/workshop_staging/peer/unattend.xml -P /home/nutanix/peer_staging/
+  mv /home/nutanix/peer_staging/unattend.xml /home/nutanix/peer_staging/unattend_${VMNAME}.xml
+  chmod 777 /home/nutanix/peer_staging/unattend_${VMNAME}.xml
+  sed -i "s/<ComputerName>.*<\/ComputerName>/<ComputerName>${VMNAME}<\/ComputerName>/g" /home/nutanix/peer_staging/unattend_${VMNAME}.xml
+
+  ### Deploy PMC Server ###
+
+  echo "${VMNAME} - Deploying VM..."
+  #log "Create ${VMNAME} VM based on ${IMAGENAME} image"
+  #acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  acli "vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  acli "vm.disk_create ${VMNAME} clone_from_image=${PeerMgmtServer}"
+  # MTM TODO replace net1 with appropriate variable
+  acli "vm.nic_create ${VMNAME} network=Secondary"
+
+  #log "Power on ${VMNAME} VM..."
+  echo "${VMNAME} - Powering on..."
+  acli "vm.on ${VMNAME}"
+
+  echo "${VMNAME} - Deployed."
+
+}
+
+###############################################################################################################################################################################
+# Routine to deploy a Peer Agent
+###############################################################################################################################################################################
+# MTM TODO When integrating with Nutanix scripts, need to change echo to log and put quotes around text after all acli commands
+deploy_peer_agent_server() {
+
+  if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${PeerAgentServer} | wc --lines) == 0 )); then
+    log "Import ${PeerAgentServer} image from ${QCOW2_REPOS}..."
+    acli image.create ${PeerAgentServer} \
+      image_type=kDiskImage wait=true \
+      container=${STORAGE_IMAGES} source_url="${QCOW2_REPOS}peer/${PeerAgentServer}.qcow2"
+  else
+    log "Image found, assuming ready. Skipping ${PeerAgentServer} import."
+  fi
+
+  VMNAME=$1
+
+  ### Get sysyprep config file ready ###
+
+  echo "${VMNAME} - Prepping sysprep config..."
+  # MTM Create a temp folder for sysprep file work as to not clutter up nutanix home
+  #mkdir /home/nutanix/peer_staging/
+
+  #MTM todo have unattend.xml staged somewhere else
+  wget http://10.42.194.11/workshop_staging/peer/unattend.xml -P /home/nutanix/peer_staging/
+  mv /home/nutanix/peer_staging/unattend.xml /home/nutanix/peer_staging/unattend_${VMNAME}.xml
+  chmod 777 /home/nutanix/peer_staging/unattend_${VMNAME}.xml
+  sed -i "s/<ComputerName>.*<\/ComputerName>/<ComputerName>${VMNAME}<\/ComputerName>/g" /home/nutanix/peer_staging/unattend_${VMNAME}.xml
+
+  ### Deploy Agent Server ###
+
+  echo "${VMNAME} - Deploying VM..."
+  #log "Create ${VMNAME} VM based on ${IMAGENAME} image"
+  #acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  acli "vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  acli "vm.disk_create ${VMNAME} clone_from_image=${PeerAgentServer}"
+  # MTM TODO replace net1 with appropriate variable
+  acli "vm.nic_create ${VMNAME} network=Secondary"
+
+  #log "Power on ${VMNAME} VM..."
+  echo "${VMNAME} - Powering on..."
+  acli "vm.on ${VMNAME}"
+
+  echo "${VMNAME} - Deployed."
+
+}
