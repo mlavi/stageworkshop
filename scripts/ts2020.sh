@@ -46,15 +46,15 @@ case ${1} in
     && network_configure \
     && authentication_source \
     && pe_auth \
-    #&& prism_pro_server_deploy \
-    #&& files_install \
-    #&& sleep 30 \
-    #&& create_file_server "${NW1_NAME}" "${NW2_NAME}" \
-    #&& sleep 30 \
-    #&& file_analytics_install \
-    #&& sleep 30 \
-    #&& create_file_analytics_server \
-    #&& sleep 30
+    && prism_pro_server_deploy \
+    && files_install \
+    && sleep 30 \
+    && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
+    && sleep 30 \
+    && file_analytics_install \
+    && sleep 30 \
+    && create_file_analytics_server \
+    && sleep 30
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -74,7 +74,7 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        #deploy_peer_mgmt_server "${PMC}" \
+        deploy_peer_mgmt_server "${PMC}" \
         #&& deploy_peer_agent_server "${AGENTA}" \
         #&& deploy_peer_agent_server "${AGENTB}"
         #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
@@ -96,7 +96,7 @@ case ${1} in
       Windows2016.qcow2 \
       CentOS7.qcow2 \
       #Win10v1903.qcow2 \
-      #ToolsVM.qcow2 \
+      ToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
       #move-3.4.1.qcow2 \
       #MSSQL-2016-VM.qcow2 \
@@ -167,9 +167,9 @@ case ${1} in
     && objects_enable \
     && lcm \
     && pc_project \
-    #&& object_store \
-    #&& karbon_image_download \
-    images \
+    && object_store \
+    && karbon_image_download \
+    && images \
     && flow_enable \
     && pc_cluster_img_import \
     && seedPC \

@@ -1243,7 +1243,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
+      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
@@ -1489,7 +1489,7 @@ function upload_citrix_calm_blueprint() {
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
+      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
@@ -1721,7 +1721,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
+      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
