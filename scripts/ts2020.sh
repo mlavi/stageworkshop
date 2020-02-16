@@ -74,7 +74,7 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        && deploy_peer_mgmt_server "${PMC}" \
+        deploy_peer_mgmt_server "${PMC}" \
         && deploy_peer_agent_server "${AGENTA}" \
         && deploy_peer_agent_server "${AGENTB}"
         #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
