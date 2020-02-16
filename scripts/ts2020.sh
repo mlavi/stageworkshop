@@ -173,6 +173,7 @@ case ${1} in
     && seedPC \
     && upload_era_calm_blueprint \
     && upload_citrix_calm_blueprint \
+    && upload_CICDInfra_calm_blueprint \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
