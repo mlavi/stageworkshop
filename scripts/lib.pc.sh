@@ -1028,7 +1028,7 @@ EOF
 ###############################################################################################################################################################################
 
 function upload_era_calm_blueprint() {
-  local DIRECTORY="/home/nutanix/"
+  local DIRECTORY="/home/nutanix/era"
   local BLUEPRINT=${ERA_Blueprint}
   local CALM_PROJECT="BootcampInfra"
   local ERA_IP=${ERA_HOST}
@@ -1070,8 +1070,9 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   local DOWNLOAD_BLUEPRINTS
   local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
   local ERA_IMAGE_UUID
-  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+  local CURL_HTTP_OPTS="--max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure"
 
+  mkdir $DIRECTORY
 
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1079,7 +1080,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   echo "ERA Image UUID = $ERA_IMAGE_UUID"
 
   # download the blueprint
-  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}${BLUEPRINT})
+  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
   log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
 
   # ensure the directory that contains the blueprints to be imported is not empty
@@ -1089,15 +1090,48 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # create a list to store all bluprints found in the directory provided by user
-  #declare -a LIST_OF_BLUEPRINTS=()
+  declare -a LIST_OF_BLUEPRINTS=()
 
   # circle thru all of the files in the provided directory and add file names to a list of blueprints array
   # IMPORTANT NOTE: THE FILES NAMES FOR THE JSON FILES BEING IMPORTED CAN'T HAVE ANY SPACES (IN THIS SCRIPT)
-  #for FILE in "$DIRECTORY"/*.json; do
-  #    BASENAM="$(basename ${FILE})"
-  #    FILENAME="${BASENAM%.*}"
-  #    LIST_OF_BLUEPRINTS+=("$BASENAM")
-  #done
+  for FILE in "$DIRECTORY"/*.json; do
+      BASENAM="$(basename ${FILE})"
+      FILENAME="${BASENAM%.*}"
+      LIST_OF_BLUEPRINTS+=("$BASENAM")
+  done
+
+  # echo $LIST_OF_BLUEPRINTS
+  # if the list of blueprints is not empty then:
+  if ((${#LIST_OF_BLUEPRINTS[@]})); then
+
+  if [ $CALM_PROJECT != 'none' ]; then
+
+      # curl command needed:
+      # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
+
+      # formulate the curl to check for project
+      _url_pc="https://localhost:9440/api/nutanix/v3/projects/list"
+
+      # make API call and store project_uuid
+      project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
+
+      if [ -z "$project_uuid" ]; then
+          # project wasn't found
+          # exit at this point as we don't want to assume all blueprints should then hit the 'default' project
+          echo "Project $CALM_PROJECT was not found. Please check the name and retry."
+          exit 0
+      else
+          echo "Project $CALM_PROJECT exists..."
+      fi
+  fi
+  else
+    echo 'No JSON files found in' + $DIRECTORY +' ... nothing to import!'
+  fi
+
+  # update the user with script progress...
+  _num_of_files=${#LIST_OF_BLUEPRINTS[@]}
+  echo "Number of .json files found: ${_num_of_files}"
+  echo "Starting blueprint updates and then Uploading to Calm..."
 
 
   if [ $CALM_PROJECT != 'none' ]; then
@@ -1119,8 +1153,11 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
   echo "Starting blueprint updates and then Uploading to Calm..."
 
+
+  for elem in "${LIST_OF_BLUEPRINTS[@]}"; do
   # read the entire JSON file from the directory
-  JSONFile=${DIRECTORY}${BLUEPRINT}
+  #JSONFile=${DIRECTORY}${BLUEPRINT
+  JSONFile=${DIRECTORY}/"$elem"
 
   echo "Currently updating blueprint $JSONFile..."
 
@@ -1138,7 +1175,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ ${BLUEPRINT} == "${NAME}" ]; then
+  if [ "$elem" == "${NAME}" ]; then
       # Profile Variables
       if [ "$ERA_IP" != "none" ]; then
           tmp_ERA_IP=$(mktemp)
@@ -1218,6 +1255,8 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       fi
   fi
 
+  done
+
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
 
   #Getting the Blueprint UUID
@@ -1236,13 +1275,12 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
 }
 
-
 ###############################################################################################################################################################################
 # Routine to upload Citrix Calm Blueprint and set variables
 ###############################################################################################################################################################################
 
 function upload_citrix_calm_blueprint() {
-  local DIRECTORY="/home/nutanix/"
+  local DIRECTORY="/home/nutanix/citrix"
   local BLUEPRINT=${Citrix_Blueprint}
   local CALM_PROJECT="BootcampInfra"
   local DOMAIN=${AUTH_FQDN}
@@ -1266,6 +1304,8 @@ function upload_citrix_calm_blueprint() {
   local CITRIX_IMAGE_UUID
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
+  mkdir $DIRECTORY
+
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==Windows2016.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
@@ -1284,6 +1324,21 @@ function upload_citrix_calm_blueprint() {
       echo "There are no .json files found in the directory provided."
       exit 0
   fi
+
+  # create a list to store all bluprints found in the directory provided by user
+  declare -a LIST_OF_BLUEPRINTS=()
+
+  # circle thru all of the files in the provided directory and add file names to a list of blueprints array
+  # IMPORTANT NOTE: THE FILES NAMES FOR THE JSON FILES BEING IMPORTED CAN'T HAVE ANY SPACES (IN THIS SCRIPT)
+  for FILE in "$DIRECTORY"/*.json; do
+      BASENAM="$(basename ${FILE})"
+      FILENAME="${BASENAM%.*}"
+      LIST_OF_BLUEPRINTS+=("$BASENAM")
+  done
+
+  # echo $LIST_OF_BLUEPRINTS
+  # if the list of blueprints is not empty then:
+  if ((${#LIST_OF_BLUEPRINTS[@]})); then
 
   if [ $CALM_PROJECT != 'none' ]; then
 
@@ -1305,13 +1360,19 @@ function upload_citrix_calm_blueprint() {
           echo "Project $CALM_PROJECT exists..."
       fi
   fi
+  else
+    echo 'No JSON files found in' + $DIRECTORY +' ... nothing to import!'
+  fi
 
   # update the user with script progress...
-
+  _num_of_files=${#LIST_OF_BLUEPRINTS[@]}
+  echo "Number of .json files found: ${_num_of_files}"
   echo "Starting blueprint updates and then Uploading to Calm..."
 
+  for elem in "${LIST_OF_BLUEPRINTS[@]}"; do
   # read the entire JSON file from the directory
-  JSONFile=${DIRECTORY}${BLUEPRINT}
+  #JSONFile=${DIRECTORY}${BLUEPRINT}
+  JSONFile=${DIRECTORY}/"$elem"
 
   echo "Currently updating blueprint $JSONFile..."
 
@@ -1332,7 +1393,7 @@ function upload_citrix_calm_blueprint() {
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ ${BLUEPRINT} == "${NAME}" ]; then
+  if [ "$elem" == "${NAME}" ]; then
       # Profile Variables
       if [ "$DOMAIN" != "none" ]; then
           tmp_DOMAIN=$(mktemp)
@@ -1428,7 +1489,7 @@ function upload_citrix_calm_blueprint() {
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
+      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid "https://localhost:9440/api/nutanix/v3/blueprints/import_file")
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
@@ -1439,6 +1500,8 @@ function upload_citrix_calm_blueprint() {
           # echo "Result: $upload_result"
       fi
   fi
+
+done
 
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
 
@@ -1458,13 +1521,12 @@ function upload_citrix_calm_blueprint() {
 
 }
 
-
 ###############################################################################################################################################################################
 # Routine to upload CICDInfra Calm Blueprint and set variables
 ###############################################################################################################################################################################
 
 function upload_CICDInfra_calm_blueprint() {
-  local DIRECTORY="/home/nutanix/"
+  local DIRECTORY="/home/nutanix/cicdinfra"
   local BLUEPRINT=${CICDInfra_Blueprint}
   local CALM_PROJECT="BootcampInfra"
   local ERA_IP=${ERA_HOST}
@@ -1503,6 +1565,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   local SERVER_IMAGE_UUID
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
+  mkdir $DIRECTORY
 
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==CentOS7.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1520,15 +1583,48 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # create a list to store all bluprints found in the directory provided by user
-  #declare -a LIST_OF_BLUEPRINTS=()
+  declare -a LIST_OF_BLUEPRINTS=()
 
   # circle thru all of the files in the provided directory and add file names to a list of blueprints array
   # IMPORTANT NOTE: THE FILES NAMES FOR THE JSON FILES BEING IMPORTED CAN'T HAVE ANY SPACES (IN THIS SCRIPT)
-  #for FILE in "$DIRECTORY"/*.json; do
-  #    BASENAM="$(basename ${FILE})"
-  #    FILENAME="${BASENAM%.*}"
-  #    LIST_OF_BLUEPRINTS+=("$BASENAM")
-  #done
+  for FILE in "$DIRECTORY"/*.json; do
+      BASENAM="$(basename ${FILE})"
+      FILENAME="${BASENAM%.*}"
+      LIST_OF_BLUEPRINTS+=("$BASENAM")
+  done
+
+  # echo $LIST_OF_BLUEPRINTS
+  # if the list of blueprints is not empty then:
+  if ((${#LIST_OF_BLUEPRINTS[@]})); then
+
+  if [ $CALM_PROJECT != 'none' ]; then
+
+      # curl command needed:
+      # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
+
+      # formulate the curl to check for project
+      _url_pc="https://localhost:9440/api/nutanix/v3/projects/list"
+
+      # make API call and store project_uuid
+      project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
+
+      if [ -z "$project_uuid" ]; then
+          # project wasn't found
+          # exit at this point as we don't want to assume all blueprints should then hit the 'default' project
+          echo "Project $CALM_PROJECT was not found. Please check the name and retry."
+          exit 0
+      else
+          echo "Project $CALM_PROJECT exists..."
+      fi
+  fi
+  else
+    echo 'No JSON files found in' + $DIRECTORY +' ... nothing to import!'
+  fi
+
+  # update the user with script progress...
+  _num_of_files=${#LIST_OF_BLUEPRINTS[@]}
+  echo "Number of .json files found: ${_num_of_files}"
+  echo "Starting blueprint updates and then Uploading to Calm..."
 
 
   if [ $CALM_PROJECT != 'none' ]; then
@@ -1550,8 +1646,10 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
   echo "Starting blueprint updates and then Uploading to Calm..."
 
+  for elem in "${LIST_OF_BLUEPRINTS[@]}"; do
   # read the entire JSON file from the directory
-  JSONFile=${DIRECTORY}${BLUEPRINT}
+  #JSONFile=${DIRECTORY}${BLUEPRINT}
+  JSONFile=${DIRECTORY}/"$elem"
 
   echo "Currently updating blueprint $JSONFile..."
 
@@ -1568,7 +1666,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ ${BLUEPRINT} == "${NAME}" ]; then
+  if [ "$elem" == "${NAME}" ]; then
       # Profile Variables
       # VM Configuration
       if [ "$SERVER_IMAGE" != "none" ]; then
@@ -1634,6 +1732,8 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
           # echo "Result: $upload_result"
       fi
   fi
+
+done
 
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
 

@@ -46,15 +46,15 @@ case ${1} in
     && network_configure \
     && authentication_source \
     && pe_auth \
-    && prism_pro_server_deploy \
-    && files_install \
-    && sleep 30 \
-    && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
-    && sleep 30 \
-    && file_analytics_install \
-    && sleep 30 \
-    && create_file_analytics_server \
-    && sleep 30
+    #&& prism_pro_server_deploy \
+    #&& files_install \
+    #&& sleep 30 \
+    #&& create_file_server "${NW1_NAME}" "${NW2_NAME}" \
+    #&& sleep 30 \
+    #&& file_analytics_install \
+    #&& sleep 30 \
+    #&& create_file_analytics_server \
+    #&& sleep 30
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -74,9 +74,9 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        deploy_peer_mgmt_server "${PMC}" \
-        && deploy_peer_agent_server "${AGENTA}" \
-        && deploy_peer_agent_server "${AGENTB}"
+        #deploy_peer_mgmt_server "${PMC}" \
+        #&& deploy_peer_agent_server "${AGENTA}" \
+        #&& deploy_peer_agent_server "${AGENTB}"
         #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
@@ -164,13 +164,13 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && karbon_enable \
-    && objects_enable \
+    #&& objects_enable \
     && lcm \
     && pc_project \
-    && object_store \
-    && karbon_image_download \
+    #&& object_store \
+    #&& karbon_image_download \
     && images \
-    && flow_enable \
+    #&& flow_enable \
     && pc_cluster_img_import \
     && seedPC \
     && upload_era_calm_blueprint \
