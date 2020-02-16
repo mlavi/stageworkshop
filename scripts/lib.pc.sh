@@ -1206,7 +1206,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
+      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
@@ -1220,7 +1220,22 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
 
+  #Getting the Blueprint UUID
+  ERA_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==EraServerDeployment"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "ERA Blueprint UUID = $ERA_BLUEPRINT_UUID"
+
+  # GET The Blueprint payload
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://<PC IP>:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Era Server", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
+
+  # Launch the BLUEPRINT
+
+  echo "Launching the Era Server Application"
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://<PC_IP>:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}/launch"
+
 }
+
 
 ###############################################################################################################################################################################
 # Routine to upload Citrix Calm Blueprint and set variables
@@ -1413,7 +1428,7 @@ function upload_citrix_calm_blueprint() {
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
+      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
@@ -1427,7 +1442,22 @@ function upload_citrix_calm_blueprint() {
 
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
 
+  #Getting the Blueprint UUID
+  CITRIX_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==CitrixBootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "Citrix Blueprint UUID = $CITRIX_BLUEPRINT_UUID"
+
+  # GET The Blueprint payload
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://<PC IP>:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Citrix Infra", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
+
+  # Launch the BLUEPRINT
+
+  echo "Launching the Era Server Application"
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://<PC_IP>:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}/launch"
+
 }
+
 
 ###############################################################################################################################################################################
 # Routine to upload CICDInfra Calm Blueprint and set variables
@@ -1593,7 +1623,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
+      upload_result=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid 'https://localhost:9440/api/nutanix/v3/blueprints/import_file')
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
