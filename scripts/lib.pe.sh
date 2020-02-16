@@ -903,6 +903,8 @@ function pc_destroy() {
 # MTM TODO When integrating with Nutanix scripts, need to change echo to log and put quotes around text after all acli commands
 deploy_peer_mgmt_server() {
 
+
+
   if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${PeerMgmtServer} | wc --lines) == 0 )); then
     log "Import ${PeerMgmtServer} image from ${QCOW2_REPOS}..."
     acli image.create ${PeerMgmtServer} \
