@@ -141,6 +141,10 @@ case ${1} in
     export   NUCLEI_SERVER='localhost'
     export NUCLEI_USERNAME="${PRISM_ADMIN}"
     export NUCLEI_PASSWORD="${PE_PASSWORD}"
+    export BUCKETS_DNS_IP="${IPV4_PREFIX}.$((${OCTET[3]} + 25))"
+    export BUCKETS_VIP="${IPV4_PREFIX}.$((${OCTET[3]} + 26))"
+    export OBJECTS_NW_START="${IPV4_PREFIX}.$((${OCTET[3]} + 27))"
+    export OBJECTS_NW_END="${IPV4_PREFIX}.$((${OCTET[3]} + 30))"
     # nuclei -debug -username admin -server localhost -password x vm.list
 
     if [[ -z "${PE_HOST}" ]]; then # -z ${CLUSTER_NAME} || #TOFIX
