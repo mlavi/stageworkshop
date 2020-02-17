@@ -1039,7 +1039,9 @@ function upload_era_calm_blueprint() {
   local NETWORK_NAME=${NW1_NAME}
   local VLAN_NAME=${NW1_VLAN}
   local ERAADMIN_PASSWORD="nutanix/4u"
+  local ERAADMIN_PASSWORD_MODIFIED="true"
   local PE_CREDS_PASSWORD="${PE_PASSWORD}"
+  local PE_CREDS_PASSWORD_MODIFIED="true"
   local ERACLI_PASSWORD="-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAii7qFDhVadLx5lULAG/ooCUTA/ATSmXbArs+GdHxbUWd/bNG
 ZCXnaQ2L1mSVVGDxfTbSaTJ3En3tVlMtD2RjZPdhqWESCaoj2kXLYSiNDS9qz3SK
@@ -1067,6 +1069,7 @@ iUf7AoGBALjvtjapDwlEa5/CFvzOVGFq4L/OJTBEBGx/SA4HUc3TFTtlY2hvTDPZ
 dQr/JBzLBUjCOBVuUuH3uW7hGhW+DnlzrfbfJATaRR8Ht6VU651T+Gbrr8EqNpCP
 gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 -----END RSA PRIVATE KEY-----"
+  local ERACLI_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
   local ERA_IMAGE_UUID
@@ -1079,6 +1082,10 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
   echo "ERA Image UUID = $ERA_IMAGE_UUID"
 
+  NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "NETWORK UUID = $NETWORK_UUID"
+
   # download the blueprint
   DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
   log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
@@ -1089,55 +1096,15 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       exit 0
   fi
 
-  # create a list to store all bluprints found in the directory provided by user
-  declare -a LIST_OF_BLUEPRINTS=()
-
-  # circle thru all of the files in the provided directory and add file names to a list of blueprints array
-  # IMPORTANT NOTE: THE FILES NAMES FOR THE JSON FILES BEING IMPORTED CAN'T HAVE ANY SPACES (IN THIS SCRIPT)
-  for FILE in "$DIRECTORY"/*.json; do
-      BASENAM="$(basename ${FILE})"
-      FILENAME="${BASENAM%.*}"
-      LIST_OF_BLUEPRINTS+=("$BASENAM")
-  done
-
-  # echo $LIST_OF_BLUEPRINTS
-  # if the list of blueprints is not empty then:
-  if ((${#LIST_OF_BLUEPRINTS[@]})); then
-
   if [ $CALM_PROJECT != 'none' ]; then
 
       # curl command needed:
       # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
 
-      # formulate the curl to check for project
-      _url_pc="https://localhost:9440/api/nutanix/v3/projects/list"
-
       # make API call and store project_uuid
       project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
 
-      if [ -z "$project_uuid" ]; then
-          # project wasn't found
-          # exit at this point as we don't want to assume all blueprints should then hit the 'default' project
-          echo "Project $CALM_PROJECT was not found. Please check the name and retry."
-          exit 0
-      else
-          echo "Project $CALM_PROJECT exists..."
-      fi
-  fi
-  else
-    echo 'No JSON files found in' + $DIRECTORY +' ... nothing to import!'
-  fi
-
-  # update the user with script progress...
-  _num_of_files=${#LIST_OF_BLUEPRINTS[@]}
-  echo "Number of .json files found: ${_num_of_files}"
-  echo "Starting blueprint updates and then Uploading to Calm..."
-
-
-  if [ $CALM_PROJECT != 'none' ]; then
-
-      # make API call and store project_uuid
-      project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
+      echo "Projet UUID = $project_uuid"
 
       if [ -z "$project_uuid" ]; then
           # project wasn't found
@@ -1153,17 +1120,17 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
   echo "Starting blueprint updates and then Uploading to Calm..."
 
-
-  for elem in "${LIST_OF_BLUEPRINTS[@]}"; do
   # read the entire JSON file from the directory
-  #JSONFile=${DIRECTORY}${BLUEPRINT
-  JSONFile=${DIRECTORY}/"$elem"
+  JSONFile="${DIRECTORY}${BLUEPRINT}"
 
   echo "Currently updating blueprint $JSONFile..."
 
   echo "${CALM_PROJECT} network UUID: ${project_uuid}"
   echo "ERA_IP=${ERA_IP}"
   echo "PE_IP=${PE_IP}"
+  echo "ERA_IMAGE=${ERA_IMAGE}"
+  echo "ERA_IMAGE_UUID=${ERA_IMAGE_UUID}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
 
   # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
   tmp=$(mktemp)
@@ -1175,42 +1142,62 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ "$elem" == "${NAME}" ]; then
+  if [ ${BLUEPRINT} == "${NAME}" ]; then
       # Profile Variables
       if [ "$ERA_IP" != "none" ]; then
           tmp_ERA_IP=$(mktemp)
           # add the new variable to the json file and save it
-          $(jq --arg var_name $ERA_IP '(.spec.resources.app_profile_list[0].variable_list[] | select (.name=="ERA_IP")).value=$var_name' $JSONFile >"$tmp_ERA_IP" && mv "$tmp_ERA_IP" $JSONFile)
+          $(jq --arg var_name $ERA_IP '.spec.resources.app_profile_list[0].variable_list[0].value=$var_name' $JSONFile >"$tmp_ERA_IP" && mv "$tmp_ERA_IP" $JSONFile)
       fi
       # VM Configuration
       if [ "$ERA_IMAGE" != "none" ]; then
           tmp_ERA_IMAGE=$(mktemp)
-          $(jq --arg var_name $ERA_IMAGE '(.spec.resources.disk_list[0].data_source_reference.name=$var_name' $JSONFile >"$tmp_ERA_IMAGE" && mv "$tmp_ERA_IMAGE" $JSONFile)
+          $(jq --arg var_name $ERA_IMAGE '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.name=$var_name' $JSONFile >"$tmp_ERA_IMAGE" && mv "$tmp_ERA_IMAGE" $JSONFile)
       fi
       if [ "$ERA_IMAGE_UUID" != "none" ]; then
           tmp_ERA_IMAGE_UUID=$(mktemp)
-          $(jq --arg var_name $ERA_IMAGE_UUID '(.spec.resources.disk_list[0].data_source_reference.uuid=$var_name' $JSONFile >"$tmp_ERA_IMAGE_UUID" && mv "$tmp_ERA_IMAGE_UUID" $JSONFile)
+          $(jq --arg var_name $ERA_IMAGE_UUID '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid=$var_name' $JSONFile >"$tmp_ERA_IMAGE_UUID" && mv "$tmp_ERA_IMAGE_UUID" $JSONFile)
       fi
       if [ "$NETWORK_NAME" != "none" ]; then
           tmp_NETWORK_NAME=$(mktemp)
-          $(jq --arg var_name $NETWORK_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_NAME")).value=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
+          $(jq --arg var_name $NETWORK_NAME '.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
       fi
-      if [ "$VLAN_NAME" != "none" ]; then
-          tmp_VLAN_NAME=$(mktemp)
-          $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
+      if [ "$NETWORK_UUID" != "none" ]; then
+          tmp_NETWORK_UUID=$(mktemp)
+          $(jq --arg var_name $NETWORK_UUID '.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
       fi
+      #if [ "$NETWORK_NAME" != "none" ]; then
+      #    tmp_NETWORK_NAME=$(mktemp)
+      #    $(jq --arg var_name $NETWORK_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_NAME")).value=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
+      #fi
+      #if [ "$VLAN_NAME" != "none" ]; then
+      #    tmp_VLAN_NAME=$(mktemp)
+      #    $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
+      #fi
       # Credentials
       if [ "$ERAADMIN_PASSWORD" != "none" ]; then
           tmp_ERAADMIN_PASSWORD=$(mktemp)
-          $(jq --arg var_name $ERAADMIN_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="EraAdmin")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD" && mv "$tmp_ERAADMIN_PASSWORD" $JSONFile)
+          $(jq --arg var_name $ERAADMIN_PASSWORD '.spec.resources.credential_definition_list[0].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD" && mv "$tmp_ERAADMIN_PASSWORD" $JSONFile)
+      fi
+      if [ "$ERAADMIN_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_ERAADMIN_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $ERAADMIN_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD_MODIFIED" && mv "$tmp_ERAADMIN_PASSWORD_MODIFIED" $JSONFile)
       fi
       if [ "$PE_CREDS_PASSWORD" != "none" ]; then
           tmp_PE_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="pe_creds")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
+          $(jq --arg var_name $PE_CREDS_PASSWORD '.spec.resources.credential_definition_list[1].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
+      fi
+      if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[1].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
       fi
       if [ "$ERACLI_PASSWORD" != "none" ]; then
           tmp_ERACLI_PASSWORD=$(mktemp)
-          $(jq --arg var_name $ERACLI_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="EraCLI")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD" && mv "$tmp_ERACLI_PASSWORD" $JSONFile)
+          $(jq --arg var_name $ERACLI_PASSWORD '.spec.resources.credential_definition_list[2].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD" && mv "$tmp_ERACLI_PASSWORD" $JSONFile)
+      fi
+      if [ "$ERACLI_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_ERACLI_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $ERACLI_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[2].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD_MODIFIED" && mv "$tmp_ERACLI_PASSWORD_MODIFIED" $JSONFile)
       fi
   fi
 
@@ -1254,8 +1241,6 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
           # echo "Result: $upload_result"
       fi
   fi
-
-  done
 
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
 
@@ -1294,10 +1279,15 @@ function upload_citrix_calm_blueprint() {
   local BPG_RKTOOLS_URL="none"
   local NutanixAcropolis_Installed_Path="none"
   local LOCAL_PASSWORD="nutanix/4u"
+  local LOCAL_PASSWORD_MODIFIED="true"
   local DOMAIN_CREDS_PASSWORD="nutanix/4u"
+  local DOMAIN_PASSWORD_MODIFIED="true"
   local PE_CREDS_PASSWORD="${PE_PASSWORD}"
+  local PE_CREDS_PASSWORD_MODIFIED="true"
   local SQL_CREDS_PASSWORD="nutanix/4u"
+  local SQL_CREDS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
+  local NETWORK_UUID
   local SERVER_IMAGE="Windows2016.qcow2"
   local SERVER_IMAGE_UUID
   local CITRIX_IMAGE="Citrix_Virtual_Apps_and_Desktops_7_1912.iso"
@@ -1315,6 +1305,10 @@ function upload_citrix_calm_blueprint() {
 
   echo "Citrix Image UUID = $CITRIX_IMAGE_UUID"
 
+  NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "NETWORK UUID = $NETWORK_UUID"
+
   # download the blueprint
   DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${CALM_Blueprint} -o ${DIRECTORY}${CALM_Blueprint})
   log "Downloading ${CALM_Blueprint} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
@@ -1325,31 +1319,15 @@ function upload_citrix_calm_blueprint() {
       exit 0
   fi
 
-  # create a list to store all bluprints found in the directory provided by user
-  declare -a LIST_OF_BLUEPRINTS=()
-
-  # circle thru all of the files in the provided directory and add file names to a list of blueprints array
-  # IMPORTANT NOTE: THE FILES NAMES FOR THE JSON FILES BEING IMPORTED CAN'T HAVE ANY SPACES (IN THIS SCRIPT)
-  for FILE in "$DIRECTORY"/*.json; do
-      BASENAM="$(basename ${FILE})"
-      FILENAME="${BASENAM%.*}"
-      LIST_OF_BLUEPRINTS+=("$BASENAM")
-  done
-
-  # echo $LIST_OF_BLUEPRINTS
-  # if the list of blueprints is not empty then:
-  if ((${#LIST_OF_BLUEPRINTS[@]})); then
-
   if [ $CALM_PROJECT != 'none' ]; then
 
       # curl command needed:
       # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
 
-      # formulate the curl to check for project
-      _url_pc="https://localhost:9440/api/nutanix/v3/projects/list"
-
       # make API call and store project_uuid
       project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
+
+      echo "Projet UUID = $project_uuid"
 
       if [ -z "$project_uuid" ]; then
           # project wasn't found
@@ -1360,19 +1338,12 @@ function upload_citrix_calm_blueprint() {
           echo "Project $CALM_PROJECT exists..."
       fi
   fi
-  else
-    echo 'No JSON files found in' + $DIRECTORY +' ... nothing to import!'
-  fi
 
   # update the user with script progress...
-  _num_of_files=${#LIST_OF_BLUEPRINTS[@]}
-  echo "Number of .json files found: ${_num_of_files}"
+
   echo "Starting blueprint updates and then Uploading to Calm..."
 
-  for elem in "${LIST_OF_BLUEPRINTS[@]}"; do
-  # read the entire JSON file from the directory
-  #JSONFile=${DIRECTORY}${BLUEPRINT}
-  JSONFile=${DIRECTORY}/"$elem"
+  JSONFile=${DIRECTORY}${BLUEPRINT}
 
   echo "Currently updating blueprint $JSONFile..."
 
@@ -1382,6 +1353,11 @@ function upload_citrix_calm_blueprint() {
   echo "PE_IP=${PE_IP}"
   echo "DDC_IP=${DDC_IP}"
   echo "CVM_NETWORK=${CVM_NETWORK}"
+  echo "SERVER_IMAGE=${SERVER_IMAGE}"
+  echo "SERVER_IMAGE_UUID=${SERVER_IMAGE_UUID}"
+  echo "CITRIX_IMAGE=${CITRIX_IMAGE}"
+  echo "CITRIX_IMAGE_UUID=${CITRIX_IMAGE_UUID}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
 
   # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
   tmp=$(mktemp)
@@ -1393,70 +1369,90 @@ function upload_citrix_calm_blueprint() {
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ "$elem" == "${NAME}" ]; then
+  if [ ${BLUEPRINT} == "${NAME}" ]; then
       # Profile Variables
       if [ "$DOMAIN" != "none" ]; then
           tmp_DOMAIN=$(mktemp)
           # add the new variable to the json file and save it
-          $(jq --arg var_name $DOMAIN'(.spec.resources.app_profile_list[0].variable_list[] | select (.name=="DOMAIN")).value=$var_name' $JSONFile >"$tmp_DOMAIN" && mv "$tmp_DOMAIN" $JSONFile)
+          $(jq --arg var_name $DOMAIN'.spec.resources.app_profile_list[0].variable_list[0].value=$var_name' $JSONFile >"$tmp_DOMAIN" && mv "$tmp_DOMAIN" $JSONFile)
       fi
       if [ "$AD_IP" != "none" ]; then
           tmp_AD_IP=$(mktemp)
-          $(jq --arg var_name $AD_IP '(.spec.resources.app_profile_list[0].variable_list[] | select (.name=="AD_IP")).value=$var_name' $JSONFile >"$tmp_AD_IP" && mv "$tmp_AD_IP" $JSONFile)
+          $(jq --arg var_name $AD_IP '.spec.resources.app_profile_list[0].variable_list[1].value=$var_name' $JSONFile >"$tmp_AD_IP" && mv "$tmp_AD_IP" $JSONFile)
       fi
       if [ "$PE_IP" != "none" ]; then
           tmp_PE_IP=$(mktemp)
-          $(jq --arg var_name $PE_IP'(.spec.resources.app_profile_list[0].variable_list[] | select (.name=="PE_IP")).value=$var_name' $JSONFile >"$tmp_PE_IP" && mv "$tmp_PE_IP" $JSONFile)
+          $(jq --arg var_name $PE_IP'.spec.resources.app_profile_list[0].variable_list[2].value=$var_name' $JSONFile >"$tmp_PE_IP" && mv "$tmp_PE_IP" $JSONFile)
       fi
       if [ "$DDC_IP" != "none" ]; then
           tmp_DDC_IP=$(mktemp)
-          $(jq --arg var_name $DDC_IP '(.spec.resources.app_profile_list[0].variable_list[] | select (.name=="DDC_IP")).value=$var_name' $JSONFile >"$tmp_DDC_IP" && mv "$tmp_DDC_IP" $JSONFile)
+          $(jq --arg var_name $DDC_IP '.spec.resources.app_profile_list[0].variable_list[6].value=$var_name' $JSONFile >"$tmp_DDC_IP" && mv "$tmp_DDC_IP" $JSONFile)
       fi
       if [ "$CVM_NETWORK" != "none" ]; then
           tmp_CVM_NETWORK=$(mktemp)
-          $(jq --arg var_name $CVM_NETWORK '(.spec.resources.app_profile_list[0].variable_list[] | select (.name=="CVM_NETWORK")).value=$var_name' $JSONFile >"$tmp_CVM_NETWORK" && mv "$tmp_CVM_NETWORK" $JSONFile)
+          $(jq --arg var_name $CVM_NETWORK '.spec.resources.app_profile_list[0].variable_list[4].value=$var_name' $JSONFile >"$tmp_CVM_NETWORK" && mv "$tmp_CVM_NETWORK" $JSONFile)
       fi
       # VM Configuration
-      #if [ "$SERVER_IMAGE" != "none" ]; then
-      #    tmp_SERVER_IMAGE=$(mktemp)
-      #    $(jq --arg var_name $SERVER_IMAGE '(.spec.resources.disk_list[0].data_source_reference.name=$var_name' $JSONFile >"$tmp_SERVER_IMAGE" && mv #"$tmp_SERVER_IMAGE" $JSONFile)
-      #fi
+      if [ "$SERVER_IMAGE" != "none" ]; then
+          tmp_SERVER_IMAGE=$(mktemp)
+          $(jq --arg var_name $SERVER_IMAGE '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.name=$var_name' $JSONFile >"$tmp_SERVER_IMAGE" && mv "$tmp_SERVER_IMAGE" $JSONFile)
+      fi
       if [ "$SERVER_IMAGE_UUID" != "none" ]; then
           tmp_SERVER_IMAGE_UUID=$(mktemp)
-          $(jq --arg var_name $SERVER_IMAGE_UUID '(.spec.resources.disk_list[0].data_source_reference | select (.name=="Windows2016.qcow2")).uuid=$var_name' $JSONFile >"$tmp_SERVER_IMAGE_UUID" && mv "$tmp_SERVER_IMAGE_UUID" $JSONFile)
+          $(jq --arg var_name $SERVER_IMAGE_UUID '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid=$var_name' $JSONFile >"$tmp_SERVER_IMAGE_UUID" && mv "$tmp_SERVER_IMAGE_UUID" $JSONFile)
       fi
-      #if [ "$CITRIX_IMAGE" != "none" ]; then
-      #    tmp_CITRIX_IMAGE=$(mktemp)
-      #    $(jq --arg var_name $CITRIX_IMAGE '(.spec.resources.disk_list[0].data_source_reference.name=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE" && mv "$tmp_CITRIX_IMAGE" $JSONFile)
-      #fi
+      if [ "$CITRIX_IMAGE" != "none" ]; then
+          tmp_CITRIX_IMAGE=$(mktemp)
+          $(jq --arg var_name $CITRIX_IMAGE '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference.name=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE" && mv "$tmp_CITRIX_IMAGE" $JSONFile)
+      fi
       if [ "$CITRIX_IMAGE_UUID" != "none" ]; then
           tmp_CITRIX_IMAGE_UUID=$(mktemp)
-          $(jq --arg var_name $CITRIX_IMAGE_UUID '(.spec.resources.disk_list[0].data_source_reference | select (.name=="Citrix_Virtual_Apps_and_Desktops_7_1912.iso")).uuid=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE_UUID" && mv "$tmp_CITRIX_IMAGE_UUID" $JSONFile)
+          $(jq --arg var_name $CITRIX_IMAGE_UUID '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference.uuid=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE_UUID" && mv "$tmp_CITRIX_IMAGE_UUID" $JSONFile)
       fi
       if [ "$NETWORK_NAME" != "none" ]; then
           tmp_NETWORK_NAME=$(mktemp)
-          $(jq --arg var_name $NETWORK_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_NAME")).value=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
+          $(jq --arg var_name $NETWORK_NAME '.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
       fi
-      if [ "$VLAN_NAME" != "none" ]; then
-          tmp_VLAN_NAME=$(mktemp)
-          $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
+      if [ "$NETWORK_UUID" != "none" ]; then
+          tmp_NETWORK_UUID=$(mktemp)
+          $(jq --arg var_name $NETWORK_UUID '.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
       fi
+      #if [ "$VLAN_NAME" != "none" ]; then
+      #    tmp_VLAN_NAME=$(mktemp)
+      #    $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
+      #fi
       # Credentials
       if [ "$LOCAL_PASSWORD" != "none" ]; then
           tmp_LOCAL_PASSWORD=$(mktemp)
-          $(jq --arg var_name $LOCAL_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="LOCAL")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD" && mv "$tmp_LOCAL_PASSWORD" $JSONFile)
+          $(jq --arg var_name $LOCAL_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD" && mv "$tmp_LOCAL_PASSWORD" $JSONFile)
       fi
-      if [ "$PE_CREDS_PASSWORD" != "none" ]; then
-          tmp_PE_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="PE_CREDS")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
+      if [ "$LOCAL_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_LOCAL_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $LOCAL_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD_MODIFIED" && mv "$tmp_LOCAL_PASSWORD_MODIFIED" $JSONFile)
       fi
       if [ "$DOMAIN_CREDS_PASSWORD" != "none" ]; then
           tmp_DOMAIN_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $DOMAIN_CREDS_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="DOMAIN_CREDS")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD" && mv "$tmp_DOMAIN_CREDS_PASSWORD" $JSONFile)
+          $(jq --arg var_name $DOMAIN_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD" && mv "$tmp_DOMAIN_CREDS_PASSWORD" $JSONFile)
+      fi
+      if [ "$DOMAIN_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_DOMAIN_CREDS_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $DOMAIN_CREDS_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[1].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" && mv "$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" $JSONFile)
+      fi
+      if [ "$PE_CREDS_PASSWORD" != "none" ]; then
+          tmp_PE_CREDS_PASSWORD=$(mktemp)
+          $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
+      fi
+      if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[2].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
       fi
       if [ "$SQL_CREDS_PASSWORD" != "none" ]; then
           tmp_SQL_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $SQL_CREDS_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="SQL_CREDS")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD" && mv "$tmp_SQL_CREDS_PASSWORD" $JSONFile)
+          $(jq --arg var_name $SQL_CREDS_PASSWORD '(.spec.resources.credential_definition_list[3].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD" && mv "$tmp_SQL_CREDS_PASSWORD" $JSONFile)
+      fi
+      if [ "$SQL_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_SQL_CREDS_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $SQL_CREDS_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[3].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD_MODIFIED" && mv "$tmp_SQL_CREDS_PASSWORD_MODIFIED" $JSONFile)
       fi
   fi
 
@@ -1489,7 +1485,7 @@ function upload_citrix_calm_blueprint() {
       bp_name=$blueprint_name
       project_uuid=$project_uuid
 
-      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
+      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid "https://localhost:9440/api/nutanix/v3/blueprints/import_file")
 
       #if the upload_result var is not empty then let's say it was succcessful
       if [ -z "$upload_result" ]; then
@@ -1500,8 +1496,6 @@ function upload_citrix_calm_blueprint() {
           # echo "Result: $upload_result"
       fi
   fi
-
-done
 
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
 
@@ -1560,7 +1554,9 @@ iUf7AoGBALjvtjapDwlEa5/CFvzOVGFq4L/OJTBEBGx/SA4HUc3TFTtlY2hvTDPZ
 dQr/JBzLBUjCOBVuUuH3uW7hGhW+DnlzrfbfJATaRR8Ht6VU651T+Gbrr8EqNpCP
 gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 -----END RSA PRIVATE KEY-----"
+  local CENTOS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
+  local NETWORK_UUID
   local SERVER_IMAGE="CentOS7.qcow2"
   local SERVER_IMAGE_UUID
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
@@ -1572,6 +1568,10 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
   echo "Server Image UUID = $SERVER_IMAGE_UUID"
 
+  NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "NETWORK UUID = $NETWORK_UUID"
+
   # download the blueprint
   DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}${BLUEPRINT})
   log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
@@ -1582,55 +1582,15 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       exit 0
   fi
 
-  # create a list to store all bluprints found in the directory provided by user
-  declare -a LIST_OF_BLUEPRINTS=()
-
-  # circle thru all of the files in the provided directory and add file names to a list of blueprints array
-  # IMPORTANT NOTE: THE FILES NAMES FOR THE JSON FILES BEING IMPORTED CAN'T HAVE ANY SPACES (IN THIS SCRIPT)
-  for FILE in "$DIRECTORY"/*.json; do
-      BASENAM="$(basename ${FILE})"
-      FILENAME="${BASENAM%.*}"
-      LIST_OF_BLUEPRINTS+=("$BASENAM")
-  done
-
-  # echo $LIST_OF_BLUEPRINTS
-  # if the list of blueprints is not empty then:
-  if ((${#LIST_OF_BLUEPRINTS[@]})); then
-
   if [ $CALM_PROJECT != 'none' ]; then
 
       # curl command needed:
       # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
 
-      # formulate the curl to check for project
-      _url_pc="https://localhost:9440/api/nutanix/v3/projects/list"
-
       # make API call and store project_uuid
       project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
 
-      if [ -z "$project_uuid" ]; then
-          # project wasn't found
-          # exit at this point as we don't want to assume all blueprints should then hit the 'default' project
-          echo "Project $CALM_PROJECT was not found. Please check the name and retry."
-          exit 0
-      else
-          echo "Project $CALM_PROJECT exists..."
-      fi
-  fi
-  else
-    echo 'No JSON files found in' + $DIRECTORY +' ... nothing to import!'
-  fi
-
-  # update the user with script progress...
-  _num_of_files=${#LIST_OF_BLUEPRINTS[@]}
-  echo "Number of .json files found: ${_num_of_files}"
-  echo "Starting blueprint updates and then Uploading to Calm..."
-
-
-  if [ $CALM_PROJECT != 'none' ]; then
-
-      # make API call and store project_uuid
-      project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
+      echo "Projet UUID = $project_uuid"
 
       if [ -z "$project_uuid" ]; then
           # project wasn't found
@@ -1643,17 +1603,14 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # update the user with script progress...
-
   echo "Starting blueprint updates and then Uploading to Calm..."
 
-  for elem in "${LIST_OF_BLUEPRINTS[@]}"; do
-  # read the entire JSON file from the directory
-  #JSONFile=${DIRECTORY}${BLUEPRINT}
-  JSONFile=${DIRECTORY}/"$elem"
+  JSONFile=${DIRECTORY}${BLUEPRINT}
 
   echo "Currently updating blueprint $JSONFile..."
 
   echo "${CALM_PROJECT} network UUID: ${project_uuid}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
 
 
   # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
@@ -1666,29 +1623,33 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ "$elem" == "${NAME}" ]; then
+  if [ ${BLUEPRINT} == "${NAME}" ]; then
       # Profile Variables
       # VM Configuration
       if [ "$SERVER_IMAGE" != "none" ]; then
           tmp_SERVER_IMAGE=$(mktemp)
-          $(jq --arg var_name $SERVER_IMAGE '(.spec.resources.disk_list[0].data_source_reference.name=$var_name' $JSONFile >"$tmp_SERVER_IMAGE" && mv "$tmp_SERVER_IMAGE" $JSONFile)
+          $(jq --arg var_name $SERVER_IMAGE '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.name=$var_name' $JSONFile >"$tmp_SERVER_IMAGE" && mv "$tmp_SERVER_IMAGE" $JSONFile)
       fi
       if [ "$SERVER_IMAGE_UUID" != "none" ]; then
           tmp_SERVER_IMAGE_UUID=$(mktemp)
-          $(jq --arg var_name $SERVER_IMAGE_UUID '(.spec.resources.disk_list[0].data_source_reference | select (.name=="CentOS7.qcow2")).uuid=$var_name' $JSONFile >"$tmp_SERVER_IMAGE_UUID" && mv "$tmp_SERVER_IMAGE_UUID" $JSONFile)
+          $(jq --arg var_name $SERVER_IMAGE_UUID '.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid=$var_name' $JSONFile >"$tmp_SERVER_IMAGE_UUID" && mv "$tmp_SERVER_IMAGE_UUID" $JSONFile)
       fi
       if [ "$NETWORK_NAME" != "none" ]; then
           tmp_NETWORK_NAME=$(mktemp)
-          $(jq --arg var_name $NETWORK_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_NAME")).value=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
+          $(jq --arg var_name $NETWORK_NAME '.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
       fi
-      if [ "$VLAN_NAME" != "none" ]; then
-          tmp_VLAN_NAME=$(mktemp)
-          $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
+      if [ "$NETWORK_UUID" != "none" ]; then
+          tmp_NETWORK_UUID=$(mktemp)
+          $(jq --arg var_name $NETWORK_UUID '.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
       fi
       # Credentials
       if [ "$CENTOS_PASSWORD" != "none" ]; then
           tmp_CENTOS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $CENTOS_PASSWORD '(.spec.resources.credential_definition_list[0].variable_list[] | select (.name=="CENTOS")).secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD" && mv "$tmp_CENTOS_PASSWORD" $JSONFile)
+          $(jq --arg var_name $CENTOS_PASSWORD '.spec.resources.credential_definition_list[0].secret.attrs.secret_reference=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD" && mv "$tmp_CENTOS_PASSWORD" $JSONFile)
+      fi
+      if [ "$CENTOS_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_CENTOS_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $CENTOS_PASSWORD_MODIFIED '.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD_MODIFIED" && mv "$tmp_CENTOS_PASSWORD_MODIFIED" $JSONFile)
       fi
   fi
 

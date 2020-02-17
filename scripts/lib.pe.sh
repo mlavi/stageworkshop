@@ -935,8 +935,8 @@ deploy_peer_mgmt_server() {
 
   echo "${VMNAME} - Deploying VM..."
   #log "Create ${VMNAME} VM based on ${IMAGENAME} image"
-  #acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
-  acli "vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  #acli "vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
   acli "vm.disk_create ${VMNAME} clone_from_image=${PeerMgmtServer}"
   # MTM TODO replace net1 with appropriate variable
   acli "vm.nic_create ${VMNAME} network=Secondary"
@@ -982,8 +982,8 @@ deploy_peer_agent_server() {
 
   echo "${VMNAME} - Deploying VM..."
   #log "Create ${VMNAME} VM based on ${IMAGENAME} image"
-  #acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
-  acli "vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
+  #acli "vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
   acli "vm.disk_create ${VMNAME} clone_from_image=${PeerAgentServer}"
   # MTM TODO replace net1 with appropriate variable
   acli "vm.nic_create ${VMNAME} network=Secondary"
