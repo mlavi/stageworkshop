@@ -1142,7 +1142,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ ${BLUEPRINT} == "${NAME}" ]; then
+
       # Profile Variables
       if [ "$ERA_IP" != "none" ]; then
           tmp_ERA_IP=$(mktemp)
@@ -1199,7 +1199,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
           tmp_ERACLI_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $ERACLI_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD_MODIFIED" && mv "$tmp_ERACLI_PASSWORD_MODIFIED" $JSONFile)
       fi
-  fi
+
 
   # REMOVE the "status" and "product_version" keys (if they exist) from the JSON data this is included on export but is invalid on import. (affects all BPs being imported)
   tmp_removal=$(mktemp)
@@ -1371,7 +1371,7 @@ function upload_citrix_calm_blueprint() {
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ ${BLUEPRINT} == "${NAME}" ]; then
+
       # Profile Variables
       if [ "$DOMAIN" != "none" ]; then
           tmp_DOMAIN=$(mktemp)
@@ -1456,7 +1456,7 @@ function upload_citrix_calm_blueprint() {
           tmp_SQL_CREDS_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $SQL_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[3].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD_MODIFIED" && mv "$tmp_SQL_CREDS_PASSWORD_MODIFIED" $JSONFile)
       fi
-  fi
+
 
   # REMOVE the "status" and "product_version" keys (if they exist) from the JSON data this is included on export but is invalid on import. (affects all BPs being imported)
   tmp_removal=$(mktemp)
@@ -1627,7 +1627,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   fi
 
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-  if [ ${BLUEPRINT} == "${NAME}" ]; then
+
       # Profile Variables
       # VM Configuration
       if [ "$SERVER_IMAGE" != "none" ]; then
@@ -1655,7 +1655,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
           tmp_CENTOS_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $CENTOS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD_MODIFIED" && mv "$tmp_CENTOS_PASSWORD_MODIFIED" $JSONFile)
       fi
-  fi
+
 
   # REMOVE the "status" and "product_version" keys (if they exist) from the JSON data this is included on export but is invalid on import. (affects all BPs being imported)
   tmp_removal=$(mktemp)
