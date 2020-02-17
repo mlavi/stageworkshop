@@ -1121,7 +1121,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   echo "Starting blueprint updates and then Uploading to Calm..."
 
   # read the entire JSON file from the directory
-  JSONFile="${DIRECTORY}${BLUEPRINT}"
+  JSONFile="${DIRECTORY}/${BLUEPRINT}"
 
   echo "Currently updating blueprint $JSONFile..."
 
@@ -1343,7 +1343,7 @@ function upload_citrix_calm_blueprint() {
 
   echo "Starting blueprint updates and then Uploading to Calm..."
 
-  JSONFile=${DIRECTORY}${BLUEPRINT}
+  JSONFile=${DIRECTORY}/${BLUEPRINT}
 
   echo "Currently updating blueprint $JSONFile..."
 
@@ -1605,7 +1605,7 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   # update the user with script progress...
   echo "Starting blueprint updates and then Uploading to Calm..."
 
-  JSONFile=${DIRECTORY}${BLUEPRINT}
+  JSONFile=${DIRECTORY}/${BLUEPRINT}
 
   echo "Currently updating blueprint $JSONFile..."
 
