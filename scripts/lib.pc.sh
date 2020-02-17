@@ -1630,27 +1630,33 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
 
       # Profile Variables
       # VM Configuration
+      echo "Making $SERVER_IMAGE Edits"
       if [ "$SERVER_IMAGE" != "none" ]; then
           tmp_SERVER_IMAGE=$(mktemp)
           $(jq --arg var_name $SERVER_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).name=$var_name' $JSONFile >"$tmp_SERVER_IMAGE" && mv "$tmp_SERVER_IMAGE" $JSONFile)
       fi
+      echo "Making $SERVER_IMAGE_UUID Edits"
       if [ "$SERVER_IMAGE_UUID" != "none" ]; then
           tmp_SERVER_IMAGE_UUID=$(mktemp)
           $(jq --arg var_name $SERVER_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_SERVER_IMAGE_UUID" && mv "$tmp_SERVER_IMAGE_UUID" $JSONFile)
       fi
+      echo "Making $NETWORK_NAME Edits"
       if [ "$NETWORK_NAME" != "none" ]; then
           tmp_NETWORK_NAME=$(mktemp)
           $(jq --arg var_name $NETWORK_NAME '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
       fi
+      echo "Making $NETWORK_UUID Edits"
       if [ "$NETWORK_UUID" != "none" ]; then
           tmp_NETWORK_UUID=$(mktemp)
           $(jq --arg var_name $NETWORK_UUID '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
       fi
       # Credentials
+      echo "Making $CENTOS_PASSWORD Edits"
       if [ "$CENTOS_PASSWORD" != "none" ]; then
           tmp_CENTOS_PASSWORD=$(mktemp)
           $(jq --arg var_name $CENTOS_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD" && mv "$tmp_CENTOS_PASSWORD" $JSONFile)
       fi
+      echo "Making $CENTOS_PASSWORD_MODIFIED Edits"
       if [ "$CENTOS_PASSWORD_MODIFIED" != "none" ]; then
           tmp_CENTOS_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $CENTOS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD_MODIFIED" && mv "$tmp_CENTOS_PASSWORD_MODIFIED" $JSONFile)
