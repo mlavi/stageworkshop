@@ -1144,24 +1144,29 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
 
       # Profile Variables
+      echo "Making ERA_IP Edits"
       if [ "$ERA_IP" != "none" ]; then
           tmp_ERA_IP=$(mktemp)
           # add the new variable to the json file and save it
           $(jq --arg var_name $ERA_IP '(.spec.resources.app_profile_list[0].variable_list[0]).value=$var_name' $JSONFile >"$tmp_ERA_IP" && mv "$tmp_ERA_IP" $JSONFile)
       fi
       # VM Configuration
+      echo "Making ERA_IMAGE Edits"
       if [ "$ERA_IMAGE" != "none" ]; then
           tmp_ERA_IMAGE=$(mktemp)
           $(jq --arg var_name $ERA_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).name=$var_name' $JSONFile >"$tmp_ERA_IMAGE" && mv "$tmp_ERA_IMAGE" $JSONFile)
       fi
+      echo "Making ERA_IP_UUID Edits"
       if [ "$ERA_IMAGE_UUID" != "none" ]; then
           tmp_ERA_IMAGE_UUID=$(mktemp)
           $(jq --arg var_name $ERA_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_ERA_IMAGE_UUID" && mv "$tmp_ERA_IMAGE_UUID" $JSONFile)
       fi
+      echo "Making NETWORK_NAME Edits"
       if [ "$NETWORK_NAME" != "none" ]; then
           tmp_NETWORK_NAME=$(mktemp)
           $(jq --arg var_name $NETWORK_NAME '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
       fi
+      echo "Making NETWORK_UUID Edits"
       if [ "$NETWORK_UUID" != "none" ]; then
           tmp_NETWORK_UUID=$(mktemp)
           $(jq --arg var_name $NETWORK_UUID '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
@@ -1175,26 +1180,32 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       #    $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
       #fi
       # Credentials
+      echo "Making ERAADMIN_PASSWORD Edits"
       if [ "$ERAADMIN_PASSWORD" != "none" ]; then
           tmp_ERAADMIN_PASSWORD=$(mktemp)
           $(jq --arg var_name $ERAADMIN_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD" && mv "$tmp_ERAADMIN_PASSWORD" $JSONFile)
       fi
+      echo "Making ERAADMIN_PASSWORD_MODIFIED Edits"
       if [ "$ERAADMIN_PASSWORD_MODIFIED" != "none" ]; then
           tmp_ERAADMIN_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $ERAADMIN_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD_MODIFIED" && mv "$tmp_ERAADMIN_PASSWORD_MODIFIED" $JSONFile)
       fi
+      echo "Making PE_CREDS_PASSWORD Edits"
       if [ "$PE_CREDS_PASSWORD" != "none" ]; then
           tmp_PE_CREDS_PASSWORD=$(mktemp)
           $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
       fi
+      echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
       if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
           tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
       fi
+      echo "Making ERACLI_PASSWORD Edits"
       if [ "$ERACLI_PASSWORD" != "none" ]; then
           tmp_ERACLI_PASSWORD=$(mktemp)
           $(jq --arg var_name $ERACLI_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD" && mv "$tmp_ERACLI_PASSWORD" $JSONFile)
       fi
+      echo "Making ERACLI_PASSWORD_MODIFIED Edits"
       if [ "$ERACLI_PASSWORD_MODIFIED" != "none" ]; then
           tmp_ERACLI_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $ERACLI_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD_MODIFIED" && mv "$tmp_ERACLI_PASSWORD_MODIFIED" $JSONFile)
@@ -1373,48 +1384,59 @@ function upload_citrix_calm_blueprint() {
   # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
 
       # Profile Variables
+      echo "Making DOMAIN Edits"
       if [ "$DOMAIN" != "none" ]; then
           tmp_DOMAIN=$(mktemp)
           # add the new variable to the json file and save it
           $(jq --arg var_name $DOMAIN'(.spec.resources.app_profile_list[0].variable_list[0]).value=$var_name' $JSONFile >"$tmp_DOMAIN" && mv "$tmp_DOMAIN" $JSONFile)
       fi
+      echo "Making AD_IP Edits"
       if [ "$AD_IP" != "none" ]; then
           tmp_AD_IP=$(mktemp)
           $(jq --arg var_name $AD_IP '(.spec.resources.app_profile_list[0].variable_list[1]).value=$var_name' $JSONFile >"$tmp_AD_IP" && mv "$tmp_AD_IP" $JSONFile)
       fi
+      echo "Making PE_IP Edits"
       if [ "$PE_IP" != "none" ]; then
           tmp_PE_IP=$(mktemp)
           $(jq --arg var_name $PE_IP'(.spec.resources.app_profile_list[0].variable_list[2]).value=$var_name' $JSONFile >"$tmp_PE_IP" && mv "$tmp_PE_IP" $JSONFile)
       fi
+      echo "Making DDC_IP Edits"
       if [ "$DDC_IP" != "none" ]; then
           tmp_DDC_IP=$(mktemp)
           $(jq --arg var_name $DDC_IP '(.spec.resources.app_profile_list[0].variable_list[6]).value=$var_name' $JSONFile >"$tmp_DDC_IP" && mv "$tmp_DDC_IP" $JSONFile)
       fi
+      echo "Making CVM_NETWORK Edits"
       if [ "$CVM_NETWORK" != "none" ]; then
           tmp_CVM_NETWORK=$(mktemp)
           $(jq --arg var_name $CVM_NETWORK '(.spec.resources.app_profile_list[0].variable_list[4]).value=$var_name' $JSONFile >"$tmp_CVM_NETWORK" && mv "$tmp_CVM_NETWORK" $JSONFile)
       fi
       # VM Configuration
+      echo "Making SERVER_IMAGE Edits"
       if [ "$SERVER_IMAGE" != "none" ]; then
           tmp_SERVER_IMAGE=$(mktemp)
           $(jq --arg var_name $SERVER_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).name=$var_name' $JSONFile >"$tmp_SERVER_IMAGE" && mv "$tmp_SERVER_IMAGE" $JSONFile)
       fi
+      echo "Making SERVER_IMAGE_UUID Edits"
       if [ "$SERVER_IMAGE_UUID" != "none" ]; then
           tmp_SERVER_IMAGE_UUID=$(mktemp)
           $(jq --arg var_name $SERVER_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_SERVER_IMAGE_UUID" && mv "$tmp_SERVER_IMAGE_UUID" $JSONFile)
       fi
+      echo "Making CITRIX_IMAGE Edits"
       if [ "$CITRIX_IMAGE" != "none" ]; then
           tmp_CITRIX_IMAGE=$(mktemp)
           $(jq --arg var_name $CITRIX_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference).name=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE" && mv "$tmp_CITRIX_IMAGE" $JSONFile)
       fi
+      echo "Making CITRIX_IMAGE_UUID Edits"
       if [ "$CITRIX_IMAGE_UUID" != "none" ]; then
           tmp_CITRIX_IMAGE_UUID=$(mktemp)
           $(jq --arg var_name $CITRIX_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE_UUID" && mv "$tmp_CITRIX_IMAGE_UUID" $JSONFile)
       fi
+      echo "Making NETWORK_NAME Edits"
       if [ "$NETWORK_NAME" != "none" ]; then
           tmp_NETWORK_NAME=$(mktemp)
           $(jq --arg var_name $NETWORK_NAME '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
       fi
+      echo "Making NETWORK_UUID Edits"
       if [ "$NETWORK_UUID" != "none" ]; then
           tmp_NETWORK_UUID=$(mktemp)
           $(jq --arg var_name $NETWORK_UUID '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
@@ -1424,34 +1446,42 @@ function upload_citrix_calm_blueprint() {
       #    $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
       #fi
       # Credentials
+      echo "Making LOCAL_PASSWORD Edits"
       if [ "$LOCAL_PASSWORD" != "none" ]; then
           tmp_LOCAL_PASSWORD=$(mktemp)
           $(jq --arg var_name $LOCAL_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD" && mv "$tmp_LOCAL_PASSWORD" $JSONFile)
       fi
+      echo "Making LOCAL_PASSWORD_MODIFIED Edits"
       if [ "$LOCAL_PASSWORD_MODIFIED" != "none" ]; then
           tmp_LOCAL_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $LOCAL_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD_MODIFIED" && mv "$tmp_LOCAL_PASSWORD_MODIFIED" $JSONFile)
       fi
+      echo "Making DOMAIN_CREDS_PASSWORD Edits"
       if [ "$DOMAIN_CREDS_PASSWORD" != "none" ]; then
           tmp_DOMAIN_CREDS_PASSWORD=$(mktemp)
           $(jq --arg var_name $DOMAIN_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD" && mv "$tmp_DOMAIN_CREDS_PASSWORD" $JSONFile)
       fi
+      echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
       if [ "$DOMAIN_CREDS_PASSWORD_MODIFIED" != "none" ]; then
           tmp_DOMAIN_CREDS_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $DOMAIN_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" && mv "$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" $JSONFile)
       fi
+      echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
       if [ "$PE_CREDS_PASSWORD" != "none" ]; then
           tmp_PE_CREDS_PASSWORD=$(mktemp)
           $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
       fi
+      echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
       if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
           tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
       fi
+      echo "Making SQL_CREDS_PASSWORD Edits"
       if [ "$SQL_CREDS_PASSWORD" != "none" ]; then
           tmp_SQL_CREDS_PASSWORD=$(mktemp)
           $(jq --arg var_name $SQL_CREDS_PASSWORD '(.spec.resources.credential_definition_list[3].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD" && mv "$tmp_SQL_CREDS_PASSWORD" $JSONFile)
       fi
+      echo "Making SQL_CREDS_PASSWORD_MODIFIED Edits"
       if [ "$SQL_CREDS_PASSWORD_MODIFIED" != "none" ]; then
           tmp_SQL_CREDS_PASSWORD_MODIFIED=$(mktemp)
           $(jq --arg var_name $SQL_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[3].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD_MODIFIED" && mv "$tmp_SQL_CREDS_PASSWORD_MODIFIED" $JSONFile)
