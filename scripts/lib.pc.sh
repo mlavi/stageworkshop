@@ -1250,13 +1250,15 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
   echo "ERA Blueprint UUID = $ERA_BLUEPRINT_UUID"
 
   # GET The Blueprint payload
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://<PC IP>:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Era Server", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Era Server", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
 
   # Launch the BLUEPRINT
 
   echo "Launching the Era Server Application"
 
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://<PC_IP>:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}/launch"
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}/launch"
+
+  echo "Finished Launching the Era Server Application"
 
 }
 
@@ -1505,13 +1507,15 @@ function upload_citrix_calm_blueprint() {
   echo "Citrix Blueprint UUID = $CITRIX_BLUEPRINT_UUID"
 
   # GET The Blueprint payload
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://<PC IP>:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Citrix Infra", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Citrix Infra", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
 
   # Launch the BLUEPRINT
 
   echo "Launching the Era Server Application"
 
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://<PC_IP>:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}/launch"
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}/launch"
+
+  echo "Finished Launching the Era Server Application"
 
 }
 
