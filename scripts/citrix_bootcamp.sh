@@ -70,7 +70,6 @@ case ${1} in
     export OBJECTS_NW_END="${IPV4_PREFIX}.21"
 
     export QCOW2_IMAGES=(\
-      ERA-Server-build-1.2.0.1.qcow2 \
       Windows2016.qcow2 \
       CentOS7.qcow2 \
       Win10v1903.qcow2 \
