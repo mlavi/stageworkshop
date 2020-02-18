@@ -1293,6 +1293,9 @@ function upload_citrix_calm_blueprint() {
 
   JSONFile="set_blueprint_credentials_file.json"
 
+  # Remove Staatus
+  echo "Removing Status"
+  $(jq -c 'del(.status)' $JSONFile)
   # Credentials
   echo "Making LOCAL_PASSWORD Edits"
   if [ "$LOCAL_PASSWORD" != "none" ]; then
@@ -1371,7 +1374,7 @@ function upload_era_calm_blueprint() {
   local ERAADMIN_PASSWORD_MODIFIED="true"
   local PE_CREDS_PASSWORD="${PE_PASSWORD}"
   local PE_CREDS_PASSWORD_MODIFIED="true"
-  local ERACLI_PASSWORD=`cat /home/nutanix/stageworkshop/scripts/calm_rsa_key.env`
+  local ERACLI_PASSWORD=$(awk '{printf "%s\\n", $0}' /home/nutanix/stageworkshop/scripts/calm_rsa_key.env)
   local ERACLI_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
@@ -1570,6 +1573,9 @@ function upload_era_calm_blueprint() {
 
   JSONFile="set_blueprint_credentials_file.json"
 
+  # Remove Staatus
+  echo "Removing Status"
+  $(jq -c 'del(.status)' $JSONFile)
   # Credentials
   echo "Making ERAADMIN_PASSWORD Edits"
   if [ "$ERAADMIN_PASSWORD" != "none" ]; then
@@ -1631,7 +1637,7 @@ function upload_CICDInfra_calm_blueprint() {
   local PE_IP=${PE_HOST}
   local NETWORK_NAME=${NW1_NAME}
   local VLAN_NAME=${NW1_VLAN}
-  local CENTOS_PASSWORD=`cat /home/nutanix/stageworkshop/scripts/calm_rsa_key.env`
+  local CENTOS_PASSWORD=$(awk '{printf "%s\\n", $0}' /home/nutanix/stageworkshop/scripts/calm_rsa_key.env)
   local CENTOS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local NETWORK_UUID
@@ -1792,6 +1798,9 @@ function upload_CICDInfra_calm_blueprint() {
 
   JSONFile="set_blueprint_credentials_file.json"
 
+  # Remove Staatus
+  echo "Removing Status"
+  $(jq -c 'del(.status)' $JSONFile)
   # Credentials
   echo "Making $CENTOS_PASSWORD Edits"
   if [ "$CENTOS_PASSWORD" != "none" ]; then
