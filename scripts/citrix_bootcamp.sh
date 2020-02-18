@@ -123,10 +123,10 @@ case ${1} in
     && pc_smtp
 
     ssp_auth \
+    && images \
     && calm_enable \
     && lcm \
     && pc_project \
-    && images \
     && flow_enable \
     && pc_cluster_img_import \
     && upload_citrix_calm_blueprint \
