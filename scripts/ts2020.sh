@@ -123,6 +123,7 @@ case ${1} in
       Nutanix-VirtIO-1.1.5.iso \
       FrameCCA-2.1.6.iso \
       FrameGuestAgentInstaller_1.0.2.2_7930.iso \
+      VeeamBRv10.iso \
     )
 
 

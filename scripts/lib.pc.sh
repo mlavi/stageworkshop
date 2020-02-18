@@ -1055,7 +1055,7 @@ function upload_citrix_calm_blueprint() {
   local SERVER_IMAGE_UUID
   local CITRIX_IMAGE="Citrix_Virtual_Apps_and_Desktops_7_1912.iso"
   local CITRIX_IMAGE_UUID
-  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+  local CURL_HTTP_OPTS=" --max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure "
 
   mkdir $DIRECTORY
 
@@ -1376,7 +1376,7 @@ function upload_era_calm_blueprint() {
   local DOWNLOAD_BLUEPRINTS
   local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
   local ERA_IMAGE_UUID
-  local CURL_HTTP_OPTS="--max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure"
+  local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
 
   mkdir $DIRECTORY
 
@@ -1637,7 +1637,7 @@ function upload_CICDInfra_calm_blueprint() {
   local NETWORK_UUID
   local SERVER_IMAGE="CentOS7.qcow2"
   local SERVER_IMAGE_UUID
-  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+  local CURL_HTTP_OPTS=" --max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure "
 
   mkdir $DIRECTORY
 
