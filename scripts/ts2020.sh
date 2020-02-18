@@ -101,7 +101,7 @@ case ${1} in
       Windows2016.qcow2 \
       CentOS7.qcow2 \
       Win10v1903.qcow2 \
-      ToolsVM.qcow2 \
+      WinToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
       move-3.4.1.qcow2 \
       MSSQL-2016-VM.qcow2 \
