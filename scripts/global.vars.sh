@@ -58,7 +58,7 @@ QCOW2_IMAGES=(\
    Windows2016.qcow2 \
    Windows2012R2.qcow2 \
    Windows10-1709.qcow2 \
-   ToolsVM.qcow2 \
+   WinToolsVM.qcow2 \
    Linux_ToolsVM.qcow2 \
    ERA-Server-build-1.1.1.3.qcow2 \
    MSSQL-2016-VM.qcow2 \
