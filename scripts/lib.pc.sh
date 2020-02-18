@@ -1024,256 +1024,6 @@ EOF
 }
 
 ###############################################################################################################################################################################
-# Routine to upload Era Calm Blueprint and set variables
-###############################################################################################################################################################################
-
-function upload_era_calm_blueprint() {
-  local DIRECTORY="/home/nutanix/era"
-  local BLUEPRINT=${ERA_Blueprint}
-  local CALM_PROJECT="BootcampInfra"
-  local ERA_IP=${ERA_HOST}
-  local PE_IP=${PE_HOST}
-  local CLSTR_NAME="none"
-  local CTR_UUID=${_storage_default_uuid}
-  local CTR_NAME=${STORAGE_DEFAULT}
-  local NETWORK_NAME=${NW1_NAME}
-  local VLAN_NAME=${NW1_VLAN}
-  local ERAADMIN_PASSWORD="nutanix/4u"
-  local ERAADMIN_PASSWORD_MODIFIED="true"
-  local PE_CREDS_PASSWORD="${PE_PASSWORD}"
-  local PE_CREDS_PASSWORD_MODIFIED="true"
-  local ERACLI_PASSWORD="-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEAii7qFDhVadLx5lULAG/ooCUTA/ATSmXbArs+GdHxbUWd/bNG
-ZCXnaQ2L1mSVVGDxfTbSaTJ3En3tVlMtD2RjZPdhqWESCaoj2kXLYSiNDS9qz3SK
-6h822je/f9O9CzCTrw2XGhnDVwmNraUvO5wmQObCDthTXc72PcBOd6oa4ENsnuY9
-HtiETg29TZXgCYPFXipLBHSZYkBmGgccAeY9dq5ywiywBJLuoSovXkkRJk3cd7Gy
-hCRIwYzqfdgSmiAMYgJLrz/UuLxatPqXts2D8v1xqR9EPNZNzgd4QHK4of1lqsNR
-uz2SxkwqLcXSw0mGcAL8mIwVpzhPzwmENC5OrwIBJQKCAQB++q2WCkCmbtByyrAp
-6ktiukjTL6MGGGhjX/PgYA5IvINX1SvtU0NZnb7FAntiSz7GFrODQyFPQ0jL3bq0
-MrwzRDA6x+cPzMb/7RvBEIGdadfFjbAVaMqfAsul5SpBokKFLxU6lDb2CMdhS67c
-1K2Hv0qKLpHL0vAdEZQ2nFAMWETvVMzl0o1dQmyGzA0GTY8VYdCRsUbwNgvFMvBj
-8T/svzjpASDifa7IXlGaLrXfCH584zt7y+qjJ05O1G0NFslQ9n2wi7F93N8rHxgl
-JDE4OhfyaDyLL1UdBlBpjYPSUbX7D5NExLggWEVFEwx4JRaK6+aDdFDKbSBIidHf
-h45NAoGBANjANRKLBtcxmW4foK5ILTuFkOaowqj+2AIgT1ezCVpErHDFg0bkuvDk
-QVdsAJRX5//luSO30dI0OWWGjgmIUXD7iej0sjAPJjRAv8ai+MYyaLfkdqv1Oj5c
-oDC3KjmSdXTuWSYNvarsW+Uf2v7zlZlWesTnpV6gkZH3tX86iuiZAoGBAKM0mKX0
-EjFkJH65Ym7gIED2CUyuFqq4WsCUD2RakpYZyIBKZGr8MRni3I4z6Hqm+rxVW6Dj
-uFGQe5GhgPvO23UG1Y6nm0VkYgZq81TraZc/oMzignSC95w7OsLaLn6qp32Fje1M
-Ez2Yn0T3dDcu1twY8OoDuvWx5LFMJ3NoRJaHAoGBAJ4rZP+xj17DVElxBo0EPK7k
-7TKygDYhwDjnJSRSN0HfFg0agmQqXucjGuzEbyAkeN1Um9vLU+xrTHqEyIN/Jqxk
-hztKxzfTtBhK7M84p7M5iq+0jfMau8ykdOVHZAB/odHeXLrnbrr/gVQsAKw1NdDC
-kPCNXP/c9JrzB+c4juEVAoGBAJGPxmp/vTL4c5OebIxnCAKWP6VBUnyWliFhdYME
-rECvNkjoZ2ZWjKhijVw8Il+OAjlFNgwJXzP9Z0qJIAMuHa2QeUfhmFKlo4ku9LOF
-2rdUbNJpKD5m+IRsLX1az4W6zLwPVRHp56WjzFJEfGiRjzMBfOxkMSBSjbLjDm3Z
-iUf7AoGBALjvtjapDwlEa5/CFvzOVGFq4L/OJTBEBGx/SA4HUc3TFTtlY2hvTDPZ
-dQr/JBzLBUjCOBVuUuH3uW7hGhW+DnlzrfbfJATaRR8Ht6VU651T+Gbrr8EqNpCP
-gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
------END RSA PRIVATE KEY-----"
-  local ERACLI_PASSWORD_MODIFIED="true"
-  local DOWNLOAD_BLUEPRINTS
-  local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
-  local ERA_IMAGE_UUID
-  local CURL_HTTP_OPTS="--max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure"
-
-  mkdir $DIRECTORY
-
-  #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
-  ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-
-  echo "ERA Image UUID = $ERA_IMAGE_UUID"
-
-  NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-
-  echo "NETWORK UUID = $NETWORK_UUID"
-
-  # download the blueprint
-  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
-  log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
-
-  # ensure the directory that contains the blueprints to be imported is not empty
-  if [[ $(ls -l "$DIRECTORY"/*.json) == *"No such file or directory"* ]]; then
-      echo "There are no .json files found in the directory provided."
-      exit 0
-  fi
-
-  if [ $CALM_PROJECT != 'none' ]; then
-
-      # curl command needed:
-      # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
-
-      # make API call and store project_uuid
-      project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
-
-      echo "Projet UUID = $project_uuid"
-
-      if [ -z "$project_uuid" ]; then
-          # project wasn't found
-          # exit at this point as we don't want to assume all blueprints should then hit the 'default' project
-          echo "Project $CALM_PROJECT was not found. Please check the name and retry."
-          exit 0
-      else
-          echo "Project $CALM_PROJECT exists..."
-      fi
-  fi
-
-  # update the user with script progress...
-
-  echo "Starting blueprint updates and then Uploading to Calm..."
-
-  # read the entire JSON file from the directory
-  JSONFile="${DIRECTORY}/${BLUEPRINT}"
-
-  echo "Currently updating blueprint $JSONFile..."
-
-  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
-  echo "ERA_IP=${ERA_IP}"
-  echo "PE_IP=${PE_IP}"
-  echo "ERA_IMAGE=${ERA_IMAGE}"
-  echo "ERA_IMAGE_UUID=${ERA_IMAGE_UUID}"
-  echo "NETWORK_UUID=${NETWORK_UUID}"
-
-  # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
-  tmp=$(mktemp)
-
-  # ADD PROJECT , we need to add it into the JSON data
-  if [ $CALM_PROJECT != 'none' ]; then
-      # add the new atributes to the JSON and overwrite the old JSON file with the new one
-      $(jq --arg proj $CALM_PROJECT --arg proj_uuid $project_uuid '.metadata+={"project_reference":{"kind":$proj,"uuid":$proj_uuid}}' $JSONFile >"$tmp" && mv "$tmp" $JSONFile)
-  fi
-
-  # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-
-      # Profile Variables
-      echo "Making ERA_IP Edits"
-      if [ "$ERA_IP" != "none" ]; then
-          tmp_ERA_IP=$(mktemp)
-          # add the new variable to the json file and save it
-          $(jq --arg var_name $ERA_IP '(.spec.resources.app_profile_list[0].variable_list[0]).value=$var_name' $JSONFile >"$tmp_ERA_IP" && mv "$tmp_ERA_IP" $JSONFile)
-      fi
-      # VM Configuration
-      echo "Making ERA_IMAGE Edits"
-      if [ "$ERA_IMAGE" != "none" ]; then
-          tmp_ERA_IMAGE=$(mktemp)
-          $(jq --arg var_name $ERA_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).name=$var_name' $JSONFile >"$tmp_ERA_IMAGE" && mv "$tmp_ERA_IMAGE" $JSONFile)
-      fi
-      echo "Making ERA_IP_UUID Edits"
-      if [ "$ERA_IMAGE_UUID" != "none" ]; then
-          tmp_ERA_IMAGE_UUID=$(mktemp)
-          $(jq --arg var_name $ERA_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_ERA_IMAGE_UUID" && mv "$tmp_ERA_IMAGE_UUID" $JSONFile)
-      fi
-      echo "Making NETWORK_NAME Edits"
-      if [ "$NETWORK_NAME" != "none" ]; then
-          tmp_NETWORK_NAME=$(mktemp)
-          $(jq --arg var_name $NETWORK_NAME '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
-      fi
-      echo "Making NETWORK_UUID Edits"
-      if [ "$NETWORK_UUID" != "none" ]; then
-          tmp_NETWORK_UUID=$(mktemp)
-          $(jq --arg var_name $NETWORK_UUID '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
-      fi
-      #if [ "$NETWORK_NAME" != "none" ]; then
-      #    tmp_NETWORK_NAME=$(mktemp)
-      #    $(jq --arg var_name $NETWORK_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_NAME")).value=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
-      #fi
-      #if [ "$VLAN_NAME" != "none" ]; then
-      #    tmp_VLAN_NAME=$(mktemp)
-      #    $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
-      #fi
-      # Credentials
-      echo "Making ERAADMIN_PASSWORD Edits"
-      if [ "$ERAADMIN_PASSWORD" != "none" ]; then
-          tmp_ERAADMIN_PASSWORD=$(mktemp)
-          $(jq --arg var_name $ERAADMIN_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD" && mv "$tmp_ERAADMIN_PASSWORD" $JSONFile)
-      fi
-      echo "Making ERAADMIN_PASSWORD_MODIFIED Edits"
-      if [ "$ERAADMIN_PASSWORD_MODIFIED" != "none" ]; then
-          tmp_ERAADMIN_PASSWORD_MODIFIED=$(mktemp)
-          $(jq --arg var_name $ERAADMIN_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD_MODIFIED" && mv "$tmp_ERAADMIN_PASSWORD_MODIFIED" $JSONFile)
-      fi
-      echo "Making PE_CREDS_PASSWORD Edits"
-      if [ "$PE_CREDS_PASSWORD" != "none" ]; then
-          tmp_PE_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
-      fi
-      echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
-      if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
-          tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
-          $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
-      fi
-      echo "Making ERACLI_PASSWORD Edits"
-      if [ "$ERACLI_PASSWORD" != "none" ]; then
-          tmp_ERACLI_PASSWORD=$(mktemp)
-          $(jq --arg var_name $ERACLI_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD" && mv "$tmp_ERACLI_PASSWORD" $JSONFile)
-      fi
-      echo "Making ERACLI_PASSWORD_MODIFIED Edits"
-      if [ "$ERACLI_PASSWORD_MODIFIED" != "none" ]; then
-          tmp_ERACLI_PASSWORD_MODIFIED=$(mktemp)
-          $(jq --arg var_name $ERACLI_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD_MODIFIED" && mv "$tmp_ERACLI_PASSWORD_MODIFIED" $JSONFile)
-      fi
-
-
-  # REMOVE the "status" and "product_version" keys (if they exist) from the JSON data this is included on export but is invalid on import. (affects all BPs being imported)
-  tmp_removal=$(mktemp)
-  $(jq 'del(.status) | del(.product_version)' $JSONFile >"$tmp_removal" && mv "$tmp_removal" $JSONFile)
-
-  # GET BP NAME (affects all BPs being imported)
-  # if this fails, it's either a corrupt/damaged/edited blueprint JSON file or not a blueprint file at all
-  blueprint_name_quotes=$(jq '(.spec.name)' $JSONFile)
-  blueprint_name="${blueprint_name_quotes%\"}" # remove the suffix "
-  blueprint_name="${blueprint_name#\"}" # will remove the prefix "
-
-  if [ $blueprint_name == 'null' ]; then
-      echo "Unprocessable JSON file found. Is this definitely a Nutanix Calm blueprint file?"
-      exit 0
-  else
-      # got the blueprint name means it is probably a valid blueprint file, we can now continue the upload
-      echo "Uploading the updated blueprint: $blueprint_name..."
-
-      # Example curl call from the console:
-      # url="https://10.42.7.39:9440/api/nutanix/v3/blueprints/import_file"
-      # path_to_file="/Users/sharon.santana/Desktop/saved_blueprints/EraServerDeployment.json"
-      # bp_name="EraServerDeployment"
-      # project_uuid="a944258a-fd8a-4d02-8646-72c311e03747"
-      # password='techX2019!'
-      # curl -s -k -X POST $url -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid --user admin:"$password"
-
-      path_to_file=$JSONFile
-      bp_name=$blueprint_name
-      project_uuid=$project_uuid
-
-      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
-
-      #if the upload_result var is not empty then let's say it was succcessful
-      if [ -z "$upload_result" ]; then
-          echo "Upload for $bp_name did not finish."
-      else
-          echo "Upload for $bp_name finished."
-          echo "-----------------------------------------"
-          # echo "Result: $upload_result"
-      fi
-  fi
-
-  echo "Finished uploading ${BLUEPRINT} and setting Variables!"
-
-  #Getting the Blueprint UUID
-  ERA_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==EraServerDeployment"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-
-  echo "ERA Blueprint UUID = $ERA_BLUEPRINT_UUID"
-
-  # GET The Blueprint payload
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Era Server", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
-
-  # Launch the BLUEPRINT
-
-  echo "Launching the Era Server Application"
-
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}/launch"
-
-  echo "Finished Launching the Era Server Application"
-
-}
-
-###############################################################################################################################################################################
 # Routine to upload Citrix Calm Blueprint and set variables
 ###############################################################################################################################################################################
 
@@ -1536,6 +1286,59 @@ function upload_citrix_calm_blueprint() {
 
   echo "Citrix Blueprint UUID = $CITRIX_BLUEPRINT_UUID"
 
+  echo "Set Credentials"
+
+  # GET The Blueprint so it can be updated
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}" > set_blueprint_credentials_file.json
+
+  JSONFile="set_blueprint_credentials_file.json"
+
+  # Credentials
+  echo "Making LOCAL_PASSWORD Edits"
+  if [ "$LOCAL_PASSWORD" != "none" ]; then
+      tmp_LOCAL_PASSWORD=$(mktemp)
+      $(jq --arg var_name $LOCAL_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD" && mv "$tmp_LOCAL_PASSWORD" $JSONFile)
+  fi
+  echo "Making LOCAL_PASSWORD_MODIFIED Edits"
+  if [ "$LOCAL_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_LOCAL_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $LOCAL_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD_MODIFIED" && mv "$tmp_LOCAL_PASSWORD_MODIFIED" $JSONFile)
+  fi
+  echo "Making DOMAIN_CREDS_PASSWORD Edits"
+  if [ "$DOMAIN_CREDS_PASSWORD" != "none" ]; then
+      tmp_DOMAIN_CREDS_PASSWORD=$(mktemp)
+      $(jq --arg var_name $DOMAIN_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD" && mv "$tmp_DOMAIN_CREDS_PASSWORD" $JSONFile)
+  fi
+  echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
+  if [ "$DOMAIN_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_DOMAIN_CREDS_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $DOMAIN_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" && mv "$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" $JSONFile)
+  fi
+  echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
+  if [ "$PE_CREDS_PASSWORD" != "none" ]; then
+      tmp_PE_CREDS_PASSWORD=$(mktemp)
+      $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
+  fi
+  echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
+  if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
+  fi
+  echo "Making SQL_CREDS_PASSWORD Edits"
+  if [ "$SQL_CREDS_PASSWORD" != "none" ]; then
+      tmp_SQL_CREDS_PASSWORD=$(mktemp)
+      $(jq --arg var_name $SQL_CREDS_PASSWORD '(.spec.resources.credential_definition_list[3].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD" && mv "$tmp_SQL_CREDS_PASSWORD" $JSONFile)
+  fi
+  echo "Making SQL_CREDS_PASSWORD_MODIFIED Edits"
+  if [ "$SQL_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_SQL_CREDS_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $SQL_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[3].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD_MODIFIED" && mv "$tmp_SQL_CREDS_PASSWORD_MODIFIED" $JSONFile)
+  fi
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @set_blueprint_credentials_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}"
+
+  echo "Finished Updating Credentials"
+
   # GET The Blueprint payload
   curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Citrix Infra", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
 
@@ -1544,6 +1347,273 @@ function upload_citrix_calm_blueprint() {
   echo "Launching the Era Server Application"
 
   curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}/launch"
+
+  echo "Finished Launching the Era Server Application"
+
+}
+
+###############################################################################################################################################################################
+# Routine to upload Era Calm Blueprint and set variables
+###############################################################################################################################################################################
+
+function upload_era_calm_blueprint() {
+  local DIRECTORY="/home/nutanix/era"
+  local BLUEPRINT=${ERA_Blueprint}
+  local CALM_PROJECT="BootcampInfra"
+  local ERA_IP=${ERA_HOST}
+  local PE_IP=${PE_HOST}
+  local CLSTR_NAME="none"
+  local CTR_UUID=${_storage_default_uuid}
+  local CTR_NAME=${STORAGE_DEFAULT}
+  local NETWORK_NAME=${NW1_NAME}
+  local VLAN_NAME=${NW1_VLAN}
+  local ERAADMIN_PASSWORD="nutanix/4u"
+  local ERAADMIN_PASSWORD_MODIFIED="true"
+  local PE_CREDS_PASSWORD="${PE_PASSWORD}"
+  local PE_CREDS_PASSWORD_MODIFIED="true"
+  local ERACLI_PASSWORD=`cat /home/nutanix/stageworkshop/scripts/calm_rsa_key.env`
+  local ERACLI_PASSWORD_MODIFIED="true"
+  local DOWNLOAD_BLUEPRINTS
+  local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
+  local ERA_IMAGE_UUID
+  local CURL_HTTP_OPTS="--max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure"
+
+  mkdir $DIRECTORY
+
+  #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
+  ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "ERA Image UUID = $ERA_IMAGE_UUID"
+
+  NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "NETWORK UUID = $NETWORK_UUID"
+
+  # download the blueprint
+  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
+  log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
+
+  # ensure the directory that contains the blueprints to be imported is not empty
+  if [[ $(ls -l "$DIRECTORY"/*.json) == *"No such file or directory"* ]]; then
+      echo "There are no .json files found in the directory provided."
+      exit 0
+  fi
+
+  if [ $CALM_PROJECT != 'none' ]; then
+
+      # curl command needed:
+      # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
+
+      # make API call and store project_uuid
+      project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
+
+      echo "Projet UUID = $project_uuid"
+
+      if [ -z "$project_uuid" ]; then
+          # project wasn't found
+          # exit at this point as we don't want to assume all blueprints should then hit the 'default' project
+          echo "Project $CALM_PROJECT was not found. Please check the name and retry."
+          exit 0
+      else
+          echo "Project $CALM_PROJECT exists..."
+      fi
+  fi
+
+  # update the user with script progress...
+
+  echo "Starting blueprint updates and then Uploading to Calm..."
+
+  # read the entire JSON file from the directory
+  JSONFile="${DIRECTORY}/${BLUEPRINT}"
+
+  echo "Currently updating blueprint $JSONFile..."
+
+  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
+  echo "ERA_IP=${ERA_IP}"
+  echo "PE_IP=${PE_IP}"
+  echo "ERA_IMAGE=${ERA_IMAGE}"
+  echo "ERA_IMAGE_UUID=${ERA_IMAGE_UUID}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
+
+  # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
+  tmp=$(mktemp)
+
+  # ADD PROJECT , we need to add it into the JSON data
+  if [ $CALM_PROJECT != 'none' ]; then
+      # add the new atributes to the JSON and overwrite the old JSON file with the new one
+      $(jq --arg proj $CALM_PROJECT --arg proj_uuid $project_uuid '.metadata+={"project_reference":{"kind":$proj,"uuid":$proj_uuid}}' $JSONFile >"$tmp" && mv "$tmp" $JSONFile)
+  fi
+
+  # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
+
+      # Profile Variables
+      echo "Making ERA_IP Edits"
+      if [ "$ERA_IP" != "none" ]; then
+          tmp_ERA_IP=$(mktemp)
+          # add the new variable to the json file and save it
+          $(jq --arg var_name $ERA_IP '(.spec.resources.app_profile_list[0].variable_list[0]).value=$var_name' $JSONFile >"$tmp_ERA_IP" && mv "$tmp_ERA_IP" $JSONFile)
+      fi
+      # VM Configuration
+      echo "Making ERA_IMAGE Edits"
+      if [ "$ERA_IMAGE" != "none" ]; then
+          tmp_ERA_IMAGE=$(mktemp)
+          $(jq --arg var_name $ERA_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).name=$var_name' $JSONFile >"$tmp_ERA_IMAGE" && mv "$tmp_ERA_IMAGE" $JSONFile)
+      fi
+      echo "Making ERA_IP_UUID Edits"
+      if [ "$ERA_IMAGE_UUID" != "none" ]; then
+          tmp_ERA_IMAGE_UUID=$(mktemp)
+          $(jq --arg var_name $ERA_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_ERA_IMAGE_UUID" && mv "$tmp_ERA_IMAGE_UUID" $JSONFile)
+      fi
+      echo "Making NETWORK_NAME Edits"
+      if [ "$NETWORK_NAME" != "none" ]; then
+          tmp_NETWORK_NAME=$(mktemp)
+          $(jq --arg var_name $NETWORK_NAME '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
+      fi
+      echo "Making NETWORK_UUID Edits"
+      if [ "$NETWORK_UUID" != "none" ]; then
+          tmp_NETWORK_UUID=$(mktemp)
+          $(jq --arg var_name $NETWORK_UUID '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
+      fi
+      #if [ "$NETWORK_NAME" != "none" ]; then
+      #    tmp_NETWORK_NAME=$(mktemp)
+      #    $(jq --arg var_name $NETWORK_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_NAME")).value=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
+      #fi
+      #if [ "$VLAN_NAME" != "none" ]; then
+      #    tmp_VLAN_NAME=$(mktemp)
+      #    $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
+      #fi
+      # Credentials
+      echo "Making ERAADMIN_PASSWORD Edits"
+      if [ "$ERAADMIN_PASSWORD" != "none" ]; then
+          tmp_ERAADMIN_PASSWORD=$(mktemp)
+          $(jq --arg var_name $ERAADMIN_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD" && mv "$tmp_ERAADMIN_PASSWORD" $JSONFile)
+      fi
+      echo "Making ERAADMIN_PASSWORD_MODIFIED Edits"
+      if [ "$ERAADMIN_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_ERAADMIN_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $ERAADMIN_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD_MODIFIED" && mv "$tmp_ERAADMIN_PASSWORD_MODIFIED" $JSONFile)
+      fi
+      echo "Making PE_CREDS_PASSWORD Edits"
+      if [ "$PE_CREDS_PASSWORD" != "none" ]; then
+          tmp_PE_CREDS_PASSWORD=$(mktemp)
+          $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
+      fi
+      echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
+      if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
+      fi
+      echo "Making ERACLI_PASSWORD Edits"
+      if [ "$ERACLI_PASSWORD" != "none" ]; then
+          tmp_ERACLI_PASSWORD=$(mktemp)
+          $(jq --arg var_name $ERACLI_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD" && mv "$tmp_ERACLI_PASSWORD" $JSONFile)
+      fi
+      echo "Making ERACLI_PASSWORD_MODIFIED Edits"
+      if [ "$ERACLI_PASSWORD_MODIFIED" != "none" ]; then
+          tmp_ERACLI_PASSWORD_MODIFIED=$(mktemp)
+          $(jq --arg var_name $ERACLI_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD_MODIFIED" && mv "$tmp_ERACLI_PASSWORD_MODIFIED" $JSONFile)
+      fi
+
+
+  # REMOVE the "status" and "product_version" keys (if they exist) from the JSON data this is included on export but is invalid on import. (affects all BPs being imported)
+  tmp_removal=$(mktemp)
+  $(jq 'del(.status) | del(.product_version)' $JSONFile >"$tmp_removal" && mv "$tmp_removal" $JSONFile)
+
+  # GET BP NAME (affects all BPs being imported)
+  # if this fails, it's either a corrupt/damaged/edited blueprint JSON file or not a blueprint file at all
+  blueprint_name_quotes=$(jq '(.spec.name)' $JSONFile)
+  blueprint_name="${blueprint_name_quotes%\"}" # remove the suffix "
+  blueprint_name="${blueprint_name#\"}" # will remove the prefix "
+
+  if [ $blueprint_name == 'null' ]; then
+      echo "Unprocessable JSON file found. Is this definitely a Nutanix Calm blueprint file?"
+      exit 0
+  else
+      # got the blueprint name means it is probably a valid blueprint file, we can now continue the upload
+      echo "Uploading the updated blueprint: $blueprint_name..."
+
+      # Example curl call from the console:
+      # url="https://10.42.7.39:9440/api/nutanix/v3/blueprints/import_file"
+      # path_to_file="/Users/sharon.santana/Desktop/saved_blueprints/EraServerDeployment.json"
+      # bp_name="EraServerDeployment"
+      # project_uuid="a944258a-fd8a-4d02-8646-72c311e03747"
+      # password='techX2019!'
+      # curl -s -k -X POST $url -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid --user admin:"$password"
+
+      path_to_file=$JSONFile
+      bp_name=$blueprint_name
+      project_uuid=$project_uuid
+
+      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
+
+      #if the upload_result var is not empty then let's say it was succcessful
+      if [ -z "$upload_result" ]; then
+          echo "Upload for $bp_name did not finish."
+      else
+          echo "Upload for $bp_name finished."
+          echo "-----------------------------------------"
+          # echo "Result: $upload_result"
+      fi
+  fi
+
+  echo "Finished uploading ${BLUEPRINT} and setting Variables!"
+
+  #Getting the Blueprint UUID
+  ERA_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==EraServerDeployment"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "ERA Blueprint UUID = $ERA_BLUEPRINT_UUID"
+
+  echo "Set Credentials"
+
+  # GET The Blueprint so it can be updated
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}" > set_blueprint_credentials_file.json
+
+  JSONFile="set_blueprint_credentials_file.json"
+
+  # Credentials
+  echo "Making ERAADMIN_PASSWORD Edits"
+  if [ "$ERAADMIN_PASSWORD" != "none" ]; then
+      tmp_ERAADMIN_PASSWORD=$(mktemp)
+      $(jq --arg var_name $ERAADMIN_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD" && mv "$tmp_ERAADMIN_PASSWORD" $JSONFile)
+  fi
+  echo "Making ERAADMIN_PASSWORD_MODIFIED Edits"
+  if [ "$ERAADMIN_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_ERAADMIN_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $ERAADMIN_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERAADMIN_PASSWORD_MODIFIED" && mv "$tmp_ERAADMIN_PASSWORD_MODIFIED" $JSONFile)
+  fi
+  echo "Making PE_CREDS_PASSWORD Edits"
+  if [ "$PE_CREDS_PASSWORD" != "none" ]; then
+      tmp_PE_CREDS_PASSWORD=$(mktemp)
+      $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
+  fi
+  echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
+  if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
+  fi
+  echo "Making ERACLI_PASSWORD Edits"
+  if [ "$ERACLI_PASSWORD" != "none" ]; then
+      tmp_ERACLI_PASSWORD=$(mktemp)
+      $(jq --arg var_name $ERACLI_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD" && mv "$tmp_ERACLI_PASSWORD" $JSONFile)
+  fi
+  echo "Making ERACLI_PASSWORD_MODIFIED Edits"
+  if [ "$ERACLI_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_ERACLI_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $ERACLI_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD_MODIFIED" && mv "$tmp_ERACLI_PASSWORD_MODIFIED" $JSONFile)
+  fi
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @set_blueprint_credentials_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}"
+
+  echo "Finished Updating Credentials"
+
+  # GET The Blueprint payload
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Era Server", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
+
+  # Launch the BLUEPRINT
+
+  echo "Launching the Era Server Application"
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}/launch"
 
   echo "Finished Launching the Era Server Application"
 
@@ -1561,33 +1631,7 @@ function upload_CICDInfra_calm_blueprint() {
   local PE_IP=${PE_HOST}
   local NETWORK_NAME=${NW1_NAME}
   local VLAN_NAME=${NW1_VLAN}
-  local CENTOS_PASSWORD="-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEAii7qFDhVadLx5lULAG/ooCUTA/ATSmXbArs+GdHxbUWd/bNG
-ZCXnaQ2L1mSVVGDxfTbSaTJ3En3tVlMtD2RjZPdhqWESCaoj2kXLYSiNDS9qz3SK
-6h822je/f9O9CzCTrw2XGhnDVwmNraUvO5wmQObCDthTXc72PcBOd6oa4ENsnuY9
-HtiETg29TZXgCYPFXipLBHSZYkBmGgccAeY9dq5ywiywBJLuoSovXkkRJk3cd7Gy
-hCRIwYzqfdgSmiAMYgJLrz/UuLxatPqXts2D8v1xqR9EPNZNzgd4QHK4of1lqsNR
-uz2SxkwqLcXSw0mGcAL8mIwVpzhPzwmENC5OrwIBJQKCAQB++q2WCkCmbtByyrAp
-6ktiukjTL6MGGGhjX/PgYA5IvINX1SvtU0NZnb7FAntiSz7GFrODQyFPQ0jL3bq0
-MrwzRDA6x+cPzMb/7RvBEIGdadfFjbAVaMqfAsul5SpBokKFLxU6lDb2CMdhS67c
-1K2Hv0qKLpHL0vAdEZQ2nFAMWETvVMzl0o1dQmyGzA0GTY8VYdCRsUbwNgvFMvBj
-8T/svzjpASDifa7IXlGaLrXfCH584zt7y+qjJ05O1G0NFslQ9n2wi7F93N8rHxgl
-JDE4OhfyaDyLL1UdBlBpjYPSUbX7D5NExLggWEVFEwx4JRaK6+aDdFDKbSBIidHf
-h45NAoGBANjANRKLBtcxmW4foK5ILTuFkOaowqj+2AIgT1ezCVpErHDFg0bkuvDk
-QVdsAJRX5//luSO30dI0OWWGjgmIUXD7iej0sjAPJjRAv8ai+MYyaLfkdqv1Oj5c
-oDC3KjmSdXTuWSYNvarsW+Uf2v7zlZlWesTnpV6gkZH3tX86iuiZAoGBAKM0mKX0
-EjFkJH65Ym7gIED2CUyuFqq4WsCUD2RakpYZyIBKZGr8MRni3I4z6Hqm+rxVW6Dj
-uFGQe5GhgPvO23UG1Y6nm0VkYgZq81TraZc/oMzignSC95w7OsLaLn6qp32Fje1M
-Ez2Yn0T3dDcu1twY8OoDuvWx5LFMJ3NoRJaHAoGBAJ4rZP+xj17DVElxBo0EPK7k
-7TKygDYhwDjnJSRSN0HfFg0agmQqXucjGuzEbyAkeN1Um9vLU+xrTHqEyIN/Jqxk
-hztKxzfTtBhK7M84p7M5iq+0jfMau8ykdOVHZAB/odHeXLrnbrr/gVQsAKw1NdDC
-kPCNXP/c9JrzB+c4juEVAoGBAJGPxmp/vTL4c5OebIxnCAKWP6VBUnyWliFhdYME
-rECvNkjoZ2ZWjKhijVw8Il+OAjlFNgwJXzP9Z0qJIAMuHa2QeUfhmFKlo4ku9LOF
-2rdUbNJpKD5m+IRsLX1az4W6zLwPVRHp56WjzFJEfGiRjzMBfOxkMSBSjbLjDm3Z
-iUf7AoGBALjvtjapDwlEa5/CFvzOVGFq4L/OJTBEBGx/SA4HUc3TFTtlY2hvTDPZ
-dQr/JBzLBUjCOBVuUuH3uW7hGhW+DnlzrfbfJATaRR8Ht6VU651T+Gbrr8EqNpCP
-gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
------END RSA PRIVATE KEY-----"
+  local CENTOS_PASSWORD=`cat /home/nutanix/stageworkshop/scripts/calm_rsa_key.env`
   local CENTOS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local NETWORK_UUID
@@ -1734,8 +1778,34 @@ gmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF
       fi
   fi
 
-done
-
   echo "Finished uploading ${BLUEPRINT} and setting Variables!"
+
+  #Getting the Blueprint UUID
+  CICDInfra_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==CICD_Infra.json"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "ERA Blueprint UUID = $CICDInfra_BLUEPRINT_UUID"
+
+  echo "Set Credentials"
+
+  # GET The Blueprint so it can be updated
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${CICDInfra_BLUEPRINT_UUID}" > set_blueprint_credentials_file.json
+
+  JSONFile="set_blueprint_credentials_file.json"
+
+  # Credentials
+  echo "Making $CENTOS_PASSWORD Edits"
+  if [ "$CENTOS_PASSWORD" != "none" ]; then
+      tmp_CENTOS_PASSWORD=$(mktemp)
+      $(jq --arg var_name $CENTOS_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD" && mv "$tmp_CENTOS_PASSWORD" $JSONFile)
+  fi
+  echo "Making $CENTOS_PASSWORD_MODIFIED Edits"
+  if [ "$CENTOS_PASSWORD_MODIFIED" != "none" ]; then
+      tmp_CENTOS_PASSWORD_MODIFIED=$(mktemp)
+      $(jq --arg var_name $CENTOS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD_MODIFIED" && mv "$tmp_CENTOS_PASSWORD_MODIFIED" $JSONFile)
+  fi
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @set_blueprint_credentials_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CICDInfra_BLUEPRINT_UUID}"
+
+  echo "Finished Updating Credentials"
 
 }

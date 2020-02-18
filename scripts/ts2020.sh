@@ -95,7 +95,7 @@ case ${1} in
     export BUCKETS_VIP="${IPV4_PREFIX}.17"
     export OBJECTS_NW_START="${IPV4_PREFIX}.18"
     export OBJECTS_NW_END="${IPV4_PREFIX}.21"
-    
+
     export QCOW2_IMAGES=(\
       ERA-Server-build-1.2.0.1.qcow2 \
       Windows2016.qcow2 \
@@ -178,9 +178,9 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && seedPC \
-    && upload_era_calm_blueprint \
-    && sleep 30 \
     && upload_citrix_calm_blueprint \
+    && sleep 30 \
+    && upload_era_calm_blueprint \
     && sleep 30 \
     && upload_CICDInfra_calm_blueprint \
     && prism_check 'PC'
