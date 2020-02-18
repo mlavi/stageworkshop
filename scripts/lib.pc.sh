@@ -1073,8 +1073,8 @@ function upload_citrix_calm_blueprint() {
   echo "NETWORK UUID = $NETWORK_UUID"
 
   # download the blueprint
-  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${CALM_Blueprint} -o ${DIRECTORY}${CALM_Blueprint})
-  log "Downloading ${CALM_Blueprint} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
+  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}${BLUEPRINT})
+  log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
 
   # ensure the directory that contains the blueprints to be imported is not empty
   if [[ $(ls -l "$DIRECTORY"/*.json) == *"No such file or directory"* ]]; then
