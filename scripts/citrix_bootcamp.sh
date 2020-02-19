@@ -124,7 +124,7 @@ case ${1} in
     && lcm \
     && pc_project \
     && images \
-    && sleep 120 \
+    && sleep 420 \
     && flow_enable \
     && pc_cluster_img_import \
     && upload_citrix_calm_blueprint \
