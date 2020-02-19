@@ -1051,7 +1051,7 @@ function upload_citrix_calm_blueprint() {
   local SERVER_IMAGE_UUID
   local CITRIX_IMAGE="Citrix_Virtual_Apps_and_Desktops_7_1912.iso"
   local CITRIX_IMAGE_UUID
-  local CURL_HTTP_OPTS=" --max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure "
+  local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
 
   echo "Starting Citrix Blueprint Deployment"
 
@@ -1099,6 +1099,7 @@ function upload_citrix_calm_blueprint() {
           echo "Project $CALM_PROJECT exists..."
       fi
   fi
+
 
   # update the user with script progress...
 
@@ -1190,13 +1191,13 @@ function upload_citrix_calm_blueprint() {
   | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference.uuid = \"$CITRIX_IMAGE_UUID\")" \
   | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
   | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
-  | jq -c -r "(.spec.resources.credential_definition_list[0].secret.attrs.secret_reference = \"$LOCAL_PASSWORD\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[0].secret.value = \"$LOCAL_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
-  | jq -c -r "(.spec.resources.credential_definition_list[1].secret.attrs.secret_reference = \"$DOMAIN_CREDS_PASSWORD\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[1].secret.value = \"$DOMAIN_CREDS_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[1].secret.attrs.is_secret_modified = "true")' \
-  | jq -c -r "(.spec.resources.credential_definition_list[2].secret.attrs.secret_reference = \"$PE_CREDS_PASSWORD\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[2].secret.value = \"$PE_CREDS_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[2].secret.attrs.is_secret_modified = "true")' \
-  | jq -c -r "(.spec.resources.credential_definition_list[3].secret.attrs.secret_reference = \"$SQL_CREDS_PASSWORD\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[3].secret.value = \"$SQL_CREDS_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[3].secret.attrs.is_secret_modified = "true")' \
   > $UPDATED_JSONFile
 
@@ -1215,7 +1216,7 @@ function upload_citrix_calm_blueprint() {
 
   curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}/launch"
 
-  echo "Finished Launching the Era Server Application"
+  echo "Finished Launching the Calm Infra Application"
 
 }
 
@@ -1368,11 +1369,11 @@ function upload_era_calm_blueprint() {
   | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid = \"$ERA_IMAGE_UUID\")" \
   | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
   | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
-  | jq -c -r "(.spec.resources.credential_definition_list[0].secret.attrs.secret_reference = \"$ERAADMIN_PASSWORD\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[0].secret.value = \"$ERAADMIN_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
-  | jq -c -r "(.spec.resources.credential_definition_list[1].secret.attrs.secret_reference = \"$PE_CREDS_PASSWORD\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[1].secret.value = \"$PE_CREDS_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[1].secret.attrs.is_secret_modified = "true")' \
-  | jq -c -r "(.spec.resources.credential_definition_list[2].secret.attrs.secret_reference = \"$ERACLI_PASSWORD\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[2].secret.value = \"$ERACLI_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[2].secret.attrs.is_secret_modified = "true")' \
   > $UPDATED_JSONFile
 
@@ -1536,7 +1537,7 @@ function upload_CICDInfra_calm_blueprint() {
     | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid = \"$SERVER_IMAGE_UUID\")" \
     | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
     | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
-    | jq -c -r "(.spec.resources.credential_definition_list[0].secret.attrs.secret_reference = \"$CENTOS_PASSWORD\")" \
+    | jq -c -r "(.spec.resources.credential_definition_list[0].secret.value = \"$CENTOS_PASSWORD\")" \
     | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
     > $UPDATED_JSONFile
 
