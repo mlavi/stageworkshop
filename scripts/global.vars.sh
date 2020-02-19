@@ -17,6 +17,7 @@ ATTEMPTS=40
 SLEEP=60
 PrismOpsServer='PrismProLabUtilityServer'
 SeedPC='seedPC.zip'
+CALM_RSA_KEY_FILE='calm_rsa_key.env'
 ERA_Blueprint='EraServerDeployment.json'
 Citrix_Blueprint='CitrixBootcampInfra.json'
 Beam_Blueprint=''

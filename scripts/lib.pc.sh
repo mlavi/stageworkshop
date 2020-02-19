@@ -1057,6 +1057,8 @@ function upload_citrix_calm_blueprint() {
   local CITRIX_IMAGE_UUID
   local CURL_HTTP_OPTS=" --max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure "
 
+  echo "Starting Citrix Blueprint Deployment"
+
   mkdir $DIRECTORY
 
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
@@ -1073,7 +1075,7 @@ function upload_citrix_calm_blueprint() {
   echo "NETWORK UUID = $NETWORK_UUID"
 
   # download the blueprint
-  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}${BLUEPRINT})
+  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
   log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
 
   # ensure the directory that contains the blueprints to be imported is not empty
@@ -1131,113 +1133,6 @@ function upload_citrix_calm_blueprint() {
       $(jq --arg proj $CALM_PROJECT --arg proj_uuid $project_uuid '.metadata+={"project_reference":{"kind":$proj,"uuid":$proj_uuid}}' $JSONFile >"$tmp" && mv "$tmp" $JSONFile)
   fi
 
-  # ADD VARIABLES (affects ONLY if the current blueprint being imported MATCHES the name specified earlier "EraServerDeployment.json")
-
-      # Profile Variables
-      echo "Making DOMAIN Edits"
-      if [ "$DOMAIN" != "none" ]; then
-          tmp_DOMAIN=$(mktemp)
-          # add the new variable to the json file and save it
-          $(jq --arg var_name $DOMAIN'(.spec.resources.app_profile_list[0].variable_list[0]).value=$var_name' $JSONFile >"$tmp_DOMAIN" && mv "$tmp_DOMAIN" $JSONFile)
-      fi
-      echo "Making AD_IP Edits"
-      if [ "$AD_IP" != "none" ]; then
-          tmp_AD_IP=$(mktemp)
-          $(jq --arg var_name $AD_IP '(.spec.resources.app_profile_list[0].variable_list[1]).value=$var_name' $JSONFile >"$tmp_AD_IP" && mv "$tmp_AD_IP" $JSONFile)
-      fi
-      echo "Making PE_IP Edits"
-      if [ "$PE_IP" != "none" ]; then
-          tmp_PE_IP=$(mktemp)
-          $(jq --arg var_name $PE_IP'(.spec.resources.app_profile_list[0].variable_list[2]).value=$var_name' $JSONFile >"$tmp_PE_IP" && mv "$tmp_PE_IP" $JSONFile)
-      fi
-      echo "Making DDC_IP Edits"
-      if [ "$DDC_IP" != "none" ]; then
-          tmp_DDC_IP=$(mktemp)
-          $(jq --arg var_name $DDC_IP '(.spec.resources.app_profile_list[0].variable_list[6]).value=$var_name' $JSONFile >"$tmp_DDC_IP" && mv "$tmp_DDC_IP" $JSONFile)
-      fi
-      echo "Making CVM_NETWORK Edits"
-      if [ "$CVM_NETWORK" != "none" ]; then
-          tmp_CVM_NETWORK=$(mktemp)
-          $(jq --arg var_name $CVM_NETWORK '(.spec.resources.app_profile_list[0].variable_list[4]).value=$var_name' $JSONFile >"$tmp_CVM_NETWORK" && mv "$tmp_CVM_NETWORK" $JSONFile)
-      fi
-      # VM Configuration
-      echo "Making SERVER_IMAGE Edits"
-      if [ "$SERVER_IMAGE" != "none" ]; then
-          tmp_SERVER_IMAGE=$(mktemp)
-          $(jq --arg var_name $SERVER_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).name=$var_name' $JSONFile >"$tmp_SERVER_IMAGE" && mv "$tmp_SERVER_IMAGE" $JSONFile)
-      fi
-      echo "Making SERVER_IMAGE_UUID Edits"
-      if [ "$SERVER_IMAGE_UUID" != "none" ]; then
-          tmp_SERVER_IMAGE_UUID=$(mktemp)
-          $(jq --arg var_name $SERVER_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_SERVER_IMAGE_UUID" && mv "$tmp_SERVER_IMAGE_UUID" $JSONFile)
-      fi
-      echo "Making CITRIX_IMAGE Edits"
-      if [ "$CITRIX_IMAGE" != "none" ]; then
-          tmp_CITRIX_IMAGE=$(mktemp)
-          $(jq --arg var_name $CITRIX_IMAGE '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference).name=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE" && mv "$tmp_CITRIX_IMAGE" $JSONFile)
-      fi
-      echo "Making CITRIX_IMAGE_UUID Edits"
-      if [ "$CITRIX_IMAGE_UUID" != "none" ]; then
-          tmp_CITRIX_IMAGE_UUID=$(mktemp)
-          $(jq --arg var_name $CITRIX_IMAGE_UUID '(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference).uuid=$var_name' $JSONFile >"$tmp_CITRIX_IMAGE_UUID" && mv "$tmp_CITRIX_IMAGE_UUID" $JSONFile)
-      fi
-      echo "Making NETWORK_NAME Edits"
-      if [ "$NETWORK_NAME" != "none" ]; then
-          tmp_NETWORK_NAME=$(mktemp)
-          $(jq --arg var_name $NETWORK_NAME '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).name=$var_name' $JSONFile >"$tmp_NETWORK_NAME" && mv "$tmp_NETWORK_NAME" $JSONFile)
-      fi
-      echo "Making NETWORK_UUID Edits"
-      if [ "$NETWORK_UUID" != "none" ]; then
-          tmp_NETWORK_UUID=$(mktemp)
-          $(jq --arg var_name $NETWORK_UUID '(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference).uuid=$var_name' $JSONFile >"$tmp_NETWORK_UUID" && mv "$tmp_NETWORK_UUID" $JSONFile)
-      fi
-      #if [ "$VLAN_NAME" != "none" ]; then
-      #    tmp_VLAN_NAME=$(mktemp)
-      #    $(jq --arg var_name $VLAN_NAME '(.spec.resources.service_definition_list[0].variable_list[] | select (.name=="NETWORK_VLAN")).value=$var_name' $JSONFile >"$tmp_VLAN_NAME" && mv "$tmp_VLAN_NAME" $JSONFile)
-      #fi
-      # Credentials
-      echo "Making LOCAL_PASSWORD Edits"
-      if [ "$LOCAL_PASSWORD" != "none" ]; then
-          tmp_LOCAL_PASSWORD=$(mktemp)
-          $(jq --arg var_name $LOCAL_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD" && mv "$tmp_LOCAL_PASSWORD" $JSONFile)
-      fi
-      echo "Making LOCAL_PASSWORD_MODIFIED Edits"
-      if [ "$LOCAL_PASSWORD_MODIFIED" != "none" ]; then
-          tmp_LOCAL_PASSWORD_MODIFIED=$(mktemp)
-          $(jq --arg var_name $LOCAL_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD_MODIFIED" && mv "$tmp_LOCAL_PASSWORD_MODIFIED" $JSONFile)
-      fi
-      echo "Making DOMAIN_CREDS_PASSWORD Edits"
-      if [ "$DOMAIN_CREDS_PASSWORD" != "none" ]; then
-          tmp_DOMAIN_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $DOMAIN_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD" && mv "$tmp_DOMAIN_CREDS_PASSWORD" $JSONFile)
-      fi
-      echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
-      if [ "$DOMAIN_CREDS_PASSWORD_MODIFIED" != "none" ]; then
-          tmp_DOMAIN_CREDS_PASSWORD_MODIFIED=$(mktemp)
-          $(jq --arg var_name $DOMAIN_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" && mv "$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" $JSONFile)
-      fi
-      echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
-      if [ "$PE_CREDS_PASSWORD" != "none" ]; then
-          tmp_PE_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
-      fi
-      echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
-      if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
-          tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
-          $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
-      fi
-      echo "Making SQL_CREDS_PASSWORD Edits"
-      if [ "$SQL_CREDS_PASSWORD" != "none" ]; then
-          tmp_SQL_CREDS_PASSWORD=$(mktemp)
-          $(jq --arg var_name $SQL_CREDS_PASSWORD '(.spec.resources.credential_definition_list[3].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD" && mv "$tmp_SQL_CREDS_PASSWORD" $JSONFile)
-      fi
-      echo "Making SQL_CREDS_PASSWORD_MODIFIED Edits"
-      if [ "$SQL_CREDS_PASSWORD_MODIFIED" != "none" ]; then
-          tmp_SQL_CREDS_PASSWORD_MODIFIED=$(mktemp)
-          $(jq --arg var_name $SQL_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[3].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD_MODIFIED" && mv "$tmp_SQL_CREDS_PASSWORD_MODIFIED" $JSONFile)
-      fi
-
-
   # REMOVE the "status" and "product_version" keys (if they exist) from the JSON data this is included on export but is invalid on import. (affects all BPs being imported)
   tmp_removal=$(mktemp)
   $(jq 'del(.status) | del(.product_version)' $JSONFile >"$tmp_removal" && mv "$tmp_removal" $JSONFile)
@@ -1254,14 +1149,6 @@ function upload_citrix_calm_blueprint() {
   else
       # got the blueprint name means it is probably a valid blueprint file, we can now continue the upload
       echo "Uploading the updated blueprint: $blueprint_name..."
-
-      # Example curl call from the console:
-      # url="https://10.42.7.39:9440/api/nutanix/v3/blueprints/import_file"
-      # path_to_file="/Users/sharon.santana/Desktop/saved_blueprints/EraServerDeployment.json"
-      # bp_name="EraServerDeployment"
-      # project_uuid="a944258a-fd8a-4d02-8646-72c311e03747"
-      # password='techX2019!'
-      # curl -s -k -X POST $url -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid --user admin:"$password"
 
       path_to_file=$JSONFile
       bp_name=$blueprint_name
@@ -1286,59 +1173,40 @@ function upload_citrix_calm_blueprint() {
 
   echo "Citrix Blueprint UUID = $CITRIX_BLUEPRINT_UUID"
 
-  echo "Set Credentials"
+  echo "Update Blueprint and writing to temp file"
+
+  DOWNLOADED_JSONFile="${BLUEPRINT}-${CITRIX_BLUEPRINT_UUID}.json"
+  UPDATED_JSONFile="${BLUEPRINT}-${CITRIX_BLUEPRINT_UUID}-updated.json"
 
   # GET The Blueprint so it can be updated
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}" > set_blueprint_credentials_file.json
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}" > ${DOWNLOADED_JSONFile}
 
-  JSONFile="set_blueprint_credentials_file.json"
+  cat $DOWNLOADED_JSONFile \
+  | jq -c 'del(.status)' \
+  | jq -c -r "(.spec.resources.app_profile_list[0].variable_list[0].value = \"$DOMAIN\")" \
+  | jq -c -r "(.spec.resources.app_profile_list[0].variable_list[1].value = \"$AD_IP\")" \
+  | jq -c -r "(.spec.resources.app_profile_list[0].variable_list[2].value = \"$PE_IP\")" \
+  | jq -c -r "(.spec.resources.app_profile_list[0].variable_list[6].value = \"$DDC_IP\")" \
+  | jq -c -r "(.spec.resources.app_profile_list[0].variable_list[4].value = \"$CVM_NETWORK\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.name = \"$SERVER_IMAGE\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid = \"$SERVER_IMAGE_UUID\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference.name = \"$CITRIX_IMAGE\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[1].data_source_reference.uuid = \"$CITRIX_IMAGE_UUID\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[0].secret.attrs.secret_reference = \"$LOCAL_PASSWORD\")" \
+  | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
+  | jq -c -r "(.spec.resources.credential_definition_list[1].secret.attrs.secret_reference = \"$DOMAIN_CREDS_PASSWORD\")" \
+  | jq -c -r '(.spec.resources.credential_definition_list[1].secret.attrs.is_secret_modified = "true")' \
+  | jq -c -r "(.spec.resources.credential_definition_list[2].secret.attrs.secret_reference = \"$PE_CREDS_PASSWORD\")" \
+  | jq -c -r '(.spec.resources.credential_definition_list[2].secret.attrs.is_secret_modified = "true")' \
+  | jq -c -r "(.spec.resources.credential_definition_list[3].secret.attrs.secret_reference = \"$SQL_CREDS_PASSWORD\")" \
+  | jq -c -r '(.spec.resources.credential_definition_list[3].secret.attrs.is_secret_modified = "true")' \
+  > $UPDATED_JSONFile
 
-  # Remove Staatus
-  echo "Removing Status"
-  $(jq -c 'del(.status)' $JSONFile)
-  # Credentials
-  echo "Making LOCAL_PASSWORD Edits"
-  if [ "$LOCAL_PASSWORD" != "none" ]; then
-      tmp_LOCAL_PASSWORD=$(mktemp)
-      $(jq --arg var_name $LOCAL_PASSWORD '(.spec.resources.credential_definition_list[0].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD" && mv "$tmp_LOCAL_PASSWORD" $JSONFile)
-  fi
-  echo "Making LOCAL_PASSWORD_MODIFIED Edits"
-  if [ "$LOCAL_PASSWORD_MODIFIED" != "none" ]; then
-      tmp_LOCAL_PASSWORD_MODIFIED=$(mktemp)
-      $(jq --arg var_name $LOCAL_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_LOCAL_PASSWORD_MODIFIED" && mv "$tmp_LOCAL_PASSWORD_MODIFIED" $JSONFile)
-  fi
-  echo "Making DOMAIN_CREDS_PASSWORD Edits"
-  if [ "$DOMAIN_CREDS_PASSWORD" != "none" ]; then
-      tmp_DOMAIN_CREDS_PASSWORD=$(mktemp)
-      $(jq --arg var_name $DOMAIN_CREDS_PASSWORD '(.spec.resources.credential_definition_list[1].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD" && mv "$tmp_DOMAIN_CREDS_PASSWORD" $JSONFile)
-  fi
-  echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
-  if [ "$DOMAIN_CREDS_PASSWORD_MODIFIED" != "none" ]; then
-      tmp_DOMAIN_CREDS_PASSWORD_MODIFIED=$(mktemp)
-      $(jq --arg var_name $DOMAIN_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[1].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" && mv "$tmp_DOMAIN_CREDS_PASSWORD_MODIFIED" $JSONFile)
-  fi
-  echo "Making DOMAIN_CREDS_PASSWORD_MODIFIED Edits"
-  if [ "$PE_CREDS_PASSWORD" != "none" ]; then
-      tmp_PE_CREDS_PASSWORD=$(mktemp)
-      $(jq --arg var_name $PE_CREDS_PASSWORD '(.spec.resources.credential_definition_list[2].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD" && mv "$tmp_PE_CREDS_PASSWORD" $JSONFile)
-  fi
-  echo "Making PE_CREDS_PASSWORD_MODIFIED Edits"
-  if [ "$PE_CREDS_PASSWORD_MODIFIED" != "none" ]; then
-      tmp_PE_CREDS_PASSWORD_MODIFIED=$(mktemp)
-      $(jq --arg var_name $PE_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_PE_CREDS_PASSWORD_MODIFIED" && mv "$tmp_PE_CREDS_PASSWORD_MODIFIED" $JSONFile)
-  fi
-  echo "Making SQL_CREDS_PASSWORD Edits"
-  if [ "$SQL_CREDS_PASSWORD" != "none" ]; then
-      tmp_SQL_CREDS_PASSWORD=$(mktemp)
-      $(jq --arg var_name $SQL_CREDS_PASSWORD '(.spec.resources.credential_definition_list[3].secret.attrs).secret_reference=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD" && mv "$tmp_SQL_CREDS_PASSWORD" $JSONFile)
-  fi
-  echo "Making SQL_CREDS_PASSWORD_MODIFIED Edits"
-  if [ "$SQL_CREDS_PASSWORD_MODIFIED" != "none" ]; then
-      tmp_SQL_CREDS_PASSWORD_MODIFIED=$(mktemp)
-      $(jq --arg var_name $SQL_CREDS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[3].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_SQL_CREDS_PASSWORD_MODIFIED" && mv "$tmp_SQL_CREDS_PASSWORD_MODIFIED" $JSONFile)
-  fi
+  echo "Saving Credentials Edits with PUT"
 
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @set_blueprint_credentials_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}"
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @$UPDATED_JSONFile "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}"
 
   echo "Finished Updating Credentials"
 
@@ -1374,14 +1242,19 @@ function upload_era_calm_blueprint() {
   local ERAADMIN_PASSWORD_MODIFIED="true"
   local PE_CREDS_PASSWORD="${PE_PASSWORD}"
   local PE_CREDS_PASSWORD_MODIFIED="true"
-  local ERACLI_PASSWORD=$(awk '{printf "%s\\n", $0}' /home/nutanix/stageworkshop/scripts/calm_rsa_key.env)
+  local ERACLI_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
   local ERACLI_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
   local ERA_IMAGE_UUID
   local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
 
+  echo "Starting Era Blueprint Deployment"
+
   mkdir $DIRECTORY
+
+  DOWNLOAD_CALM_RSA_KEY=$(curl -L ${BLUEPRINT_URL}${CALM_RSA_KEY_FILE} -o ${DIRECTORY}/${CALM_RSA_KEY_FILE})
+  log "Downloading ${CALM_RSA_KEY_FILE}"
 
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1575,7 +1448,8 @@ function upload_era_calm_blueprint() {
 
   # Remove Staatus
   echo "Removing Status"
-  $(jq -c 'del(.status)' $JSONFile)
+  tmp_REMOVE_STATUS=$(mktemp)
+  $(jq -c 'del(.status)' $JSONFile) >"$tmp_ERAADMIN_PASSWORD" && mv "$tmp_REMOVE_STATUS" $JSONFile
   # Credentials
   echo "Making ERAADMIN_PASSWORD Edits"
   if [ "$ERAADMIN_PASSWORD" != "none" ]; then
@@ -1608,6 +1482,8 @@ function upload_era_calm_blueprint() {
       $(jq --arg var_name $ERACLI_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[2].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_ERACLI_PASSWORD_MODIFIED" && mv "$tmp_ERACLI_PASSWORD_MODIFIED" $JSONFile)
   fi
 
+  echo "Saving Credentials Edits with PUT"
+
   curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @set_blueprint_credentials_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${ERA_BLUEPRINT_UUID}"
 
   echo "Finished Updating Credentials"
@@ -1637,7 +1513,7 @@ function upload_CICDInfra_calm_blueprint() {
   local PE_IP=${PE_HOST}
   local NETWORK_NAME=${NW1_NAME}
   local VLAN_NAME=${NW1_VLAN}
-  local CENTOS_PASSWORD=$(awk '{printf "%s\\n", $0}' /home/nutanix/stageworkshop/scripts/calm_rsa_key.env)
+  local CENTOS_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
   local CENTOS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local NETWORK_UUID
@@ -1645,7 +1521,12 @@ function upload_CICDInfra_calm_blueprint() {
   local SERVER_IMAGE_UUID
   local CURL_HTTP_OPTS=" --max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure "
 
+  echo "Starting CICDInfra Blueprint Deployment"
+
   mkdir $DIRECTORY
+
+  DOWNLOAD_CALM_RSA_KEY=$(curl -L ${BLUEPRINT_URL}${CALM_RSA_KEY_FILE} -o ${DIRECTORY}/${CALM_RSA_KEY_FILE})
+  log "Downloading ${CALM_RSA_KEY_FILE}"
 
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==CentOS7.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1657,7 +1538,7 @@ function upload_CICDInfra_calm_blueprint() {
   echo "NETWORK UUID = $NETWORK_UUID"
 
   # download the blueprint
-  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}${BLUEPRINT})
+  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
   log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
 
   # ensure the directory that contains the blueprints to be imported is not empty
@@ -1812,6 +1693,8 @@ function upload_CICDInfra_calm_blueprint() {
       tmp_CENTOS_PASSWORD_MODIFIED=$(mktemp)
       $(jq --arg var_name $CENTOS_PASSWORD_MODIFIED '(.spec.resources.credential_definition_list[0].secret.attrs).is_secret_modified=$var_name' $JSONFile >"$tmp_CENTOS_PASSWORD_MODIFIED" && mv "$tmp_CENTOS_PASSWORD_MODIFIED" $JSONFile)
   fi
+
+  echo "Saving Credentials Edits with PUT"
 
   curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @set_blueprint_credentials_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CICDInfra_BLUEPRINT_UUID}"
 
