@@ -71,10 +71,8 @@ case ${1} in
 
     export QCOW2_IMAGES=(\
       Windows2016.qcow2 \
-      CentOS7.qcow2 \
       Win10v1903.qcow2 \
       WinToolsVM.qcow2 \
-      Linux_ToolsVM.qcow2 \
     )
     export ISO_IMAGES=(\
       Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
@@ -127,6 +125,7 @@ case ${1} in
     && lcm \
     && pc_project \
     && images \
+    && sleep 60 \
     && flow_enable \
     && pc_cluster_img_import \
     && upload_citrix_calm_blueprint \
