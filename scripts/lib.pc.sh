@@ -1092,7 +1092,7 @@ function upload_citrix_calm_blueprint() {
     # Check if Image has been upload to IMage service
     CITRIX_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==Citrix_Virtual_Apps_and_Desktops_7_1912.iso"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "Citrix_Virtual_Apps_and_Desktops_7_1912.iso" | wc -l)
     while [ $CITRIX_IMAGE_UUID -ne 1 ]; do
-        CITRIX_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==Citrix_Virtual_Apps_and_Desktops_7_1912.iso"}' 'https://localhost:9440/api/nutanix/v3/images/list' grep "Citrix_Virtual_Apps_and_Desktops_7_1912.iso" | wc -l)
+        CITRIX_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==Citrix_Virtual_Apps_and_Desktops_7_1912.iso"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "Citrix_Virtual_Apps_and_Desktops_7_1912.iso" | wc -l)
         if [[ $loops -ne 30 ]]; then
           sleep 10
           (( _loops++ ))
@@ -1294,6 +1294,27 @@ function upload_era_calm_blueprint() {
 
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "Getting Era Image UUID"
+
+  # The response should be a Task UUID
+  if [[ ! -z $ERA_IMAGE_UUID ]]; then
+    # Check if Image has been upload to IMage service
+    ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "ERA-Server-build-1.2.0.1.qcow2" | wc -l)
+    while [ $ERA_IMAGE_UUID -ne 1 ]; do
+        ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "ERA-Server-build-1.2.0.1.qcow2" | wc -l)
+        if [[ $loops -ne 30 ]]; then
+          sleep 10
+          (( _loops++ ))
+        else
+          log "Image is not upload, please check."
+          break
+        fi
+    done
+    log "Image has been uploaded."
+  else
+    log "Image is not upload, please check."
+  fi
 
   echo "ERA Image UUID = $ERA_IMAGE_UUID"
 
