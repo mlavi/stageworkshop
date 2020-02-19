@@ -135,7 +135,6 @@ case ${1} in
     && lcm \
     && pc_project \
     && images \
-    && sleep 420 \
     && flow_enable \
     && pc_cluster_img_import \
     && upload_era_calm_blueprint \
