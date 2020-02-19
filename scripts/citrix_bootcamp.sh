@@ -79,7 +79,6 @@ case ${1} in
       Nutanix-VirtIO-1.1.5.iso \
     )
 
-
     run_once
 
     dependencies 'install' 'jq' || exit 13

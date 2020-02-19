@@ -21,9 +21,9 @@ WORKSHOPS=(\
 "Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 "SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
-#"Era Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
-#"Files Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
 "Citrix Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
+"Era Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
+#"Files Bootcamp (AOS 5.11+/AHV PC 5.11+) = Development" \
 #"Calm Workshop (AOS 5.8.x/AHV PC 5.8.x) = Stable" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
 
@@ -74,7 +74,7 @@ function stage_clusters() {
     _pe_launch='citrix_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
-  if (( $(echo ${_workshop} | grep -i Era | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "^Era" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh'
     _pe_launch='era_bootcamp.sh'
     _pc_launch=${_pe_launch}
