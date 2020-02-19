@@ -1042,13 +1042,9 @@ function upload_citrix_calm_blueprint() {
   local BPG_RKTOOLS_URL="none"
   local NutanixAcropolis_Installed_Path="none"
   local LOCAL_PASSWORD="nutanix/4u"
-  local LOCAL_PASSWORD_MODIFIED="true"
   local DOMAIN_CREDS_PASSWORD="nutanix/4u"
-  local DOMAIN_PASSWORD_MODIFIED="true"
   local PE_CREDS_PASSWORD="${PE_PASSWORD}"
-  local PE_CREDS_PASSWORD_MODIFIED="true"
   local SQL_CREDS_PASSWORD="nutanix/4u"
-  local SQL_CREDS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local NETWORK_UUID
   local SERVER_IMAGE="Windows2016.qcow2"
