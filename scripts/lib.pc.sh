@@ -1067,7 +1067,7 @@ function upload_citrix_calm_blueprint() {
     # Check if Image has been upload to IMage service
     SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==Windows2016.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "Windows2016.qcow2" | wc -l)
     while [ $SERVER_IMAGE_UUID -ne 1 ]; do
-        SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==Windows2016.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' grep "Windows2016.qcow2" | wc -l)
+        SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==Windows2016.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "Windows2016.qcow2" | wc -l)
         if [[ $loops -ne 30 ]]; then
           sleep 10
           (( _loops++ ))
@@ -1488,6 +1488,27 @@ function upload_CICDInfra_calm_blueprint() {
 
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==CentOS7.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "Getting Server Image UUID"
+
+  # The response should be a Task UUID
+  if [[ ! -z $SERVER_IMAGE_UUID ]]; then
+    # Check if Image has been upload to IMage service
+    SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==CentOS7.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "CentOS7.qcow2" | wc -l)
+    while [ $SERVER_IMAGE_UUID -ne 1 ]; do
+        SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{"kind":"image","filter": "name==CentOS7.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep "CentOS7.qcow2" | wc -l)
+        if [[ $loops -ne 30 ]]; then
+          sleep 10
+          (( _loops++ ))
+        else
+          log "Image is not upload, please check."
+          break
+        fi
+    done
+    log "Image has been uploaded."
+  else
+    log "Image is not upload, please check."
+  fi
 
   echo "Server Image UUID = $SERVER_IMAGE_UUID"
 
