@@ -133,6 +133,7 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && lcm \
+    && pc_project \
     && images \
     && flow_enable \
     && pc_cluster_img_import \
