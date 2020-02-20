@@ -36,8 +36,8 @@ SSH_OPTS+=' -q' # -v'
 #
 ###################################################
 #Peer Software
-PeerMgmtServer='Windows2016-PeerMgmt-14feb20'
-PeerAgentServer='Windows2016-PeerAgent-12feb20'
+PeerMgmtServer='Windows2016-PeerMgmt-18feb20'
+PeerAgentServer='Windows2016-PeerAgent-18feb20'
 PMC="PeerMgmt"
 AGENTA="PeerAgent-Files"
 AGENTB="PeerAgent-Win"
