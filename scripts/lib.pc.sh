@@ -1061,16 +1061,18 @@ function upload_citrix_calm_blueprint() {
 
   echo "Getting Server Image UUID"
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
-
-  SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep "Windows2016.qcow2" | wc -l)
+  _loops="0"
+  maxtries="30"
+  
+  SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
   # The response should be a Task UUID
   if [[ $SERVER_IMAGE_UUID_CHECK -ne 1 ]]; then
     # Check if Image has been upload to IMage service
-    SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep "Windows2016.qcow2" | wc -l)
+    SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
     while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt 30 ]]; do
         log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
         sleep 60
-        SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep "Windows2016.qcow2" | wc -l)
+        SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
         (( _loops++ ))
     done
   if [[ $SERVER_IMAGE_UUID_CHECK -eq 1 ]]; then
@@ -1085,16 +1087,18 @@ function upload_citrix_calm_blueprint() {
 
   echo "Getting Citrix Image UUID"
   #Getting the IMAGE_UUID
+  _loops="0"
+  maxtries="30"
 
-  CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
+  CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
   # The response should be a Task UUID
   if [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 ]]; then
     # Check if Image has been upload to IMage service
-    CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
+    CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
     while [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 && $_loops -lt 30 ]]; do
         log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
         sleep 60
-        CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
+        CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
         (( _loops++ ))
     done
   if [[ $CITRIX_IMAGE_UUID_CHECK -eq 1 ]]; then
@@ -1106,6 +1110,8 @@ function upload_citrix_calm_blueprint() {
   fi
 
   echo "Citrix Image UUID = $CITRIX_IMAGE_UUID"
+
+  echo "Getting Network UUID"
 
   NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
@@ -1278,7 +1284,7 @@ function upload_era_calm_blueprint() {
   local VLAN_NAME=${NW1_VLAN}
   local ERAADMIN_PASSWORD="nutanix/4u"
   local PE_CREDS_PASSWORD="${PE_PASSWORD}"
-  local ERACLI_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
+  #local ERACLI_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
   local DOWNLOAD_BLUEPRINTS
   local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
   local ERA_IMAGE_UUID
@@ -1290,14 +1296,11 @@ function upload_era_calm_blueprint() {
 
   mkdir $DIRECTORY
 
-  DOWNLOAD_CALM_RSA_KEY=$(curl -L ${BLUEPRINT_URL}${CALM_RSA_KEY_FILE} -o ${DIRECTORY}/${CALM_RSA_KEY_FILE})
-  log "Downloading ${CALM_RSA_KEY_FILE}"
-
-  echo "ERACLI Key - $ERACLI_PASSWORD"
-
   echo "Getting Era Image UUID"
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
-  #ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  _loops="0"
+  maxtries="30"
+
   ERA_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ERA-Server-build-1.2.0.1.qcow2' | wc -l)
   # The response should be a Task UUID
   if [[ $ERA_IMAGE_UUID_CHECK -ne 1 ]]; then
@@ -1318,6 +1321,8 @@ function upload_era_calm_blueprint() {
   fi
 
   echo "ERA Image UUID = $ERA_IMAGE_UUID"
+
+  echo "Getting NETWORK UUID"
 
   NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
@@ -1437,7 +1442,7 @@ function upload_era_calm_blueprint() {
   | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
   | jq -c -r "(.spec.resources.credential_definition_list[1].secret.value = \"$PE_CREDS_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[1].secret.attrs.is_secret_modified = "true")' \
-  | jq -c -r "(.spec.resources.credential_definition_list[].secret.value=\"-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAii7qFDhVadLx5lULAG/ooCUTA/ATSmXbArs+GdHxbUWd/bNG\nZCXnaQ2L1mSVVGDxfTbSaTJ3En3tVlMtD2RjZPdhqWESCaoj2kXLYSiNDS9qz3SK\n6h822je/f9O9CzCTrw2XGhnDVwmNraUvO5wmQObCDthTXc72PcBOd6oa4ENsnuY9\nHtiETg29TZXgCYPFXipLBHSZYkBmGgccAeY9dq5ywiywBJLuoSovXkkRJk3cd7Gy\nhCRIwYzqfdgSmiAMYgJLrz/UuLxatPqXts2D8v1xqR9EPNZNzgd4QHK4of1lqsNR\nuz2SxkwqLcXSw0mGcAL8mIwVpzhPzwmENC5OrwIBJQKCAQB++q2WCkCmbtByyrAp\n6ktiukjTL6MGGGhjX/PgYA5IvINX1SvtU0NZnb7FAntiSz7GFrODQyFPQ0jL3bq0\nMrwzRDA6x+cPzMb/7RvBEIGdadfFjbAVaMqfAsul5SpBokKFLxU6lDb2CMdhS67c\n1K2Hv0qKLpHL0vAdEZQ2nFAMWETvVMzl0o1dQmyGzA0GTY8VYdCRsUbwNgvFMvBj\n8T/svzjpASDifa7IXlGaLrXfCH584zt7y+qjJ05O1G0NFslQ9n2wi7F93N8rHxgl\nJDE4OhfyaDyLL1UdBlBpjYPSUbX7D5NExLggWEVFEwx4JRaK6+aDdFDKbSBIidHf\nh45NAoGBANjANRKLBtcxmW4foK5ILTuFkOaowqj+2AIgT1ezCVpErHDFg0bkuvDk\nQVdsAJRX5//luSO30dI0OWWGjgmIUXD7iej0sjAPJjRAv8ai+MYyaLfkdqv1Oj5c\noDC3KjmSdXTuWSYNvarsW+Uf2v7zlZlWesTnpV6gkZH3tX86iuiZAoGBAKM0mKX0\nEjFkJH65Ym7gIED2CUyuFqq4WsCUD2RakpYZyIBKZGr8MRni3I4z6Hqm+rxVW6Dj\nuFGQe5GhgPvO23UG1Y6nm0VkYgZq81TraZc/oMzignSC95w7OsLaLn6qp32Fje1M\nEz2Yn0T3dDcu1twY8OoDuvWx5LFMJ3NoRJaHAoGBAJ4rZP+xj17DVElxBo0EPK7k\n7TKygDYhwDjnJSRSN0HfFg0agmQqXucjGuzEbyAkeN1Um9vLU+xrTHqEyIN/Jqxk\nhztKxzfTtBhK7M84p7M5iq+0jfMau8ykdOVHZAB/odHeXLrnbrr/gVQsAKw1NdDC\nkPCNXP/c9JrzB+c4juEVAoGBAJGPxmp/vTL4c5OebIxnCAKWP6VBUnyWliFhdYME\nrECvNkjoZ2ZWjKhijVw8Il+OAjlFNgwJXzP9Z0qJIAMuHa2QeUfhmFKlo4ku9LOF\n2rdUbNJpKD5m+IRsLX1az4W6zLwPVRHp56WjzFJEfGiRjzMBfOxkMSBSjbLjDm3Z\niUf7AoGBALjvtjapDwlEa5/CFvzOVGFq4L/OJTBEBGx/SA4HUc3TFTtlY2hvTDPZ\ndQr/JBzLBUjCOBVuUuH3uW7hGhW+DnlzrfbfJATaRR8Ht6VU651T+Gbrr8EqNpCP\ngmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF\n-----END RSA PRIVATE KEY-----\n\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[2].secret.value=\"-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAii7qFDhVadLx5lULAG/ooCUTA/ATSmXbArs+GdHxbUWd/bNG\nZCXnaQ2L1mSVVGDxfTbSaTJ3En3tVlMtD2RjZPdhqWESCaoj2kXLYSiNDS9qz3SK\n6h822je/f9O9CzCTrw2XGhnDVwmNraUvO5wmQObCDthTXc72PcBOd6oa4ENsnuY9\nHtiETg29TZXgCYPFXipLBHSZYkBmGgccAeY9dq5ywiywBJLuoSovXkkRJk3cd7Gy\nhCRIwYzqfdgSmiAMYgJLrz/UuLxatPqXts2D8v1xqR9EPNZNzgd4QHK4of1lqsNR\nuz2SxkwqLcXSw0mGcAL8mIwVpzhPzwmENC5OrwIBJQKCAQB++q2WCkCmbtByyrAp\n6ktiukjTL6MGGGhjX/PgYA5IvINX1SvtU0NZnb7FAntiSz7GFrODQyFPQ0jL3bq0\nMrwzRDA6x+cPzMb/7RvBEIGdadfFjbAVaMqfAsul5SpBokKFLxU6lDb2CMdhS67c\n1K2Hv0qKLpHL0vAdEZQ2nFAMWETvVMzl0o1dQmyGzA0GTY8VYdCRsUbwNgvFMvBj\n8T/svzjpASDifa7IXlGaLrXfCH584zt7y+qjJ05O1G0NFslQ9n2wi7F93N8rHxgl\nJDE4OhfyaDyLL1UdBlBpjYPSUbX7D5NExLggWEVFEwx4JRaK6+aDdFDKbSBIidHf\nh45NAoGBANjANRKLBtcxmW4foK5ILTuFkOaowqj+2AIgT1ezCVpErHDFg0bkuvDk\nQVdsAJRX5//luSO30dI0OWWGjgmIUXD7iej0sjAPJjRAv8ai+MYyaLfkdqv1Oj5c\noDC3KjmSdXTuWSYNvarsW+Uf2v7zlZlWesTnpV6gkZH3tX86iuiZAoGBAKM0mKX0\nEjFkJH65Ym7gIED2CUyuFqq4WsCUD2RakpYZyIBKZGr8MRni3I4z6Hqm+rxVW6Dj\nuFGQe5GhgPvO23UG1Y6nm0VkYgZq81TraZc/oMzignSC95w7OsLaLn6qp32Fje1M\nEz2Yn0T3dDcu1twY8OoDuvWx5LFMJ3NoRJaHAoGBAJ4rZP+xj17DVElxBo0EPK7k\n7TKygDYhwDjnJSRSN0HfFg0agmQqXucjGuzEbyAkeN1Um9vLU+xrTHqEyIN/Jqxk\nhztKxzfTtBhK7M84p7M5iq+0jfMau8ykdOVHZAB/odHeXLrnbrr/gVQsAKw1NdDC\nkPCNXP/c9JrzB+c4juEVAoGBAJGPxmp/vTL4c5OebIxnCAKWP6VBUnyWliFhdYME\nrECvNkjoZ2ZWjKhijVw8Il+OAjlFNgwJXzP9Z0qJIAMuHa2QeUfhmFKlo4ku9LOF\n2rdUbNJpKD5m+IRsLX1az4W6zLwPVRHp56WjzFJEfGiRjzMBfOxkMSBSjbLjDm3Z\niUf7AoGBALjvtjapDwlEa5/CFvzOVGFq4L/OJTBEBGx/SA4HUc3TFTtlY2hvTDPZ\ndQr/JBzLBUjCOBVuUuH3uW7hGhW+DnlzrfbfJATaRR8Ht6VU651T+Gbrr8EqNpCP\ngmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF\n-----END RSA PRIVATE KEY-----\n\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[2].secret.attrs.is_secret_modified = "true")' \
   > $UPDATED_JSONFile
 
@@ -1472,7 +1477,7 @@ function upload_CICDInfra_calm_blueprint() {
   local PE_IP=${PE_HOST}
   local NETWORK_NAME=${NW1_NAME}
   local VLAN_NAME=${NW1_VLAN}
-  local CENTOS_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
+  #local CENTOS_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
   local CENTOS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local NETWORK_UUID
@@ -1486,21 +1491,20 @@ function upload_CICDInfra_calm_blueprint() {
 
   mkdir $DIRECTORY
 
-  DOWNLOAD_CALM_RSA_KEY=$(curl -L ${BLUEPRINT_URL}${CALM_RSA_KEY_FILE} -o ${DIRECTORY}/${CALM_RSA_KEY_FILE})
-  log "Downloading ${CALM_RSA_KEY_FILE}"
-
   echo "Getting Server Image UUID"
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
+  _loops="0"
+  maxtries="30"
 
-  SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep "CentOS7.qcow2" | wc -l)
+  SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'CentOS7.qcow2' | wc -l)
   # The response should be a Task UUID
   if [[ $SERVER_IMAGE_UUID_CHECK -ne 1 ]]; then
     # Check if Image has been upload to IMage service
-    SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep "CentOS7.qcow2" | wc -l)
+    SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'CentOS7.qcow2' | wc -l)
     while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt 30 ]]; do
         log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
         sleep 60
-        SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep "CentOS7.qcow2" | wc -l)
+        SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'CentOS7.qcow2' | wc -l)
         (( _loops++ ))
     done
     if [[ $SERVER_IMAGE_UUID_CHECK -eq 1 ]]; then
@@ -1510,7 +1514,6 @@ function upload_CICDInfra_calm_blueprint() {
       log "Image is not upload, please check."
     fi
   fi
-
   echo "Server Image UUID = $SERVER_IMAGE_UUID"
 
   NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
