@@ -29,6 +29,15 @@ case ${1} in
     && network_configure \
     && authentication_source \
     && pe_auth \
+    && prism_pro_server_deploy \
+    && files_install \
+    && sleep 30 \
+    && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
+    && sleep 30 \
+    && file_analytics_install \
+    && sleep 30 \
+    && create_file_analytics_server \
+    && sleep 30
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -126,6 +135,7 @@ case ${1} in
     && images \
     && flow_enable \
     && pc_cluster_img_import \
+    && seedPC \
     && upload_citrix_calm_blueprint \
     && sleep 30 \
     && prism_check 'PC'
