@@ -926,7 +926,7 @@ deploy_peer_mgmt_server() {
   #mkdir /home/nutanix/peer_staging/
 
   #MTM todo have unattend.xml staged somewhere else
-  wget http://10.42.194.11/workshop_staging/peer/unattend.xml -P /home/nutanix/peer_staging/
+  wget http://10.42.194.11/workshop_staging/peer/unattend-pmc.xml -P /home/nutanix/peer_staging/
   mv /home/nutanix/peer_staging/unattend-pmc.xml /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   chmod 777 /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   sed -i "s/<ComputerName>.*<\/ComputerName>/<ComputerName>${VMNAME}<\/ComputerName>/g" /home/nutanix/peer_staging/unattend_${VMNAME}.xml
@@ -972,7 +972,7 @@ deploy_peer_agent_server() {
   #mkdir /home/nutanix/peer_staging/
 
   #MTM todo have unattend.xml staged somewhere else
-  wget http://10.42.194.11/workshop_staging/peer/unattend.xml -P /home/nutanix/peer_staging/
+  wget http://10.42.194.11/workshop_staging/peer/unattend-agent.xml -P /home/nutanix/peer_staging/
   mv /home/nutanix/peer_staging/unattend-agent.xml /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   chmod 777 /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   sed -i "s/<ComputerName>.*<\/ComputerName>/<ComputerName>${VMNAME}<\/ComputerName>/g" /home/nutanix/peer_staging/unattend_${VMNAME}.xml
