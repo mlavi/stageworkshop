@@ -903,8 +903,6 @@ function pc_destroy() {
 # MTM TODO When integrating with Nutanix scripts, need to change echo to log and put quotes around text after all acli commands
 function deploy_peer_mgmt_server() {
 
-
-
   if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${PeerMgmtServer} | wc --lines) == 0 )); then
     log "Import ${PeerMgmtServer} image from ${QCOW2_REPOS}..."
     acli image.create ${PeerMgmtServer} \
@@ -913,36 +911,26 @@ function deploy_peer_mgmt_server() {
   else
     log "Image found, assuming ready. Skipping ${PeerMgmtServer} import."
   fi
-
   echo "Creating temp folder and applying perms..."
   mkdir /home/nutanix/peer_staging/
-
   VMNAME=$1
-
   ### Get sysyprep config file ready ###
-
   echo "${VMNAME} - Prepping sysprep config..."
-
   wget http://10.42.194.11/workshop_staging/peer/unattend-pmc.xml -P /home/nutanix/peer_staging/
   mv /home/nutanix/peer_staging/unattend-pmc.xml /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   chmod 777 /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   sed -i "s/<ComputerName>.*<\/ComputerName>/<ComputerName>${VMNAME}<\/ComputerName>/g" /home/nutanix/peer_staging/unattend_${VMNAME}.xml
-​
   ### Deploy PMC Server ###
-
   echo "${VMNAME} - Deploying VM..."
   #log "Create ${VMNAME} VM based on ${IMAGENAME} image"
   acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
   acli "vm.disk_create ${VMNAME} clone_from_image=${PeerMgmtServer}"
   # MTM TODO replace net1 with appropriate variable
   acli "vm.nic_create ${VMNAME} network=${NW2_NAME}"
-​
   #log "Power on ${VMNAME} VM..."
   echo "${VMNAME} - Powering on..."
   acli "vm.on ${VMNAME}"
-
   echo "${VMNAME} - Deployed."
-
 }
 
 ###############################################################################################################################################################################
@@ -959,31 +947,22 @@ function deploy_peer_agent_server() {
   else
     log "Image found, assuming ready. Skipping ${PeerAgentServer} import."
   fi
-
   VMNAME=$1
-
   ### Get sysyprep config file ready ###
-
   echo "${VMNAME} - Prepping sysprep config..."
-
   wget http://10.42.194.11/workshop_staging/peer/unattend-agent.xml -P /home/nutanix/peer_staging/
   mv /home/nutanix/peer_staging/unattend-agent.xml /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   chmod 777 /home/nutanix/peer_staging/unattend_${VMNAME}.xml
   sed -i "s/<ComputerName>.*<\/ComputerName>/<ComputerName>${VMNAME}<\/ComputerName>/g" /home/nutanix/peer_staging/unattend_${VMNAME}.xml
-​
   ### Deploy Agent Server ###
-
   echo "${VMNAME} - Deploying VM..."
   #log "Create ${VMNAME} VM based on ${IMAGENAME} image"
   acli "uhura.vm.create_with_customize ${VMNAME} num_vcpus=2 num_cores_per_vcpu=2 memory=4G sysprep_config_path=file:///home/nutanix/peer_staging/unattend_${VMNAME}.xml"
   acli "vm.disk_create ${VMNAME} clone_from_image=${PeerAgentServer}"
   # MTM TODO replace net1 with appropriate variable
   acli "vm.nic_create ${VMNAME} network=${NW2_NAME}"
-​
   #log "Power on ${VMNAME} VM..."
   echo "${VMNAME} - Powering on..."
   acli "vm.on ${VMNAME}"
-​
   echo "${VMNAME} - Deployed."
-
 }
