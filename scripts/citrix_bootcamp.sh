@@ -135,9 +135,9 @@ case ${1} in
     && images \
     && flow_enable \
     && pc_cluster_img_import \
-    && seedPC \
     && upload_citrix_calm_blueprint \
     && sleep 30 \
+    && seedPC \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

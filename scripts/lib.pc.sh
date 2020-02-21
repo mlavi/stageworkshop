@@ -1063,7 +1063,7 @@ function upload_citrix_calm_blueprint() {
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   _loops="0"
   maxtries="30"
-  
+
   SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
   # The response should be a Task UUID
   if [[ $SERVER_IMAGE_UUID_CHECK -ne 1 ]]; then
@@ -1263,7 +1263,7 @@ function upload_citrix_calm_blueprint() {
 
   curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${CITRIX_BLUEPRINT_UUID}/launch"
 
-  echo "Finished Launching the Calm Infra Application"
+  echo "Finished Launching the Citrix Infra Application"
 
 }
 
@@ -1608,7 +1608,7 @@ function upload_CICDInfra_calm_blueprint() {
   #Getting the Blueprint UUID
   CICDInfra_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==CICD_Infra.json"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
-  echo "ERA Blueprint UUID = $CICDInfra_BLUEPRINT_UUID"
+  echo "CICD Blueprint UUID = $CICDInfra_BLUEPRINT_UUID"
 
   echo "Update Blueprint and writing to temp file"
 
@@ -1634,5 +1634,7 @@ function upload_CICDInfra_calm_blueprint() {
   curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @$UPDATED_JSONFile "https://localhost:9440/api/nutanix/v3/blueprints/${CICDInfra_BLUEPRINT_UUID}"
 
   echo "Finished Updating Credentials"
+
+  echo "Finished CICDInfra Blueprint Deployment"
 
 }
