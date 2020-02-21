@@ -282,6 +282,89 @@ function images() {
   local      _source='source_uri'
   local        _test
 
+#######################################
+# For doing ISO IMAGES
+#######################################
+
+for _image in "${ISO_IMAGES[@]}" ; do
+
+  # log "DEBUG: ${_image} image.create..."
+  if [[ ${_cli} == 'nuclei' ]]; then
+    _test=$(source /etc/profile.d/nutanix_env.sh \
+      && ${_cli} image.list 2>&1 \
+      | grep -i complete \
+      | grep "${_image}")
+  #else
+  #  _test=$(source /etc/profile.d/nutanix_env.sh \
+  #    && ${_cli} image.list 2>&1 \
+  #    | grep "${_image}")
+  fi
+
+  if [[ ! -z ${_test} ]]; then
+    log "Skip: ${_image} already complete on cluster."
+  else
+    _command=''
+       _name="${_image}"
+
+    if (( $(echo "${_image}" | grep -i -e '^http' -e '^nfs' | wc --lines) )); then
+      log 'Bypass multiple repo source checks...'
+      SOURCE_URL="${_image}"
+    else
+      repo_source QCOW2_REPOS[@] "${_image}" # IMPORTANT: don't ${dereference}[array]!
+    fi
+
+    if [[ -z "${SOURCE_URL}" ]]; then
+      _error=30
+      log "Warning ${_error}: didn't find any sources for ${_image}, continuing..."
+      # exit ${_error}
+    fi
+
+    # TODO:0 TOFIX: acs-centos ugly override for today...
+    if (( $(echo "${_image}" | grep -i 'acs-centos' | wc --lines ) > 0 )); then
+      _name=acs-centos
+    fi
+
+    if [[ ${_cli} == 'acli' ]]; then
+      _image_type='kIsoImage'
+      _command+=" ${_name} annotation=${_image} image_type=${_image_type} \
+        container=${STORAGE_IMAGES} architecture=kX86_64 wait=true"
+    else
+      _command+=" name=${_name} description=\"${_image}\""
+    fi
+
+    if [[ ${_cli} == 'nuclei' ]]; then
+      _http_body=$(cat <<EOF
+{"action_on_failure":"CONTINUE",
+"execution_order":"SEQUENTIAL",
+"api_request_list":[
+{"operation":"POST",
+"path_and_params":"/api/nutanix/v3/images",
+"body":{"spec":
+{"name":"${_name}","description":"${_image}","resources":{
+  "image_type":"ISO_IMAGE",
+  "source_uri":"${SOURCE_URL}"}},
+"metadata":{"kind":"image"},"api_version":"3.1.0"}}],"api_version":"3.0"}
+EOF
+      )
+      _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+        https://localhost:9440/api/nutanix/v3/batch)
+      log "batch _test=|${_test}|"
+    else
+
+      ${_cli} "image.create ${_command}" ${_source}=${SOURCE_URL} 2>&1 &
+      if (( $? != 0 )); then
+        log "Warning: Image submission: $?. Continuing..."
+        #exit 10
+      fi
+
+      if [[ ${_cli} == 'nuclei' ]]; then
+        log "NOTE: image.uuid = RUNNING, but takes a while to show up in:"
+        log "TODO: ${_cli} image.list, state = COMPLETE; image.list Name UUID State"
+      fi
+    fi
+  fi
+
+done
 
 #######################################
 # For doing Disk IMAGES
@@ -364,89 +447,6 @@ EOF
 
   done
 
-  #######################################
-  # For doing ISO IMAGES
-  #######################################
-
-  for _image in "${ISO_IMAGES[@]}" ; do
-
-    # log "DEBUG: ${_image} image.create..."
-    if [[ ${_cli} == 'nuclei' ]]; then
-      _test=$(source /etc/profile.d/nutanix_env.sh \
-        && ${_cli} image.list 2>&1 \
-        | grep -i complete \
-        | grep "${_image}")
-    #else
-    #  _test=$(source /etc/profile.d/nutanix_env.sh \
-    #    && ${_cli} image.list 2>&1 \
-    #    | grep "${_image}")
-    fi
-
-    if [[ ! -z ${_test} ]]; then
-      log "Skip: ${_image} already complete on cluster."
-    else
-      _command=''
-         _name="${_image}"
-
-      if (( $(echo "${_image}" | grep -i -e '^http' -e '^nfs' | wc --lines) )); then
-        log 'Bypass multiple repo source checks...'
-        SOURCE_URL="${_image}"
-      else
-        repo_source QCOW2_REPOS[@] "${_image}" # IMPORTANT: don't ${dereference}[array]!
-      fi
-
-      if [[ -z "${SOURCE_URL}" ]]; then
-        _error=30
-        log "Warning ${_error}: didn't find any sources for ${_image}, continuing..."
-        # exit ${_error}
-      fi
-
-      # TODO:0 TOFIX: acs-centos ugly override for today...
-      if (( $(echo "${_image}" | grep -i 'acs-centos' | wc --lines ) > 0 )); then
-        _name=acs-centos
-      fi
-
-      if [[ ${_cli} == 'acli' ]]; then
-        _image_type='kIsoImage'
-        _command+=" ${_name} annotation=${_image} image_type=${_image_type} \
-          container=${STORAGE_IMAGES} architecture=kX86_64 wait=true"
-      else
-        _command+=" name=${_name} description=\"${_image}\""
-      fi
-
-      if [[ ${_cli} == 'nuclei' ]]; then
-        _http_body=$(cat <<EOF
-{"action_on_failure":"CONTINUE",
-"execution_order":"SEQUENTIAL",
-"api_request_list":[
-  {"operation":"POST",
-  "path_and_params":"/api/nutanix/v3/images",
-  "body":{"spec":
-  {"name":"${_name}","description":"${_image}","resources":{
-    "image_type":"ISO_IMAGE",
-    "source_uri":"${SOURCE_URL}"}},
-  "metadata":{"kind":"image"},"api_version":"3.1.0"}}],"api_version":"3.0"}
-EOF
-        )
-        _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
-          https://localhost:9440/api/nutanix/v3/batch)
-        log "batch _test=|${_test}|"
-      else
-
-        ${_cli} "image.create ${_command}" ${_source}=${SOURCE_URL} 2>&1 &
-        if (( $? != 0 )); then
-          log "Warning: Image submission: $?. Continuing..."
-          #exit 10
-        fi
-
-        if [[ ${_cli} == 'nuclei' ]]; then
-          log "NOTE: image.uuid = RUNNING, but takes a while to show up in:"
-          log "TODO: ${_cli} image.list, state = COMPLETE; image.list Name UUID State"
-        fi
-      fi
-    fi
-
-  done
 }
 
 ##################################################################################
