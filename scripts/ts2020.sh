@@ -115,7 +115,6 @@ case ${1} in
       GTSOracle/19c-april/19c-disk7.qcow2 \
       GTSOracle/19c-april/19c-disk8.qcow2 \
       GTSOracle/19c-april/19c-disk9.qcow2 \
-      Windows2012R2.qcow2 \
       HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
       veeam/VeeamAHVProxy2.0.404.qcow2 \
     )
