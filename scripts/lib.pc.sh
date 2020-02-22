@@ -226,21 +226,22 @@ function karbon_enable() {
 function karbon_image_download() {
   local CURL_HTTP_OPTS=' --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure '
   local _loop=0
-  local _startDownload="https://localhost:7050/acs/image/download"
-  local _getuuidDownload="https://localhost:7050/acs/image/list"
+  local _cookies=''NTNX_IGW_SESSION': resp.cookies['NTNX_IGW_SESSION']'
+  local _startDownload="https://localhost:9440/karbon/acs/image/download"
+  local _getuuidDownload="https://localhost:9440/karbon/acs/image/list"
 
   # Create the Basic Authentication using base6 commands
   _auth=$(echo "admin:${PE_PASSWORD}" | base64)
 
   # Call the UUID URL so we have the right UUID for the image
-  uuid=$(curl -X GET -H "X-NTNX-AUTH: Basic ${_auth}" https://localhost:7050/acs/image/list $CURL_HTTP_OPTS | jq '.[0].uuid' | tr -d \/\")
+  uuid=$(curl -X GET -H "X-NTNX-AUTH: Basic ${_auth}" https://localhost:9440/karbon/acs/image/list $CURL_HTTP_OPTS | jq '.[0].uuid' | tr -d \/\")
   log "UUID for The Karbon image is: $uuid"
 
   # Use the UUID to download the image
   response=$(curl -X POST ${_startDownload} -d "{\"uuid\":\"${uuid}\"}" -H "X-NTNX-AUTH: Basic ${_auth}" ${CURL_HTTP_OPTS})
 
   if [ -z $response ]; then
-    log "Download of the CenOS image for Karbon has not been started. Trying one more time..."
+    log "Download of the CentOS image for Karbon has not been started. Trying one more time..."
     response=$(curl -X POST ${_startDownload} -d "{\"uuid\":\"${uuid}\"}" -H "X-NTNX-AUTH: Basic ${_auth}" ${CURL_HTTP_OPTS})
     if [ -z $response ]; then
       log "Download of CentOS image for Karbon failed... Please run manually."
@@ -1052,6 +1053,8 @@ function upload_citrix_calm_blueprint() {
   local CITRIX_IMAGE="Citrix_Virtual_Apps_and_Desktops_7_1912.iso"
   local CITRIX_IMAGE_UUID
   local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
+  local _loops="0"
+  local _maxtries="75"
 
 
   echo "Starting Citrix Blueprint Deployment"
@@ -1083,6 +1086,7 @@ function upload_citrix_calm_blueprint() {
   fi
 
   echo "Server Image UUID = $SERVER_IMAGE_UUID"
+  echo "-----------------------------------------"
 
   sleep 30
 
@@ -1111,6 +1115,7 @@ function upload_citrix_calm_blueprint() {
   fi
 
   echo "Citrix Image UUID = $CITRIX_IMAGE_UUID"
+  echo "-----------------------------------------"
 
   sleep 30
 
@@ -1119,6 +1124,7 @@ function upload_citrix_calm_blueprint() {
   NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   echo "NETWORK UUID = $NETWORK_UUID"
+  echo "-----------------------------------------"
 
   # download the blueprint
   DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
@@ -1159,17 +1165,6 @@ function upload_citrix_calm_blueprint() {
 
   echo "Currently updating blueprint $JSONFile..."
 
-  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
-  echo "DOMAIN=${DOMAIN}"
-  echo "AD_IP=${AD_IP}"
-  echo "PE_IP=${PE_IP}"
-  echo "DDC_IP=${DDC_IP}"
-  echo "CVM_NETWORK=${CVM_NETWORK}"
-  echo "SERVER_IMAGE=${SERVER_IMAGE}"
-  echo "SERVER_IMAGE_UUID=${SERVER_IMAGE_UUID}"
-  echo "CITRIX_IMAGE=${CITRIX_IMAGE}"
-  echo "CITRIX_IMAGE_UUID=${CITRIX_IMAGE_UUID}"
-  echo "NETWORK_UUID=${NETWORK_UUID}"
 
   # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
   tmp=$(mktemp)
@@ -1213,7 +1208,7 @@ function upload_citrix_calm_blueprint() {
       fi
   fi
 
-  echo "Finished uploading ${BLUEPRINT} and setting Variables!"
+  echo "Finished uploading ${BLUEPRINT}!"
 
   #Getting the Blueprint UUID
   CITRIX_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==CitrixBootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1221,6 +1216,17 @@ function upload_citrix_calm_blueprint() {
   echo "Citrix Blueprint UUID = $CITRIX_BLUEPRINT_UUID"
 
   echo "Update Blueprint and writing to temp file"
+  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
+  echo "DOMAIN=${DOMAIN}"
+  echo "AD_IP=${AD_IP}"
+  echo "PE_IP=${PE_IP}"
+  echo "DDC_IP=${DDC_IP}"
+  echo "CVM_NETWORK=${CVM_NETWORK}"
+  echo "SERVER_IMAGE=${SERVER_IMAGE}"
+  echo "SERVER_IMAGE_UUID=${SERVER_IMAGE_UUID}"
+  echo "CITRIX_IMAGE=${CITRIX_IMAGE}"
+  echo "CITRIX_IMAGE_UUID=${CITRIX_IMAGE_UUID}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
 
   DOWNLOADED_JSONFile="${BLUEPRINT}-${CITRIX_BLUEPRINT_UUID}.json"
   UPDATED_JSONFile="${BLUEPRINT}-${CITRIX_BLUEPRINT_UUID}-updated.json"
@@ -1292,6 +1298,8 @@ function upload_era_calm_blueprint() {
   local ERA_IMAGE="ERA-Server-build-1.2.0.1.qcow2"
   local ERA_IMAGE_UUID
   local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
+  local _loops="0"
+  local _maxtries="75"
 
 
   echo "Starting Era Blueprint Deployment"
@@ -1323,12 +1331,14 @@ function upload_era_calm_blueprint() {
   fi
 
   echo "ERA Image UUID = $ERA_IMAGE_UUID"
+  echo "-----------------------------------------"
 
   echo "Getting NETWORK UUID"
 
   NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   echo "NETWORK UUID = $NETWORK_UUID"
+  echo "-----------------------------------------"
 
   # download the blueprint
   DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
@@ -1368,13 +1378,6 @@ function upload_era_calm_blueprint() {
   JSONFile="${DIRECTORY}/${BLUEPRINT}"
 
   echo "Currently updating blueprint $JSONFile..."
-
-  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
-  echo "ERA_IP=${ERA_IP}"
-  echo "PE_IP=${PE_IP}"
-  echo "ERA_IMAGE=${ERA_IMAGE}"
-  echo "ERA_IMAGE_UUID=${ERA_IMAGE_UUID}"
-  echo "NETWORK_UUID=${NETWORK_UUID}"
 
   # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
   tmp=$(mktemp)
@@ -1418,7 +1421,7 @@ function upload_era_calm_blueprint() {
       fi
   fi
 
-  echo "Finished uploading ${BLUEPRINT} and setting Variables!"
+  echo "Finished uploading ${BLUEPRINT}!"
 
   #Getting the Blueprint UUID
   ERA_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==EraServerDeployment"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1426,6 +1429,13 @@ function upload_era_calm_blueprint() {
   echo "ERA Blueprint UUID = $ERA_BLUEPRINT_UUID"
 
   echo "Update Blueprint and writing to temp file"
+
+  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
+  echo "ERA_IP=${ERA_IP}"
+  echo "PE_IP=${PE_IP}"
+  echo "ERA_IMAGE=${ERA_IMAGE}"
+  echo "ERA_IMAGE_UUID=${ERA_IMAGE_UUID}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
 
   DOWNLOADED_JSONFile="${BLUEPRINT}-${ERA_BLUEPRINT_UUID}.json"
   UPDATED_JSONFile="${BLUEPRINT}-${ERA_BLUEPRINT_UUID}-updated.json"
@@ -1468,6 +1478,200 @@ function upload_era_calm_blueprint() {
 }
 
 ###############################################################################################################################################################################
+# Routine to upload Karbon Calm Blueprint and set variables
+###############################################################################################################################################################################
+
+function upload_karbon_calm_blueprint() {
+  local DIRECTORY="/home/nutanix/karbon"
+  local BLUEPRINT=${Karbon_Blueprint}
+  local CALM_PROJECT="BootcampInfra"
+  local KARBON_IMAGE='ntnx-0.2'
+  local PE_IP=${PE_HOST}
+  local CLSTR_NAME="none"
+  local CTR_UUID=${_storage_default_uuid}
+  local CTR_NAME=${STORAGE_DEFAULT}
+  local NETWORK_NAME=${NW1_NAME}
+  local VLAN_NAME=${NW1_VLAN}
+  local PE_CREDS_PASSWORD="${PE_PASSWORD}"
+  local PE_CREDS_PASSWORD="${PE_PASSWORD}"
+  #local ERACLI_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
+  local DOWNLOAD_BLUEPRINTS
+  local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
+  local _loops="0"
+  local _maxtries="75"
+
+
+  echo "Starting Karbon Blueprint Deployment"
+
+  mkdir $DIRECTORY
+
+  echo "Getting Karbon Image UUID"
+  #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
+  _loops="0"
+  _maxtries="75"
+
+  KARBON_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ntnx-0.2' | wc -l)
+  # The response should be a Task UUID
+  if [[ $KARBON_IMAGE_UUID_CHECK -ne 1 ]]; then
+    # Check if Image has been upload to IMage service
+    KARBON_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ntnx-0.2' | wc -l)
+    while [[ $KARBON_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
+        log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
+        sleep 60
+        KARBON_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ntnx-0.2' | wc -l)
+        (( _loops++ ))
+    done
+    if [[ $KARBON_IMAGE_UUID_CHECK -eq 1 ]]; then
+      log "Image has been uploaded."
+      KARBON_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ntnx-0.2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+    else
+      log "Image is not upload, please check."
+    fi
+  fi
+
+  echo "Karbon Image UUID = $KARBON_IMAGE_UUID"
+  echo "-----------------------------------------"
+
+  echo "Getting NETWORK UUID"
+
+  NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "NETWORK UUID = $NETWORK_UUID"
+  echo "-----------------------------------------"
+
+  # download the blueprint
+  DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
+  log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
+
+  # ensure the directory that contains the blueprints to be imported is not empty
+  if [[ $(ls -l "$DIRECTORY"/*.json) == *"No such file or directory"* ]]; then
+      echo "There are no .json files found in the directory provided."
+      exit 0
+  fi
+
+  if [ $CALM_PROJECT != 'none' ]; then
+
+      # curl command needed:
+      # curl -s -k -X POST https://10.42.7.39:9440/api/nutanix/v3/projects/list -H 'Content-Type: application/json' --user admin:techX2019! -d '{"kind": "project", "filter": "name==default"}' | jq -r '.entities[].metadata.uuid'
+
+      # make API call and store project_uuid
+      project_uuid=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"project", "filter":"name==BootcampInfra"}' 'https://localhost:9440/api/nutanix/v3/projects/list' | jq -r '.entities[].metadata.uuid')
+
+      echo "Projet UUID = $project_uuid"
+
+      if [ -z "$project_uuid" ]; then
+          # project wasn't found
+          # exit at this point as we don't want to assume all blueprints should then hit the 'default' project
+          echo "Project $CALM_PROJECT was not found. Please check the name and retry."
+          exit 0
+      else
+          echo "Project $CALM_PROJECT exists..."
+      fi
+  fi
+
+  # update the user with script progress...
+
+  echo "Starting blueprint updates and then Uploading to Calm..."
+
+  # read the entire JSON file from the directory
+  JSONFile="${DIRECTORY}/${BLUEPRINT}"
+
+  echo "Currently updating blueprint $JSONFile..."
+
+  # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
+  tmp=$(mktemp)
+
+  # ADD PROJECT , we need to add it into the JSON data
+  if [ $CALM_PROJECT != 'none' ]; then
+      # add the new atributes to the JSON and overwrite the old JSON file with the new one
+      $(jq --arg proj $CALM_PROJECT --arg proj_uuid $project_uuid '.metadata+={"project_reference":{"kind":$proj,"uuid":$proj_uuid}}' $JSONFile >"$tmp" && mv "$tmp" $JSONFile)
+  fi
+
+  # REMOVE the "status" and "product_version" keys (if they exist) from the JSON data this is included on export but is invalid on import. (affects all BPs being imported)
+  tmp_removal=$(mktemp)
+  $(jq 'del(.status) | del(.product_version)' $JSONFile >"$tmp_removal" && mv "$tmp_removal" $JSONFile)
+
+  # GET BP NAME (affects all BPs being imported)
+  # if this fails, it's either a corrupt/damaged/edited blueprint JSON file or not a blueprint file at all
+  blueprint_name_quotes=$(jq '(.spec.name)' $JSONFile)
+  blueprint_name="${blueprint_name_quotes%\"}" # remove the suffix "
+  blueprint_name="${blueprint_name#\"}" # will remove the prefix "
+
+  if [ $blueprint_name == 'null' ]; then
+      echo "Unprocessable JSON file found. Is this definitely a Nutanix Calm blueprint file?"
+      exit 0
+  else
+      # got the blueprint name means it is probably a valid blueprint file, we can now continue the upload
+      echo "Uploading the updated blueprint: $blueprint_name..."
+
+      path_to_file=$JSONFile
+      bp_name=$blueprint_name
+      project_uuid=$project_uuid
+
+      upload_result=$(curl -s -k --insecure --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST https://localhost:9440/api/nutanix/v3/blueprints/import_file -F file=@$path_to_file -F name=$bp_name -F project_uuid=$project_uuid)
+
+      #if the upload_result var is not empty then let's say it was succcessful
+      if [ -z "$upload_result" ]; then
+          echo "Upload for $bp_name did not finish."
+      else
+          echo "Upload for $bp_name finished."
+          echo "-----------------------------------------"
+          # echo "Result: $upload_result"
+      fi
+  fi
+
+  echo "Finished uploading ${BLUEPRINT}!"
+
+  #Getting the Blueprint UUID
+  KARBON_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==KarbonClusterDeployment"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  echo "Karbon Blueprint UUID = $KARBON_BLUEPRINT_UUID"
+
+  echo "Update Blueprint and writing to temp file"
+
+  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
+  echo "ERA_IMAGE=${KARBON_IMAGE}"
+  echo "ERA_IMAGE_UUID=${KARBON_IMAGE_UUID}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
+
+  DOWNLOADED_JSONFile="${BLUEPRINT}-${KARBON_BLUEPRINT_UUID}.json"
+  UPDATED_JSONFile="${BLUEPRINT}-${KARBON_BLUEPRINT_UUID}-updated.json"
+
+  # GET The Blueprint so it can be updated
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}" > ${DOWNLOADED_JSONFile}
+
+  cat $DOWNLOADED_JSONFile \
+  | jq -c 'del(.status)' \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.name = \"$KARBON_IMAGE\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid = \"$KARBON_IMAGE_UUID\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
+  | jq -c -r "(.spec.resources.credential_definition_list[0].secret.value = \"$PE_CREDS_PASSWORD\")" \
+  | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
+  | jq -c -r "(.spec.resources.credential_definition_list[1].secret.value = \"$PC_CREDS_PASSWORD\")" \
+  | jq -c -r '(.spec.resources.credential_definition_list[1].secret.attrs.is_secret_modified = "true")' \
+  > $UPDATED_JSONFile
+
+  echo "Saving Credentials Edits with PUT"
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT -d @$UPDATED_JSONFile "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}"
+
+  echo "Finished Updating Credentials"
+
+  # GET The Blueprint payload
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Karbon Cluster", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
+
+  # Launch the BLUEPRINT
+
+  echo "Launching the Era Server Application"
+
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}/launch"
+
+  echo "Finished Launching the Karbon Cluster Deployment Blueprint"
+
+}
+
+###############################################################################################################################################################################
 # Routine to upload CICDInfra Calm Blueprint and set variables
 ###############################################################################################################################################################################
 
@@ -1475,19 +1679,16 @@ function upload_CICDInfra_calm_blueprint() {
   local DIRECTORY="/home/nutanix/cicdinfra"
   local BLUEPRINT=${CICDInfra_Blueprint}
   local CALM_PROJECT="BootcampInfra"
-  local ERA_IP=${ERA_HOST}
-  local PE_IP=${PE_HOST}
   local NETWORK_NAME=${NW1_NAME}
   local VLAN_NAME=${NW1_VLAN}
   #local CENTOS_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
-  local CENTOS_PASSWORD_MODIFIED="true"
   local DOWNLOAD_BLUEPRINTS
   local NETWORK_UUID
   local SERVER_IMAGE="CentOS7.qcow2"
   local SERVER_IMAGE_UUID
   local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
   local _loops="0"
-  local _maxtries="30"
+  local _maxtries="75"
 
   echo "Starting CICDInfra Blueprint Deployment"
 
@@ -1517,10 +1718,12 @@ function upload_CICDInfra_calm_blueprint() {
     fi
   fi
   echo "Server Image UUID = $SERVER_IMAGE_UUID"
+  echo "-----------------------------------------"
 
   NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   echo "NETWORK UUID = $NETWORK_UUID"
+  echo "-----------------------------------------"
 
   # download the blueprint
   DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
@@ -1558,10 +1761,6 @@ function upload_CICDInfra_calm_blueprint() {
   JSONFile="${DIRECTORY}/${BLUEPRINT}"
 
   echo "Currently updating blueprint $JSONFile..."
-
-  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
-  echo "NETWORK_UUID=${NETWORK_UUID}"
-
 
   # NOTE: bash doesn't do in place editing so we need to use a temp file and overwrite the old file with new changes for every blueprint
   tmp=$(mktemp)
@@ -1605,7 +1804,7 @@ function upload_CICDInfra_calm_blueprint() {
       fi
   fi
 
-  echo "Finished uploading ${BLUEPRINT} and setting Variables!"
+  echo "Finished uploading ${BLUEPRINT}!"
 
   #Getting the Blueprint UUID
   CICDInfra_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==CICD_Infra.json"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1613,6 +1812,11 @@ function upload_CICDInfra_calm_blueprint() {
   echo "CICD Blueprint UUID = $CICDInfra_BLUEPRINT_UUID"
 
   echo "Update Blueprint and writing to temp file"
+
+  echo "${CALM_PROJECT} network UUID: ${project_uuid}"
+  echo "SERVER_IMAGE=${SERVER_IMAGE}"
+  echo "SERVER_IMAGE_UUID=${SERVER_IMAGE_UUID}"
+  echo "NETWORK_UUID=${NETWORK_UUID}"
 
   DOWNLOADED_JSONFile="${BLUEPRINT}-${CICDInfra_BLUEPRINT_UUID}.json"
   UPDATED_JSONFile="${BLUEPRINT}-${CICDInfra_BLUEPRINT_UUID}-updated.json"
@@ -1622,11 +1826,16 @@ function upload_CICDInfra_calm_blueprint() {
 
   cat $DOWNLOADED_JSONFile \
   | jq -c 'del(.status)' \
-  | jq -c -r "(.spec.resources.app_profile_list[0].variable_list[0].value = \"$ERA_IP\")" \
   | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.name = \"$SERVER_IMAGE\")" \
   | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid = \"$SERVER_IMAGE_UUID\")" \
-  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
-  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[1].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[1].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[2].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[2].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[3].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
+  | jq -c -r "(.spec.resources.substrate_definition_list[3].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
   | jq -c -r "(.spec.resources.credential_definition_list[0].secret.value=\"-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAii7qFDhVadLx5lULAG/ooCUTA/ATSmXbArs+GdHxbUWd/bNG\nZCXnaQ2L1mSVVGDxfTbSaTJ3En3tVlMtD2RjZPdhqWESCaoj2kXLYSiNDS9qz3SK\n6h822je/f9O9CzCTrw2XGhnDVwmNraUvO5wmQObCDthTXc72PcBOd6oa4ENsnuY9\nHtiETg29TZXgCYPFXipLBHSZYkBmGgccAeY9dq5ywiywBJLuoSovXkkRJk3cd7Gy\nhCRIwYzqfdgSmiAMYgJLrz/UuLxatPqXts2D8v1xqR9EPNZNzgd4QHK4of1lqsNR\nuz2SxkwqLcXSw0mGcAL8mIwVpzhPzwmENC5OrwIBJQKCAQB++q2WCkCmbtByyrAp\n6ktiukjTL6MGGGhjX/PgYA5IvINX1SvtU0NZnb7FAntiSz7GFrODQyFPQ0jL3bq0\nMrwzRDA6x+cPzMb/7RvBEIGdadfFjbAVaMqfAsul5SpBokKFLxU6lDb2CMdhS67c\n1K2Hv0qKLpHL0vAdEZQ2nFAMWETvVMzl0o1dQmyGzA0GTY8VYdCRsUbwNgvFMvBj\n8T/svzjpASDifa7IXlGaLrXfCH584zt7y+qjJ05O1G0NFslQ9n2wi7F93N8rHxgl\nJDE4OhfyaDyLL1UdBlBpjYPSUbX7D5NExLggWEVFEwx4JRaK6+aDdFDKbSBIidHf\nh45NAoGBANjANRKLBtcxmW4foK5ILTuFkOaowqj+2AIgT1ezCVpErHDFg0bkuvDk\nQVdsAJRX5//luSO30dI0OWWGjgmIUXD7iej0sjAPJjRAv8ai+MYyaLfkdqv1Oj5c\noDC3KjmSdXTuWSYNvarsW+Uf2v7zlZlWesTnpV6gkZH3tX86iuiZAoGBAKM0mKX0\nEjFkJH65Ym7gIED2CUyuFqq4WsCUD2RakpYZyIBKZGr8MRni3I4z6Hqm+rxVW6Dj\nuFGQe5GhgPvO23UG1Y6nm0VkYgZq81TraZc/oMzignSC95w7OsLaLn6qp32Fje1M\nEz2Yn0T3dDcu1twY8OoDuvWx5LFMJ3NoRJaHAoGBAJ4rZP+xj17DVElxBo0EPK7k\n7TKygDYhwDjnJSRSN0HfFg0agmQqXucjGuzEbyAkeN1Um9vLU+xrTHqEyIN/Jqxk\nhztKxzfTtBhK7M84p7M5iq+0jfMau8ykdOVHZAB/odHeXLrnbrr/gVQsAKw1NdDC\nkPCNXP/c9JrzB+c4juEVAoGBAJGPxmp/vTL4c5OebIxnCAKWP6VBUnyWliFhdYME\nrECvNkjoZ2ZWjKhijVw8Il+OAjlFNgwJXzP9Z0qJIAMuHa2QeUfhmFKlo4ku9LOF\n2rdUbNJpKD5m+IRsLX1az4W6zLwPVRHp56WjzFJEfGiRjzMBfOxkMSBSjbLjDm3Z\niUf7AoGBALjvtjapDwlEa5/CFvzOVGFq4L/OJTBEBGx/SA4HUc3TFTtlY2hvTDPZ\ndQr/JBzLBUjCOBVuUuH3uW7hGhW+DnlzrfbfJATaRR8Ht6VU651T+Gbrr8EqNpCP\ngmznERCNf9Kaxl/hlyV5dZBe/2LIK+/jLGNu9EJLoraaCBFshJKF\n-----END RSA PRIVATE KEY-----\n\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
   > $UPDATED_JSONFile
