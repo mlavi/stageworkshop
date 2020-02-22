@@ -1067,7 +1067,7 @@ function upload_citrix_calm_blueprint() {
   if [[ $SERVER_IMAGE_UUID_CHECK -ne 1 ]]; then
     # Check if Image has been upload to IMage service
     SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
-    while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt 30 ]]; do
+    while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
         log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
         sleep 60
         SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
@@ -1095,7 +1095,7 @@ function upload_citrix_calm_blueprint() {
   if [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 ]]; then
     # Check if Image has been upload to IMage service
     CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
-    while [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 && $_loops -lt 30 ]]; do
+    while [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
         log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
         sleep 60
         CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
@@ -1307,7 +1307,7 @@ function upload_era_calm_blueprint() {
   if [[ $ERA_IMAGE_UUID_CHECK -ne 1 ]]; then
     # Check if Image has been upload to IMage service
     ERA_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ERA-Server-build-1.2.0.1.qcow2' | wc -l)
-    while [[ $ERA_IMAGE_UUID_CHECK -ne 1 && $_loops -lt 30 ]]; do
+    while [[ $ERA_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
         log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
         sleep 60
         ERA_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ERA-Server-build-1.2.0.1.qcow2' | wc -l)
@@ -1502,7 +1502,7 @@ function upload_CICDInfra_calm_blueprint() {
   if [[ $SERVER_IMAGE_UUID_CHECK -ne 1 ]]; then
     # Check if Image has been upload to IMage service
     SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'CentOS7.qcow2' | wc -l)
-    while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt 30 ]]; do
+    while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
         log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
         sleep 60
         SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'CentOS7.qcow2' | wc -l)
