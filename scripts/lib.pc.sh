@@ -1109,9 +1109,9 @@ function upload_citrix_calm_blueprint() {
   elif [[ $CITRIX_IMAGE_UUID_CHECK -eq 1 ]]; then
       log "Image has been uploaded."
       CITRIX_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==Citrix_Virtual_Apps_and_Desktops_7_1912.iso"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-    else
+  else
       log "Image is not upload, please check."
-    fi
+  fi
   #fi
 
   echo "Citrix Image UUID = $CITRIX_IMAGE_UUID"
