@@ -1060,7 +1060,7 @@ function upload_citrix_calm_blueprint() {
   echo "Getting Server Image UUID"
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   _loops="0"
-  _maxtries="30"
+  _maxtries="60"
 
   SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
   # The response should be a Task UUID
@@ -1088,7 +1088,7 @@ function upload_citrix_calm_blueprint() {
   echo "Getting Citrix Image UUID"
   #Getting the IMAGE_UUID
   _loops="0"
-  _maxtries="30"
+  _maxtries="60"
 
   CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
   # The response should be a Task UUID
@@ -1300,7 +1300,7 @@ function upload_era_calm_blueprint() {
   echo "Getting Era Image UUID"
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   _loops="0"
-  _maxtries="30"
+  _maxtries="60"
 
   ERA_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ERA-Server-build-1.2.0.1.qcow2' | wc -l)
   # The response should be a Task UUID
@@ -1495,7 +1495,7 @@ function upload_CICDInfra_calm_blueprint() {
   echo "Getting Server Image UUID"
   #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
   _loops="0"
-  _maxtries="30"
+  _maxtries="60"
 
   SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'CentOS7.qcow2' | wc -l)
   # The response should be a Task UUID
