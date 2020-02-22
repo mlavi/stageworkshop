@@ -123,6 +123,7 @@ case ${1} in
       Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       Nutanix-VirtIO-1.1.5.iso \
       FrameCCA-2.1.6.iso \
+      FrameCCA-2.1.0.iso \
       FrameGuestAgentInstaller_1.0.2.2_7930.iso \
       veeam/VBR_10.0.0.4442.iso \
     )
