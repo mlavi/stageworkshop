@@ -1068,16 +1068,13 @@ function upload_citrix_calm_blueprint() {
 
   SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
   # The response should be a Task UUID
-  if [[ $SERVER_IMAGE_UUID_CHECK -ne 1 ]]; then
-    # Check if Image has been upload to IMage service
-    SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
-    while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
-        log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
-        sleep 60
-        SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
-        (( _loops++ ))
-    done
-  elif [[ $SERVER_IMAGE_UUID_CHECK -eq 1 ]]; then
+  while [[ $SERVER_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
+      log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
+      sleep 60
+      SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
+      (( _loops++ ))
+  done
+  if [[ $_loops -lt $_maxtries ]]; then
       log "Image has been uploaded."
       SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==Windows2016.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
   else
@@ -1095,17 +1092,13 @@ function upload_citrix_calm_blueprint() {
   _maxtries="75"
 
   CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
-  # The response should be a Task UUID
-  if [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 ]]; then
-    # Check if Image has been upload to IMage service
-    CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
-    while [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
-        log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
-        sleep 60
-        CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
-        (( _loops++ ))
-    done
-  elif [[ $CITRIX_IMAGE_UUID_CHECK -eq 1 ]]; then
+  while [[ $CITRIX_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
+      log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
+      sleep 60
+      CITRIX_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Citrix_Virtual_Apps_and_Desktops_7_1912.iso' | wc -l)
+      (( _loops++ ))
+  done
+  if [[ $_loops -lt $_maxtries ]]; then
       log "Image has been uploaded."
       CITRIX_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==Citrix_Virtual_Apps_and_Desktops_7_1912.iso"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
   else
