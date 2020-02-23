@@ -1111,7 +1111,6 @@ function upload_citrix_calm_blueprint() {
   else
       log "Image is not upload, please check."
   fi
-  #fi
 
   echo "Citrix Image UUID = $CITRIX_IMAGE_UUID"
   echo "-----------------------------------------"
