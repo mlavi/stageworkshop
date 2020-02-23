@@ -183,6 +183,8 @@ case ${1} in
     && sleep 30 \
     && upload_era_calm_blueprint \
     && sleep 30 \
+    && upload_karbon_calm_blueprint \
+    && sleep 30 \
     && upload_CICDInfra_calm_blueprint \
     && seedPC \
     && prism_check 'PC'

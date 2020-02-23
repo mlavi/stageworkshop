@@ -21,7 +21,7 @@ CALM_RSA_KEY_FILE='calm_rsa_key.env'
 ERA_Blueprint='EraServerDeployment.json'
 Citrix_Blueprint='CitrixBootcampInfra.json'
 Beam_Blueprint=''
-Karbon_Blueprint=''
+Karbon_Blueprint='KarbonClusterDeployment.json'
 CICDInfra_Blueprint='CICD_Infra.json'
 
 # Curl and SSH settings

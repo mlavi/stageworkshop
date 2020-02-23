@@ -1504,40 +1504,6 @@ function upload_karbon_calm_blueprint() {
 
   mkdir $DIRECTORY
 
-  echo "Getting Karbon Image UUID"
-  #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
-  _loops="0"
-  _maxtries="75"
-
-  KARBON_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ntnx-0.2' | wc -l)
-  # The response should be a Task UUID
-  if [[ $KARBON_IMAGE_UUID_CHECK -ne 1 ]]; then
-    # Check if Image has been upload to IMage service
-    KARBON_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ntnx-0.2' | wc -l)
-    while [[ $KARBON_IMAGE_UUID_CHECK -ne 1 && $_loops -lt $_maxtries ]]; do
-        log "Image not yet uploaded. $_loops/$_maxtries... sleeping 60 seconds"
-        sleep 60
-        KARBON_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ntnx-0.2' | wc -l)
-        (( _loops++ ))
-    done
-  elif [[ $KARBON_IMAGE_UUID_CHECK -eq 1 ]]; then
-      log "Image has been uploaded."
-      KARBON_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ntnx-0.2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-  else
-      log "Image is not upload, please check."
-  fi
-
-
-  echo "Karbon Image UUID = $KARBON_IMAGE_UUID"
-  echo "-----------------------------------------"
-
-  echo "Getting NETWORK UUID"
-
-  NETWORK_UUID=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-
-  echo "NETWORK UUID = $NETWORK_UUID"
-  echo "-----------------------------------------"
-
   # download the blueprint
   DOWNLOAD_BLUEPRINTS=$(curl -L ${BLUEPRINT_URL}${BLUEPRINT} -o ${DIRECTORY}/${BLUEPRINT})
   log "Downloading ${BLUEPRINT} | BLUEPRINT_URL ${BLUEPRINT_URL}|${DOWNLOAD_BLUEPRINTS}"
@@ -1629,9 +1595,7 @@ function upload_karbon_calm_blueprint() {
   echo "Update Blueprint and writing to temp file"
 
   echo "${CALM_PROJECT} network UUID: ${project_uuid}"
-  echo "ERA_IMAGE=${KARBON_IMAGE}"
-  echo "ERA_IMAGE_UUID=${KARBON_IMAGE_UUID}"
-  echo "NETWORK_UUID=${NETWORK_UUID}"
+  echo "KARBON_BLUEPRINT_UUID=${KARBON_BLUEPRINT_UUID}"
 
   DOWNLOADED_JSONFile="${BLUEPRINT}-${KARBON_BLUEPRINT_UUID}.json"
   UPDATED_JSONFile="${BLUEPRINT}-${KARBON_BLUEPRINT_UUID}-updated.json"
@@ -1641,10 +1605,6 @@ function upload_karbon_calm_blueprint() {
 
   cat $DOWNLOADED_JSONFile \
   | jq -c 'del(.status)' \
-  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.name = \"$KARBON_IMAGE\")" \
-  | jq -c -r "(.spec.resources.substrate_definition_list[0].create_spec.resources.disk_list[0].data_source_reference.uuid = \"$KARBON_IMAGE_UUID\")" \
-  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.name = \"$NETWORK_NAME\")" \
-  | jq -c -r "(.spec.resources.substrate_definition_list[].create_spec.resources.nic_list[].subnet_reference.uuid = \"$NETWORK_UUID\")" \
   | jq -c -r "(.spec.resources.credential_definition_list[0].secret.value = \"$PE_CREDS_PASSWORD\")" \
   | jq -c -r '(.spec.resources.credential_definition_list[0].secret.attrs.is_secret_modified = "true")' \
   | jq -c -r "(.spec.resources.credential_definition_list[1].secret.value = \"$PC_CREDS_PASSWORD\")" \
@@ -1658,7 +1618,7 @@ function upload_karbon_calm_blueprint() {
   echo "Finished Updating Credentials"
 
   # GET The Blueprint payload
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "Karbon Cluster", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X GET -d '{}' "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}" | jq 'del(.status, .spec.name) | .spec += {"application_name": "KarbonClusterDeployment", "app_profile_reference": {"uuid": .spec.resources.app_profile_list[0].uuid, "kind": "app_profile" }}' > set_blueprint_response_file.json
 
   # Launch the BLUEPRINT
 
