@@ -1077,12 +1077,11 @@ function upload_citrix_calm_blueprint() {
         SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'Windows2016.qcow2' | wc -l)
         (( _loops++ ))
     done
-  if [[ $SERVER_IMAGE_UUID_CHECK -eq 1 ]]; then
+  elif [[ $SERVER_IMAGE_UUID_CHECK -eq 1 ]]; then
       log "Image has been uploaded."
       SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==Windows2016.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-    else
+  else
       log "Image is not upload, please check."
-    fi
   fi
 
   echo "Server Image UUID = $SERVER_IMAGE_UUID"
@@ -1322,13 +1321,13 @@ function upload_era_calm_blueprint() {
         ERA_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ERA-Server-build-1.2.0.1.qcow2' | wc -l)
         (( _loops++ ))
     done
-    if [[ $ERA_IMAGE_UUID_CHECK -eq 1 ]]; then
+  elif [[ $ERA_IMAGE_UUID_CHECK -eq 1 ]]; then
       log "Image has been uploaded."
       ERA_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ERA-Server-build-1.2.0.1.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-    else
+  else
       log "Image is not upload, please check."
-    fi
   fi
+
 
   echo "ERA Image UUID = $ERA_IMAGE_UUID"
   echo "-----------------------------------------"
@@ -1521,13 +1520,13 @@ function upload_karbon_calm_blueprint() {
         KARBON_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d '{}' 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'ntnx-0.2' | wc -l)
         (( _loops++ ))
     done
-    if [[ $KARBON_IMAGE_UUID_CHECK -eq 1 ]]; then
+  elif [[ $KARBON_IMAGE_UUID_CHECK -eq 1 ]]; then
       log "Image has been uploaded."
       KARBON_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==ntnx-0.2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-    else
+  else
       log "Image is not upload, please check."
-    fi
   fi
+
 
   echo "Karbon Image UUID = $KARBON_IMAGE_UUID"
   echo "-----------------------------------------"
@@ -1710,13 +1709,13 @@ function upload_CICDInfra_calm_blueprint() {
         SERVER_IMAGE_UUID_CHECK=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d {} 'https://localhost:9440/api/nutanix/v3/images/list' | grep 'CentOS7.qcow2' | wc -l)
         (( _loops++ ))
     done
-    if [[ $SERVER_IMAGE_UUID_CHECK -eq 1 ]]; then
+  elif [[ $SERVER_IMAGE_UUID_CHECK -eq 1 ]]; then
       log "Image has been uploaded."
       SERVER_IMAGE_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"image","filter": "name==CentOS7.qcow2"}' 'https://localhost:9440/api/nutanix/v3/images/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-    else
+  else
       log "Image is not upload, please check."
-    fi
   fi
+
   echo "Server Image UUID = $SERVER_IMAGE_UUID"
   echo "-----------------------------------------"
 
