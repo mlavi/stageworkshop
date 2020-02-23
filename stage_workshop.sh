@@ -135,7 +135,13 @@ ______Warning -- curl time out indicates either:
       - Foundation and initialization (Cluster IP API response) hasn't completed.
 EoM
 
-      prism_check 'PE' 60
+      _error=$(prism_check 'PE' '1')
+      # If we were unable to connect to the PRISM UI, send a message to the console and move to the next
+      if [[ ! -z ${_error} ]]; then
+        log "We were unable to connect to the PRISM UI on ${PE_HOST}..."
+        continue
+      fi
+
 
       if [[ -d cache ]]; then
         pushd cache || true
@@ -241,7 +247,7 @@ function validate_clusters() {
     set -f
     # shellcheck disable=2206
         _fields=(${_cluster//|/ })
-        PE_HOST=${_fields[0]}
+        PE_HOST=${_fields[0]} 
     PE_PASSWORD=${_fields[1]}
 
     prism_check 'PE'
