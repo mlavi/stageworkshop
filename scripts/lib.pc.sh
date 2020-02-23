@@ -1062,7 +1062,7 @@ function upload_citrix_calm_blueprint() {
   mkdir $DIRECTORY
 
   echo "Getting Server Image UUID"
-  #Getting the IMAGE_UUID -- WHen changing the image make sure to change in the name filter
+  #Getting the IMAGE_UUID
   _loops="0"
   _maxtries="75"
 
