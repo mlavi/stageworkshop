@@ -1492,7 +1492,7 @@ function upload_karbon_calm_blueprint() {
   local NETWORK_NAME=${NW1_NAME}
   local VLAN_NAME=${NW1_VLAN}
   local PE_CREDS_PASSWORD="${PE_PASSWORD}"
-  local PE_CREDS_PASSWORD="${PE_PASSWORD}"
+  local PC_CREDS_PASSWORD="${PE_PASSWORD}"
   #local ERACLI_PASSWORD=$(awk '{printf "%s\\n", $0}' ${DIRECTORY}/${CALM_RSA_KEY_FILE})
   local DOWNLOAD_BLUEPRINTS
   local CURL_HTTP_OPTS="--max-time 25 --silent -k --header Content-Type:application/json --header Accept:application/json  --insecure"
