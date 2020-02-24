@@ -450,7 +450,35 @@ EOF
 }
 
 ##################################################################################
+# Priority Images that need to be uploaded and controlled before we move to the mass upload
 
+function priority_images{
+
+  local _prio_images_arr=("ERA-Server-build-1.2.0.1.qcow2","Windows2016.qcow2","CentOS7.qcow2","Citrix_Virtual_Apps_and_Desktops_7_1912.iso")
+
+  for _image in "${_prio_images_arr[@]}"; do
+    _http_body=$(cat <<EOF
+{"action_on_failure":"CONTINUE",
+"execution_order":"SEQUENTIAL",
+"api_request_list":[
+  {"operation":"POST",
+  "path_and_params":"/api/nutanix/v3/images",
+  "body":{"spec":
+  {"name":"${_image}","description":"${_image}","resources":{
+    "image_type":"DISK_IMAGE",
+    "source_uri":"${SOURCE_URL}"}},
+  "metadata":{"kind":"image"},"api_version":"3.1.0"}}],"api_version":"3.0"}
+EOF
+    )
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
+          https://localhost:9440/api/nutanix/v3/batch | jq '.api_response_list[].api_response.status.execution_context.task_uuid' | tr -d \")
+  loop ${_task_id}
+
+  done
+
+}
+
+##################################################################################
 
 function log() {
   local _caller
