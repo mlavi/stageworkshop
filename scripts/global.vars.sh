@@ -203,7 +203,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     'http://10.55.251.38/workshop_staging/AutoAD.qcow2' \
     'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
-    PC_DATA='http://10.55.251.38/workshop_staging/seedPC.zip'
+    PC_DATA='http://10.55.76.10/seedPC.zip'
     BLUEPRINT_URL='http://10.55.251.38/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.55.251.10,10.55.251.11'
 	OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
@@ -241,7 +241,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
      'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
-    PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
+    PC_DATA='http://10.42.38.10/images/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.42.196.10,10.42.194.10'
     OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
@@ -279,7 +279,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
      'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
-    PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
+    PC_DATA='http://10.42.38.10/images/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS="10.42.196.10,10.42.194.10"
 	OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
