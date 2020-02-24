@@ -452,7 +452,7 @@ EOF
 ##################################################################################
 # Priority Images that need to be uploaded and controlled before we move to the mass upload
 
-function priority_images{
+function priority_images(){
 
   local _prio_images_arr=(\
           ERA-Server-build-1.2.0.1.qcow2 \
