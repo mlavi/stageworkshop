@@ -35,12 +35,13 @@ function flow_enable() {
   # Try one more time then fail, but continue
   if [ -z $_task_id ]; then
     log "Flow not yet enabled. Will retry...."
-    _task_id=$(curl -X POST $_json_data $CURL_HTTP_OPTS --user ${PRISM_ADMIN}:${PE_PASSWORD} $_url_flow)
+    _task_id=$(curl -X POST $_json_data $CURL_HTTP_OPTS --user ${PRISM_ADMIN}:${PE_PASSWORD} $_url_flow | jq '.task_uuid' | tr -d \")
 
     if [ -z $_task_id ]; then
       log "Flow still not enabled.... ***Not retrying. Please enable via UI.***"
     fi
   else
+    loop ${_task_id}
     log "Flow has been Enabled..."
   fi
 
