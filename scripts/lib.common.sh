@@ -460,9 +460,20 @@ function priority_images(){
           CentOS7.qcow2 \
           Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
           )
-  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
-  
+  local CURL_HTTP_OPTS=" --max-time 25 --header Content-Type:application/json --header Accept:application/json  --insecure "
+ echo ${OCTET[1]} 
+  if [[ ${OCTET[1]} == '42' || ${OCTET[1]} == '38' ]]; then
+    SOURCE_URL="10.42.194.11"
+  else
+    SOURCE_URL="10.55.251.38"
+  fi
+
   for _image in "${_prio_images_arr[@]}"; do
+    if [[ ${_image} == *"iso"* ]]; then
+        DISK_TYPE="ISO_IMAGE"
+    else
+        DISK_TYPE="DISK_IMAGE"
+    fi
     _http_body=$(cat <<EOF
 {"action_on_failure":"CONTINUE",
 "execution_order":"SEQUENTIAL",
@@ -471,13 +482,14 @@ function priority_images(){
   "path_and_params":"/api/nutanix/v3/images",
   "body":{"spec":
   {"name":"${_image}","description":"${_image}","resources":{
-    "image_type":"DISK_IMAGE",
-    "source_uri":"${SOURCE_URL}"}},
+    "image_type":"${DISK_TYPE}",
+    "source_uri":"http://${SOURCE_URL}/workshop_staging/${_image}"}},
   "metadata":{"kind":"image"},"api_version":"3.1.0"}}],"api_version":"3.0"}
 EOF
     )
-  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
-          https://localhost:9440/api/nutanix/v3/batch | jq '.api_response_list[].api_response.status.execution_context.task_uuid' | tr -d \")
+  echo ${_http_body}
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/batch| jq '.api_response_list[].api_response.status.execution_context.task_uuid' | tr -d \")
+  echo ${_task_id}
   loop ${_task_id}
 
   done
