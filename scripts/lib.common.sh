@@ -464,7 +464,7 @@ function priority_images(){
 
   # Set the correct High Perf FileServer
   if [[ ${OCTET[1]} == '42' ]] || [[ ${OCTET[1]} == '38' ]]; then
-    SOURCE_URL="10.42.38.10"
+    SOURCE_URL="10.42.38.10/images"
   else
     SOURCE_URL="10.55.76.10"
   fi
