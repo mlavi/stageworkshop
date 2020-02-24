@@ -177,7 +177,6 @@ case ${1} in
     && object_store \
     && karbon_image_download \
     && priority_images \
-    && images \
     && flow_enable \
     && pc_cluster_img_import \
     && upload_citrix_calm_blueprint \
@@ -188,6 +187,7 @@ case ${1} in
     && sleep 30 \
     && upload_CICDInfra_calm_blueprint \
     && seedPC \
+    && images \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

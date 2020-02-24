@@ -461,12 +461,15 @@ function priority_images(){
           Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
           )
   local CURL_HTTP_OPTS=" --max-time 25 --header Content-Type:application/json --header Accept:application/json  --insecure "
- echo ${OCTET[1]} 
-  if [[ ${OCTET[1]} == '42' || ${OCTET[1]} == '38' ]]; then
-    SOURCE_URL="10.42.194.11"
+
+  # Set the correct High Perf FileServer
+  if [[ ${OCTET[1]} == '42' ]] || [[ ${OCTET[1]} == '38' ]]; then
+    SOURCE_URL="10.42.38.10"
   else
-    SOURCE_URL="10.55.251.38"
+    SOURCE_URL="10.55.76.10"
   fi
+
+  log "Grabbing the priority files from the ${SOURCE_URL} fileserver..."
 
   for _image in "${_prio_images_arr[@]}"; do
     if [[ ${_image} == *"iso"* ]]; then
@@ -487,9 +490,7 @@ function priority_images(){
   "metadata":{"kind":"image"},"api_version":"3.1.0"}}],"api_version":"3.0"}
 EOF
     )
-  echo ${_http_body}
   _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/batch| jq '.api_response_list[].api_response.status.execution_context.task_uuid' | tr -d \")
-  echo ${_task_id}
   loop ${_task_id}
 
   done
