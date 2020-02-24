@@ -460,7 +460,8 @@ function priority_images(){
           CentOS7.qcow2 \
           Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
           )
-
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+  
   for _image in "${_prio_images_arr[@]}"; do
     _http_body=$(cat <<EOF
 {"action_on_failure":"CONTINUE",

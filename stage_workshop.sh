@@ -137,7 +137,7 @@ EoM
 
       _error=$(prism_check 'PE' '1')
       # If we were unable to connect to the PRISM UI, send a message to the console and move to the next
-      if [[ ! -z ${_error} ]]; then
+      if [[ ${_error} != *"successful"* ]]; then
         log "We were unable to connect to the PRISM UI on ${PE_HOST}..."
         continue
       fi
