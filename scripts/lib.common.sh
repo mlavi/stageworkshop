@@ -460,7 +460,7 @@ function priority_images(){
           CentOS7.qcow2 \
           Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
           )
-  local CURL_HTTP_OPTS=" --max-time 25 --header Content-Type:application/json --header Accept:application/json  --insecure "
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
   # Set the correct High Perf FileServer
   if [[ ${OCTET[1]} == '42' ]] || [[ ${OCTET[1]} == '38' ]]; then
