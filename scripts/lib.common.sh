@@ -454,7 +454,12 @@ EOF
 
 function priority_images{
 
-  local _prio_images_arr=("ERA-Server-build-1.2.0.1.qcow2","Windows2016.qcow2","CentOS7.qcow2","Citrix_Virtual_Apps_and_Desktops_7_1912.iso")
+  local _prio_images_arr=(\
+          ERA-Server-build-1.2.0.1.qcow2 \
+          Windows2016.qcow2 \
+          CentOS7.qcow2 \
+          Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
+          )
 
   for _image in "${_prio_images_arr[@]}"; do
     _http_body=$(cat <<EOF
