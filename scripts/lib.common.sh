@@ -486,7 +486,7 @@ function priority_images(){
   "body":{"spec":
   {"name":"${_image}","description":"${_image}","resources":{
     "image_type":"${DISK_TYPE}",
-    "source_uri":"http://${SOURCE_URL}/workshop_staging/${_image}"}},
+    "source_uri":"http://${SOURCE_URL}/${_image}"}},
   "metadata":{"kind":"image"},"api_version":"3.1.0"}}],"api_version":"3.0"}
 EOF
     )
