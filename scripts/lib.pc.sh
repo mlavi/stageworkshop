@@ -1612,11 +1612,14 @@ function upload_karbon_calm_blueprint() {
 
   # Launch the BLUEPRINT
 
-  #echo "Launching the Karbon Cluster Blueprint"
+  log "Sleep 30 seconds so the blueprint can settle in......"
+  sleep 30
+  
+  log "Launching the Karbon Cluster Blueprint"
 
-  #curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}/launch"
+  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}/launch"
 
-  #echo "Finished Launching the Karbon Cluster Deployment Blueprint"
+  log "Finished Launching the Karbon Cluster Deployment Blueprint"
 
 }
 
@@ -1728,7 +1731,7 @@ function upload_CICDInfra_calm_blueprint() {
   echo "Finished uploading ${BLUEPRINT}!"
 
   #Getting the Blueprint UUID
-  CICDInfra_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==CICD_Infra.json"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  CICDInfra_BLUEPRINT_UUID=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data '{"kind":"blueprint","filter": "name==CICD_Infra"}' 'https://localhost:9440/api/nutanix/v3/blueprints/list' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   echo "CICD Blueprint UUID = $CICDInfra_BLUEPRINT_UUID"
 

@@ -285,8 +285,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
 	  OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
 
     # If the third OCTET is between 170 and 199, we need to have the +3 vlan for the secondary
-    if [[ ${OCTET[2]} -gt 169 ]] && [[ ${OCTET[2]} -lt 200 ]]; then
-      NW2_VLAN=$((OCTET[2]*10+3))
+    if [[ ${OCTET[2]} -gt 169 ]]; then
+      NW2_VLAN=$((OCTET[2]*10+1))
     fi
       ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
