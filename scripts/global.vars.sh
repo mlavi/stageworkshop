@@ -230,7 +230,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     )
     QCOW2_REPOS=(\
        'http://10.42.194.11/workshop_staging/' \
-       'http://10.42.38.10/images' \
+       'http://10.42.38.10/images/' \
        'https://s3.amazonaws.com/get-ahv-images/' \
     )
     AUTODC_REPOS=(\
