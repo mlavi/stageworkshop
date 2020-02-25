@@ -282,7 +282,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.42.38.10/images/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS="10.42.196.10,10.42.194.10"
-	OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
+	  OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
+    NW2_VLAN=$((OCTET[2]*10+3))
       ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
     JQ_REPOS=(\
