@@ -70,12 +70,10 @@ case ${1} in
     export QCOW2_IMAGES=(\
       Windows2016.qcow2 \
       CentOS7.qcow2 \
-      Win10v1903.qcow2 \
       ToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
     )
     export ISO_IMAGES=(\
-      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       Nutanix-VirtIO-1.1.5.iso \
     )
 
@@ -125,10 +123,19 @@ case ${1} in
 
     ssp_auth \
     && calm_enable \
+    && karbon_enable \
+    && objects_enable \
     && lcm \
     && pc_project \
-    && images \
+    && object_store \
+    && karbon_image_download \
+    && priority_images \
+    && flow_enable \
     && pc_cluster_img_import \
+    && upload_karbon_calm_blueprint \
+    && sleep 30 \
+    && upload_CICDInfra_calm_blueprint \
+    && images \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
