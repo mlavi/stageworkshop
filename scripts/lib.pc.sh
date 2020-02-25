@@ -1612,11 +1612,11 @@ function upload_karbon_calm_blueprint() {
 
   # Launch the BLUEPRINT
 
-  echo "Launching the Karbon Cluster Blueprint"
+  #echo "Launching the Karbon Cluster Blueprint"
 
-  curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}/launch"
+  #curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d @set_blueprint_response_file.json "https://localhost:9440/api/nutanix/v3/blueprints/${KARBON_BLUEPRINT_UUID}/launch"
 
-  echo "Finished Launching the Karbon Cluster Deployment Blueprint"
+  #echo "Finished Launching the Karbon Cluster Deployment Blueprint"
 
 }
 
