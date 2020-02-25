@@ -79,7 +79,7 @@ function authentication_source() {
         log "Power on ${AUTH_SERVER} VM..."
         acli "vm.on ${AUTH_SERVER}"
 
-        _attempts=25
+        _attempts=45
             _loop=0
            _sleep=60
 
