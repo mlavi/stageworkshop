@@ -286,7 +286,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
 
     # If the third OCTET is between 170 and 199, we need to have the +3 vlan for the secondary
     if [[ ${OCTET[2]} -gt 169 ]]; then
-      NW2_VLAN=$((OCTET[2]*10+1))
+      NW2_VLAN=$((OCTET[2]*10+3))
     fi
       ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
