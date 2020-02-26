@@ -467,7 +467,7 @@ function create_file_analytics_server() {
   log "Get ${STORAGE_DEFAULT} Container UUID"
   _storage_default_uuid=$(ncli container ls name=${STORAGE_DEFAULT} | grep Uuid | grep -v Pool | cut -f 2 -d ':' | xargs)
 
-  echo "${_nw_name} network UUID: ${_nw_uuid}"
+  echo "Secondary network UUID: ${_nw_uuid}"
   echo "${STORAGE_DEFAULT} storage container UUID: ${_storage_default_uuid}"
 
 
