@@ -22,7 +22,7 @@ WORKSHOPS=(\
 #"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
 "Citrix Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
-"Era Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
+"Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 "Files Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 "Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
