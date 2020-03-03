@@ -18,6 +18,10 @@ case ${1} in
   PE | pe )
     . lib.pe.sh
 
+    export AUTH_SERVER='AutoAD'
+    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
+    export SeedPC='GTSseedPC.zp'
+
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
 
@@ -27,6 +31,15 @@ case ${1} in
     && network_configure \
     && authentication_source \
     && pe_auth \
+    && prism_pro_server_deploy \
+    && files_install \
+    && sleep 30 \
+    && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
+    && sleep 30 \
+    && file_analytics_install \
+    && sleep 30 \
+    && create_file_analytics_server \
+    && sleep 30
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -55,11 +68,7 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        files_install && sleep 30
-
-        create_file_server "${NW1_NAME}" "${NW2_NAME}" && sleep 30
-
-        file_analytics_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
+        # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
       fi

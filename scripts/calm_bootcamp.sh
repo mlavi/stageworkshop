@@ -70,7 +70,7 @@ case ${1} in
     export QCOW2_IMAGES=(\
       Windows2016.qcow2 \
       CentOS7.qcow2 \
-      ToolsVM.qcow2 \
+      WinToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
     )
     export ISO_IMAGES=(\
@@ -129,7 +129,6 @@ case ${1} in
     && pc_project \
     && object_store \
     && karbon_image_download \
-    && priority_images \
     && flow_enable \
     && pc_cluster_img_import \
     && upload_karbon_calm_blueprint \
