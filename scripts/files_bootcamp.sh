@@ -134,8 +134,10 @@ case ${1} in
 
     ssp_auth \
     && calm_enable \
+    && objects_enable \
     && lcm \
     && pc_project \
+    && object_store \
     && images \
     && flow_enable \
     && pc_cluster_img_import \
