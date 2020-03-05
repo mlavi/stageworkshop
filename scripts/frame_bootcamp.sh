@@ -36,7 +36,7 @@ case ${1} in
 
     export USERNW02_NAME='User02-Network'
     export USERNW02_VLAN=$((OCTET[2]*10+1))
-    export USERNW02="${IPV4_PREFIX}.129/25"
+    export USERNW02_SUBNET="${IPV4_PREFIX}.129/25"
     export USERNW02_DHCP_START="${IPV4_PREFIX}.150"
     export USERNW02_DHCP_END="${IPV4_PREFIX}.159"
 
