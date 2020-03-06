@@ -11,21 +11,22 @@ begin
 # - Calm || Bootcamp || Citrix || Summit
 # - PC #.#
 WORKSHOPS=(\
-"Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Current" \
-"SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Current" \
-"Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Current" \
-"Previous Bootcamp Staging (AOS 5.11/AHV PC 5.11) = Stable" \
-"Previous SNC (1-Node) Bootcamp Staging (AOS 5.11/AHV PC 5.11) = Stable" \
+"Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
+"SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
+"Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
+"Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
 "In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Development" \
 "In Development SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Development" \
 "Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
-"Private Cloud Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
-"Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
-"Citrix Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
-"Files Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
-"Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
+"Basic / API Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Private Cloud Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Citrix Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Files Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
 
 function stage_clusters() {
@@ -47,9 +48,9 @@ function stage_clusters() {
   # TODO: make WORKSHOPS and map a JSON configuration file?
   if (( $(echo ${_workshop} | grep -i "PC 5.11.2.1" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_DEV_VERSION}"
-  elif (( $(echo ${_workshop} | grep -i "PC 5.11.2" | wc ${WC_ARG}) > 0 )); then
+  elif (( $(echo ${_workshop} | grep -i "PC 5.11.2.1" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_CURRENT_VERSION}"
-  elif (( $(echo ${_workshop} | grep -i "PC 5.11" | wc ${WC_ARG}) > 0 )); then
+  elif (( $(echo ${_workshop} | grep -i "PC 5.11.2" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_STABLE_VERSION}"
   fi
 
@@ -65,19 +66,14 @@ function stage_clusters() {
     _pe_launch='snc_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
+  if (( $(echo ${_workshop} | grep -i "^Basic / API Bootcamp" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='basic_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
   if (( $(echo ${_workshop} | grep -i "^Private Cloud" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='privatecloud_bootcamp.sh'
-    _pc_launch=${_pe_launch}
-  fi
-  if (( $(echo ${_workshop} | grep -i "^Calm" | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='calm_bootcamp.sh'
-    _pc_launch=${_pe_launch}
-  fi
-  if (( $(echo ${_workshop} | grep -i "^Citrix" | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='citrix_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i "^Databases" | wc ${WC_ARG}) > 0 )); then
@@ -90,6 +86,21 @@ function stage_clusters() {
     _pe_launch='files_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
+  if (( $(echo ${_workshop} | grep -i "^Calm" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='calm_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^Citrix" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='citrix_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^Frame" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='frame_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
   if (( $(echo ${_workshop} | grep -i Summit | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='ts2020.sh'
@@ -100,11 +111,7 @@ function stage_clusters() {
     _pe_launch='snc_ts2020.sh'
     _pc_launch=${_pe_launch}
   fi
-  if (( $(echo ${_workshop} | grep -i "^Frame" | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='frame_bootcamp.sh'
-    _pc_launch=${_pe_launch}
-  fi
+
 
   dependencies 'install' 'sshpass'
 
