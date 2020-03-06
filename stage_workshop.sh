@@ -24,9 +24,9 @@ WORKSHOPS=(\
 "Basic / API Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 "Private Cloud Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 "Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
-"Citrix Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 "Files Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 "Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Citrix Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
 
 function stage_clusters() {
@@ -111,7 +111,6 @@ function stage_clusters() {
     _pe_launch='snc_ts2020.sh'
     _pc_launch=${_pe_launch}
   fi
-
 
   dependencies 'install' 'sshpass'
 

@@ -7,7 +7,8 @@ After HPoC Foundation, you can have push-button Calm in about half an hour!
 # Table of Contents #
 <!-- MDTOC maxdepth:6 firsth1:0 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
 
-- [Available Workshops](#available-workshops)   
+- [How To Workshop](#howto-workshop)
+- [Available Workshops](#available-workshops)
 - [HPoC Cluster Reservation](#hpoc-cluster-reservation)   
 - [Staging Your HPoC](#staging-your-hpoc)   
    - [Interactive Usage](#interactive-usage)   
@@ -17,6 +18,10 @@ After HPoC Foundation, you can have push-button Calm in about half an hour!
 
 <!-- /MDTOC -->
 ---
+## How To Workshop ##
+
+Please review the How To Workshop for the latest instructions http://ntnx.tips/howto
+
 ## Available Workshops ##
 
 1. Calm Introduction Workshop (AOS/AHV 5.5+)
