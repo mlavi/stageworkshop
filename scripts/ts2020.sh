@@ -33,7 +33,7 @@ case ${1} in
 
     export AUTH_SERVER='AutoAD'
     export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zp'
+    export SeedPC='GTSseedPC.zip'
 
     export _external_nw_name="${1}"
 
