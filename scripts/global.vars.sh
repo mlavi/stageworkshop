@@ -62,7 +62,7 @@ QCOW2_IMAGES=(\
    Windows10-1709.qcow2 \
    WinToolsVM.qcow2 \
    Linux_ToolsVM.qcow2 \
-   ERA-Server-build-1.1.1.3.qcow2 \
+   ERA-Server-build-1.2.1.qcow2 \
    MSSQL-2016-VM.qcow2 \
    hycu-3.5.0-6253.qcow2 \
    VeeamAvailability_1.0.457.vmdk \
