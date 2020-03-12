@@ -1496,7 +1496,7 @@ function upload_karbon_calm_blueprint() {
   local DIRECTORY="/home/nutanix/karbon"
   local BLUEPRINT=${Karbon_Blueprint}
   local CALM_PROJECT="BootcampInfra"
-  local KARBON_IMAGE='ntnx-0.2'
+  local KARBON_IMAGE='ntnx-0.4'
   local PE_IP=${PE_HOST}
   local CLSTR_NAME="none"
   local CTR_UUID=${_storage_default_uuid}
