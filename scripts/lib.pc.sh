@@ -11,6 +11,15 @@
 # Added the download bits for the Centos Image for Karbon
 ###############################################################################################################################################################################
 
+###############################################################################################################################################################################
+# Routine to mark PC has finished staging
+###############################################################################################################################################################################
+
+function finish_staging() {
+  log "Staging is complete. Writing to .staging_complete"
+  touch .staging_complete
+  date >> .staging_complete
+}
 
 
 ###############################################################################################################################################################################
@@ -263,6 +272,7 @@ function objects_enable() {
   local _json_data_check="{\"entity_type\":\"objectstore\"}"
   local _httpURL_check="https://localhost:9440/oss/api/nutanix/v3/groups"
   local _httpURL="https://localhost:9440/api/nutanix/v3/services/oss"
+  local _maxtries=30
 
   # Start the enablement process
   _response=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST -d $_json_data_set_enable ${_httpURL})
@@ -301,6 +311,18 @@ function object_store() {
     local _url_oss='https://localhost:9440/oss/api/nutanix/v3/objectstores'
     local _url_oss_check='https://localhost:9440/oss/api/nutanix/v3/objectstores/list'
 
+
+    # Enable Dark Site Repo and wait 3 seconds
+    mspctl airgap --enable --lcm-server=${OBJECTS_OFFLINE_REPO}
+    sleep 3
+    # Confirm airgap is enabled
+    _response=$(mspctl airgap --status | grep "\"enable\":true" | wc -l)
+
+    if [ $_response -eq 1 ]; then
+      log "Objects dark site staging successfully enabled. Response is $_response. "
+    else
+      log "Objects failed to enable dark site staging. Will use standard WAN download (this will take longer). Response is $_response."
+    fi
 
     # Payload for the _json_data
     _json_data='{"kind":"subnet"}'
