@@ -206,7 +206,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.55.76.10/seedPC.zip'
     BLUEPRINT_URL='http://10.55.251.38/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.55.251.10,10.55.251.11'
-	OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
+	  OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
     ;;
   10.42 ) # HPOC us-west = PHX
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
