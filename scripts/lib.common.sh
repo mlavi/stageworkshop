@@ -455,7 +455,7 @@ EOF
 function priority_images(){
 
   local _prio_images_arr=(\
-          ERA-Server-build-1.2.0.1.qcow2 \
+          ERA-Server-build-1.2.1.qcow2 \
           Windows2016.qcow2 \
           CentOS7.qcow2 \
           Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
