@@ -29,7 +29,7 @@ for _cluster in $(cat cluster.txt | grep -v ^#)
       cmd+=';sleep 3;/usr/local/nutanix/cluster/bin/mspctl airgap --status | grep "\"enable\":true" | wc -l'
 
       # Fire the command on the PC of the cluster so we have the right Dark Site image pull for Objects
-      sshpass -e ssh nutanix@${PE_HOST} -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null $cmd
+      #sshpass -e ssh nutanix@${PE_HOST} -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null $cmd
 
       # See if we have an error on the cluster for the objects
       url="https://${PC_HOST}:9440/oss/api/nutanix/v3/groups"
@@ -92,9 +92,8 @@ for _cluster in $(cat cluster.txt | grep -v ^#)
             _json_data_oss+=${OBJECTS_NW_END}
             _json_data_oss+='"}}}}'
 
-            # Now we have the correct data in the payload, let's fire ti to the cluster
+            # Now we have the correct data in the payload, let's fire to to the cluster
             oss_create="https://${PC_HOST}:9440/oss/api/nutanix/v3/objectstores"
-            echo "curl ${CURL_HTTP_OPTS} -X POST --user admin:${PE_PASSWORD} -d ${_json_data_oss} ${oss_create})"
             _response_oss_create=$(curl ${CURL_HTTP_OPTS} -X POST --user admin:${PE_PASSWORD} -d ${_json_data_oss} ${oss_create} | jq '.metadata.uuid' | tr -d \")
             if [[ -z ${_response_oss_create} ]]; then
               echo "Failed to fire the script. Please check the cluster.."

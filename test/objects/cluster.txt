@@ -34,7 +34,7 @@
 10.42.84.39|techX2020!|nathan@nutanix.com
 10.42.86.39|techX2020!|nathan@nutanix.com
 10.42.94.39|techX2020!|nathan@nutanix.com
-10.42.95.39|techX2020!|nathan@nutanix.com
+#10.42.95.39|techX2020!|nathan@nutanix.com
 10.42.99.39|techX2020!|nathan@nutanix.com
 10.42.104.39|techX2020!|nathan@nutanix.com
 10.42.108.39|techX2020!|nathan@nutanix.com
@@ -56,8 +56,8 @@
 10.38.217.39|techX2020!|nathan@nutanix.com
 10.38.218.39|techX2020!|nathan@nutanix.com
 10.38.221.39|techX2020!|nathan@nutanix.com
-10.42.111.39|techX2020!|nathan@nutanix.com
-10.42.112.39|techX2020!|nathan@nutanix.com
+#10.42.111.39|techX2020!|nathan@nutanix.com
+#10.42.112.39|techX2020!|nathan@nutanix.com
 10.55.1.39|techX2020!|nathan@nutanix.com
 10.55.2.39|techX2020!|nathan@nutanix.com
 10.55.4.39|techX2020!|nathan@nutanix.com
