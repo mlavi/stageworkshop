@@ -29,7 +29,7 @@ for _cluster in $(cat cluster.txt | grep -v ^#)
       cmd+=';sleep 3;/usr/local/nutanix/cluster/bin/mspctl airgap --status | grep "\"enable\":true" | wc -l'
 
       # Fire the command on the PC of the cluster so we have the right Dark Site image pull for Objects
-      #sshpass -e ssh nutanix@${PE_HOST} -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null $cmd
+      sshpass -e ssh nutanix@${PE_HOST} -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null $cmd
 
       # See if we have an error on the cluster for the objects
       url="https://${PC_HOST}:9440/oss/api/nutanix/v3/groups"
