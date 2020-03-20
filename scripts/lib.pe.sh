@@ -593,6 +593,11 @@ function era_network_configure() {
       acli "net.update_dhcp_dns ${NW2_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
     fi
 
+    if [[ ! -z "${NW3_NAME}" ]]; then
+      log "Create EraManaged network: Name: ${NW3_NAME}, VLAN: ${NW3_VLAN}"
+      acli "net.create ${NW2_NAME} vlan=${NW3_VLAN}"
+    fi
+
   fi
 }
 
