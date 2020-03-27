@@ -86,9 +86,9 @@ case ${1} in
       Windows2016.qcow2 \
       Win10v1903.qcow2 \
       WinToolsVM.qcow2 \
+      CentOS7.qcow2 \
     )
     export ISO_IMAGES=(\
-      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       Nutanix-VirtIO-1.1.5.iso \
     )
 
