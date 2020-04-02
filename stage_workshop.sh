@@ -16,8 +16,8 @@ WORKSHOPS=(\
 "Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
 "Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
 "Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
-"In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Development" \
+"In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.16.1.2) = Development" \
+"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.16.1.2) = Development" \
 "Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
@@ -46,7 +46,7 @@ function stage_clusters() {
   # Map to latest and greatest of each point release
   # Metadata URLs MUST be specified in lib.common.sh function: ntnx_download
   # TODO: make WORKSHOPS and map a JSON configuration file?
-  if (( $(echo ${_workshop} | grep -i "PC 5.11.2.1" | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "PC 5.16.1.2" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_DEV_VERSION}"
   elif (( $(echo ${_workshop} | grep -i "PC 5.11.2.1" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_CURRENT_VERSION}"
