@@ -13,7 +13,7 @@ begin
 WORKSHOPS=(\
 "Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
 "SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
-"Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
 "Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
 "Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
 "In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Development" \
