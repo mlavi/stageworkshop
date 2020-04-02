@@ -176,7 +176,7 @@ AUTH_ADMIN_GROUP='SSP Admins'
 case "${OCTET[0]}.${OCTET[1]}" in
 
   10.55 ) # HPOC us-east = DUR
-    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.6.1.2.json'
+    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_DEV_URL='http://10.55.251.38/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.11.2.1.json'
     PC_CURRENT_URL='http://10.55.251.38/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
