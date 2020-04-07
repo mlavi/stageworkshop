@@ -595,7 +595,7 @@ function era_network_configure() {
 
     if [[ ! -z "${NW3_NAME}" ]]; then
       log "Create EraManaged network: Name: ${NW3_NAME}, VLAN: ${NW3_VLAN}"
-      acli "net.create ${NW2_NAME} vlan=${NW3_VLAN}"
+      acli "net.create ${NW3_NAME} vlan=${NW3_VLAN}"
     fi
 
   fi
