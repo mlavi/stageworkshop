@@ -13,20 +13,20 @@ begin
 WORKSHOPS=(\
 "Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
 "SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
-"Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
 "Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
 "Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
 "In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.16.1.2) = Development" \
 "In Development SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.16.1.2) = Development" \
-"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
+"Basic / API Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
+"Private Cloud Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
+"Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
+"Files Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
+"Calm Workshop (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
+"Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
+"Citrix Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
+"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 #"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
-"Basic / API Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
-"Private Cloud Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
-"Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
-"Files Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
-"Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
-"Citrix Bootcamp (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
 
 function stage_clusters() {
