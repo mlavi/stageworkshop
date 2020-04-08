@@ -77,6 +77,7 @@ case ${1} in
     export ISO_IMAGES=(\
       Nutanix-VirtIO-1.1.5.iso \
       Windows2016.iso \
+      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
     )
 
     run_once
