@@ -80,13 +80,16 @@ case ${1} in
     export OBJECTS_NW_START="${IPV4_PREFIX}.18"
     export OBJECTS_NW_END="${IPV4_PREFIX}.21"
 
+    export _prio_images_arr=(\
+            Windows2016.qcow2 \
+            Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
+            )
+
     export QCOW2_IMAGES=(\
-      Windows2016.qcow2 \
       Win10v1903.qcow2 \
       WinToolsVM.qcow2 \
     )
     export ISO_IMAGES=(\
-      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
       Nutanix-VirtIO-1.1.5.iso \
     )
 
@@ -134,6 +137,7 @@ case ${1} in
     && calm_enable \
     && lcm \
     && pc_project \
+    && priority_images \
     && images \
     && flow_enable \
     && pc_cluster_img_import \
