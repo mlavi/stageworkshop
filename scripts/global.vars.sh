@@ -3,8 +3,8 @@
 # shellcheck disable=SC2034
 RELEASE='release.json'
 PC_DEV_VERSION='5.16.1.2'
-PC_CURRENT_VERSION='5.11.2.1'
-PC_STABLE_VERSION='5.11.2'
+PC_CURRENT_VERSION='5.16.1.2'
+PC_STABLE_VERSION='5.11.2.1'
 FILES_VERSION='3.6.1.2'
 FILE_ANALYTICS_VERSION='2.1.0'
 NTNX_INIT_PASSWORD='nutanix/4u'
@@ -178,10 +178,10 @@ case "${OCTET[0]}.${OCTET[1]}" in
   10.55 ) # HPOC us-east = DUR
     PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_DEV_URL='http://10.55.251.38/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
-    PC_CURRENT_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.11.2.1.json'
-    PC_CURRENT_URL='http://10.55.251.38/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
-    PC_STABLE_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.11.2.json'
-    PC_STABLE_URL='http://10.55.251.38/workshop_staging/euphrates-5.11.2-stable-prism_central.tar'
+    PC_CURRENT_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.16.1.2.json'
+    PC_CURRENT_URL='http://10.55.251.38/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
+    PC_STABLE_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.11.2.1.json'
+    PC_STABLE_URL='http://10.55.251.38/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
     FILES_METAURL='http://10.55.251.38/workshop_staging/afs-3.6.1.2.json'
     FILES_URL='http://10.55.251.38/workshop_staging/nutanix-afs-el7.3-release-afs-3.6.1.2-stable.qcow2'
     FILE_ANALYTICS_METAURL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.6-release-2.1.0-metadata.json'
@@ -196,7 +196,6 @@ case "${OCTET[0]}.${OCTET[1]}" in
        #'http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm' \
     )
     QCOW2_REPOS=(\
-       'http://10.55.76.10/' \
        'http://10.55.251.38/workshop_staging/' \
        'https://s3.amazonaws.com/get-ahv-images/' \
     )
@@ -208,7 +207,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     'http://10.55.251.38/workshop_staging/AutoAD.qcow2' \
     'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
-    PC_DATA='http://10.55.76.10/seedPC.zip'
+    PC_DATA='http://10.55.251.38/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.55.251.38/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.55.251.10,10.55.251.11'
 	  #OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
@@ -221,10 +220,10 @@ case "${OCTET[0]}.${OCTET[1]}" in
   10.42 ) # HPOC us-west = PHX
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
-    PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
-    PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
-    PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.json'
-    PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2-stable-prism_central.tar'
+    PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
+    PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
+    PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
+    PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
     FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.6.1.2.json'
     FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.6.1.2-stable.qcow2'
     FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.1.0-metadata.json'
@@ -239,7 +238,6 @@ case "${OCTET[0]}.${OCTET[1]}" in
        #'http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm' \
     )
     QCOW2_REPOS=(\
-         'http://10.42.38.10/images/' \
          'http://10.42.194.11/workshop_staging/' \
          'https://s3.amazonaws.com/get-ahv-images/' \
     )
@@ -251,17 +249,17 @@ case "${OCTET[0]}.${OCTET[1]}" in
      'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
-    PC_DATA='http://10.42.38.10/images/seedPC.zip'
+    PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.42.196.10,10.42.194.10'
     ;;
   10.38 ) # HPOC us-west = PHX 1-Node Clusters
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
-    PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
-    PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
-    PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.json'
-    PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2-stable-prism_central.tar'
+    PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
+    PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
+    PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
+    PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
     FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.6.1.2.json'
     FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.6.1.2-stable.qcow2'
     FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.6-release-2.1.0-metadata.json'
@@ -276,7 +274,6 @@ case "${OCTET[0]}.${OCTET[1]}" in
          #'http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm' \
       )
     QCOW2_REPOS=(\
-         'http://10.42.38.10/images/' \
          'http://10.42.194.11/workshop_staging/' \
          'https://s3.amazonaws.com/get-ahv-images/' \
     )
@@ -288,7 +285,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
      'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
-    PC_DATA='http://10.42.38.10/images/seedPC.zip'
+    PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS="10.42.196.10,10.42.194.10"
 
