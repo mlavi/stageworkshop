@@ -18,7 +18,7 @@ case ${1} in
   PE | pe )
     . lib.pe.sh
 
-    export AUTH_SERVER='AutoAD'
+    export AUTH_SERVER='AutoDC'
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable

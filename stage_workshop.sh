@@ -11,20 +11,20 @@ begin
 # - Calm || Bootcamp || Citrix || Summit
 # - PC #.#
 WORKSHOPS=(\
-"Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
-"SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.11.2.1) = Current" \
-"Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
-"Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2) = Stable" \
-"In Development Bootcamp Staging (AOS 5.11+/AHV PC 5.16.1.2) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11+/AHV PC 5.16.1.2) = Development" \
-"Basic / API Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
-"Private Cloud Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
-"Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
-"Files Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
-"Calm Workshop (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
-"Frame Bootcamp Staging (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
-"Citrix Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Development" \
-"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Current" \
+"Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
+"SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
+"Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
+"Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
+"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
+"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
+"Basic / API Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
+"Private Cloud Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
+"Databases with Era Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
+"Files Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
+"Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
+"Frame Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
+"Citrix Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
+#"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 #"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
