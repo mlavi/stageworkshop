@@ -15,8 +15,6 @@ WORKSHOPS=(\
 "SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 "Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 "Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
 "Basic / API Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
 "Private Cloud Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
 "Databases with Era Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
@@ -24,6 +22,8 @@ WORKSHOPS=(\
 "Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 "Frame Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
 "Citrix Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
+"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
+"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
 #"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 #"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
@@ -48,9 +48,9 @@ function stage_clusters() {
   # TODO: make WORKSHOPS and map a JSON configuration file?
   if (( $(echo ${_workshop} | grep -i "PC 5.16.1.2" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_DEV_VERSION}"
-  elif (( $(echo ${_workshop} | grep -i "PC 5.11.2.1" | wc ${WC_ARG}) > 0 )); then
+  elif (( $(echo ${_workshop} | grep -i "PC 5.16.1.2" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_CURRENT_VERSION}"
-  elif (( $(echo ${_workshop} | grep -i "PC 5.11.2" | wc ${WC_ARG}) > 0 )); then
+  elif (( $(echo ${_workshop} | grep -i "PC 5.11.2.1" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_STABLE_VERSION}"
   fi
 
