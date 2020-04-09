@@ -67,7 +67,6 @@ QCOW2_IMAGES=(\
    hycu-3.5.0-6253.qcow2 \
    VeeamAvailability_1.0.457.vmdk \
    move3.2.0.qcow2 \
-   AutoXD.qcow2 \
 )
 ISO_IMAGES=(\
    CentOS7.iso \
@@ -75,8 +74,6 @@ ISO_IMAGES=(\
    Windows2012R2.iso \
    Windows10.iso \
    Nutanix-VirtIO-1.1.5.iso \
-   SQLServer2014SP3.iso \
-   XenApp_and_XenDesktop_7_18.iso \
    VeeamBR_9.5.4.2615.Update4.iso \
 )
 
@@ -148,11 +145,6 @@ case "${OCTET[3]}" in
 esac
 
 # Stuff needed for object_store
-if curl --output /dev/null --silent --head --fail "http://10.42.38.10/images"; then
-  OBJECTS_OFFLINE_REPO='http://10.42.38.10/images'
-else
-  OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects/'
-fi
 #OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
 VLAN=${OCTET[2]}
 NETWORK="${OCTET[0]}.${OCTET[1]}"
@@ -210,12 +202,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.55.251.38/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.55.251.38/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.55.251.10,10.55.251.11'
-	  #OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
-    if curl --output /dev/null --silent --head --fail "http://10.55.76.10"; then
-      OBJECTS_OFFLINE_REPO='http://10.55.76.10'
-    else
-      OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects/'
-    fi
+	OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
     ;;
   10.42 ) # HPOC us-west = PHX
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
@@ -238,8 +225,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
        #'http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm' \
     )
     QCOW2_REPOS=(\
-         'http://10.42.194.11/workshop_staging/' \
-         'https://s3.amazonaws.com/get-ahv-images/' \
+       'http://10.42.194.11/workshop_staging/' \
+       'https://s3.amazonaws.com/get-ahv-images/' \
     )
     AUTODC_REPOS=(\
      'http://10.42.194.11/workshop_staging/AutoDC2.qcow2' \
@@ -252,6 +239,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.42.196.10,10.42.194.10'
+    OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
     ;;
   10.38 ) # HPOC us-west = PHX 1-Node Clusters
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
@@ -288,6 +276,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS="10.42.196.10,10.42.194.10"
+	OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
 
     # If the third OCTET is between 170 and 199, we need to have the +3 vlan for the secondary
     if [[ ${OCTET[2]} -gt 169 ]]; then
