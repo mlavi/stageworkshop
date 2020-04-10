@@ -454,22 +454,17 @@ EOF
 
 function priority_images(){
 
-  local _prio_images_arr=(\
-          ERA-Server-build-1.2.1.qcow2 \
-          Windows2016.qcow2 \
-          CentOS7.qcow2 \
-          Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
-          )
+  )
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
   # Set the correct High Perf FileServer
-  if [[ ${OCTET[1]} == '42' ]] || [[ ${OCTET[1]} == '38' ]]; then
-    SOURCE_URL="10.42.38.10/images"
-  else
-    SOURCE_URL="10.55.76.10"
-  fi
+  #if [[ ${OCTET[1]} == '42' ]] || [[ ${OCTET[1]} == '38' ]]; then
+  #  SOURCE_URL="10.42.38.10/images"
+  #else
+  #  SOURCE_URL="10.55.76.10"
+  #fi
 
-  log "Grabbing the priority files from the ${SOURCE_URL} fileserver..."
+  log "Grabbing the priority files from the ${QCOW2_REPOS} fileserver..."
 
   for _image in "${_prio_images_arr[@]}"; do
     if [[ ${_image} == *"iso"* ]]; then
@@ -486,7 +481,7 @@ function priority_images(){
   "body":{"spec":
   {"name":"${_image}","description":"${_image}","resources":{
     "image_type":"${DISK_TYPE}",
-    "source_uri":"http://${SOURCE_URL}/${_image}"}},
+    "source_uri":"${QCOW2_REPOS}/${_image}"}},
   "metadata":{"kind":"image"},"api_version":"3.1.0"}}],"api_version":"3.0"}
 EOF
     )
