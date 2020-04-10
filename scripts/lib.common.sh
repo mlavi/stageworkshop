@@ -454,7 +454,7 @@ EOF
 
 function priority_images(){
 
-  )
+
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
   # Set the correct High Perf FileServer
