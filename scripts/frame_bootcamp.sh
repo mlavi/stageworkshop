@@ -29,37 +29,37 @@ case ${1} in
     export NW2_DHCP_END2="${IPV4_PREFIX}.253"
 
     export USERNW01_NAME='User01-Network'
-    export USERNW01_VLAN=$((OCTET[2]*10+1))
+    export USERNW01_VLAN=${NW2_VLAN}
 
     export USERNW02_NAME='User02-Network'
-    export USERNW02_VLAN=$((OCTET[2]*10+1))
+    export USERNW02_VLAN=${NW2_VLAN}
 
     export USERNW03_NAME='User03-Network'
-    export USERNW03_VLAN=$((OCTET[2]*10+1))
+    export USERNW03_VLAN=${NW2_VLAN}
 
     export USERNW04_NAME='User04-Network'
-    export USERNW04_VLAN=$((OCTET[2]*10+1))
+    export USERNW04_VLAN=${NW2_VLAN}
 
     export USERNW05_NAME='User05-Network'
-    export USERNW05_VLAN=$((OCTET[2]*10+1))
+    export USERNW05_VLAN=${NW2_VLAN}
 
     export USERNW06_NAME='User06-Network'
-    export USERNW06_VLAN=$((OCTET[2]*10+1))
+    export USERNW06_VLAN=${NW2_VLAN}
 
     export USERNW07_NAME='User07-Network'
-    export USERNW07_VLAN=$((OCTET[2]*10+1))
+    export USERNW07_VLAN=${NW2_VLAN}
 
     export USERNW08_NAME='User08-Network'
-    export USERNW08_VLAN=$((OCTET[2]*10+1))
+    export USERNW08_VLAN=${NW2_VLAN}
 
     export USERNW09_NAME='User09-Network'
-    export USERNW09_VLAN=$((OCTET[2]*10+1))
+    export USERNW09_VLAN=${NW2_VLAN}
 
     export USERNW10_NAME='User10-Network'
-    export USERNW10_VLAN=$((OCTET[2]*10+1))
+    export USERNW10_VLAN=${NW2_VLAN}
 
     export USERNW11_NAME='User11-Network'
-    export USERNW11_VLAN=$((OCTET[2]*10+1))
+    export USERNW11_VLAN=${NW2_VLAN}
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
