@@ -24,6 +24,9 @@ WORKSHOPS=(\
 "Citrix Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
 "In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
 "In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
+"Databases Era with MSSQL Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
+"Databases Era with Oracle Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
+"Databases Era with Postgres Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 #"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 #"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
 #"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
@@ -79,6 +82,21 @@ function stage_clusters() {
   if (( $(echo ${_workshop} | grep -i "^Databases" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='era_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^Databases Era with MSSQL Bootcamp" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='era_mssql_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^Databases Era with Oracle Bootcamp" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='era_oracle_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^Databases Era with Postgres Bootcamp" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='era_postgres_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i "^Files" | wc ${WC_ARG}) > 0 )); then

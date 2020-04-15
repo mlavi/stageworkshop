@@ -13,6 +13,7 @@ SSH_PUBKEY="${HOME}/.ssh/id_rsa.pub"
 STORAGE_POOL='SP01'
 STORAGE_DEFAULT='Default'
 STORAGE_IMAGES='Images'
+STORAGE_ERA='Era'
 ATTEMPTS=40
 SLEEP=60
 PrismOpsServer='PrismProLabUtilityServer'
@@ -32,9 +33,41 @@ SSH_OPTS='-o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserK
 SSH_OPTS+=' -q' # -v'
 
 ####################################################
-#
+# Era Bootcamps VARs
+###################################################
+
+MSSQL_SourceVM="Win2016SQLSource"
+MSSQL_SourceVM_Image="Win2016SQLSource"
+MSSQL_SourceVM_Image1="MSSQL_1"
+MSSQL_SourceVM_Image2="MSSQL_2"
+
+Oracle_SourceVM="Oracle12cSource"
+Oracle_SourceVM_BootImage="12c_bootdisk"
+Oracle_SourceVM_Image1="12c_disk1"
+Oracle_SourceVM_Image2="12c_disk2"
+Oracle_SourceVM_Image3="12c_disk3"
+Oracle_SourceVM_Image4="12c_disk4"
+Oracle_SourceVM_Image5="12c_disk5"
+Oracle_SourceVM_Image6="12c_disk6"
+Oracle_SourceVM_Image7=""
+Oracle_SourceVM_Image8=""
+Oracle_SourceVM_Image9=""
+Oracle_SourceVM_Image10=""
+
+Oracle_Patch_BootImage="19c_bootdisk"
+Oracle_Patch_Image1="19c_disk1"
+Oracle_Patch_Image2="19c_disk2"
+Oracle_Patch_Image3="19c_disk3"
+Oracle_Patch_Image4="19c_disk4"
+Oracle_Patch_Image5="19c_disk5"
+Oracle_Patch_Image6="19c_disk6"
+Oracle_Patch_Image7="19c_disk7"
+Oracle_Patch_Image8="19c_disk8"
+Oracle_Patch_Image9="19c_disk9"
+Oracle_Patch_Image10=""
+
+####################################################
 # 3rd Party images used at GTS or Add-On Labs
-#
 ###################################################
 #Peer Software
 PeerMgmtServer='Windows2016-PeerMgmt-18feb20'

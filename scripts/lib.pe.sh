@@ -1064,6 +1064,17 @@ function pc_destroy() {
 }
 
 ###############################################################################################################################################################################
+# Routine create the Era Storage container for the Era Bootcamps.
+###############################################################################################################################################################################
+
+function create_era_container() {
+
+  log "Creating Era Storage Container"
+  ncli container create name="${STORAGE_ERA}" rf=2 sp-name="${STORAGE_POOL}" enable-compression=true compression-delay=60
+
+}
+
+###############################################################################################################################################################################
 # Routine to deploy the Peer Management Center
 ###############################################################################################################################################################################
 # MTM TODO When integrating with Nutanix scripts, need to change echo to log and put quotes around text after all acli commands

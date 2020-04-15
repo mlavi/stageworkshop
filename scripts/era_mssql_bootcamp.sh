@@ -3,7 +3,7 @@
 
 #__main()__________
 
-# Source Nutanix environment (PATH + aliases), then Workshop common routines + global variables
+# Source Nutanix environment (PATH + aliases), then common routines + global variables
 . /etc/profile.d/nutanix_env.sh
 . lib.common.sh
 . global.vars.sh
@@ -19,27 +19,24 @@ case ${1} in
     . lib.pe.sh
 
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zp'
+    # Networking needs for Era Bootcamp
+	  #export NW2_NAME='EraManaged'
+    export NW2_DHCP_START="${IPV4_PREFIX}.132"
+    export NW2_DHCP_END="${IPV4_PREFIX}.219"
+	  export NW3_NAME='EraManaged'
+    export NW3_VLAN=$((OCTET[2]*10+1))
+    #export NW3_SUBNET="${IPV4_PREFIX}.129/25"
 
-    args_required 'EMAIL PE_HOST PE_PASSWORD PC_VERSION'
+    args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
 
     dependencies 'install' 'sshpass' && dependencies 'install' 'jq' \
     && pe_license \
     && pe_init \
-    && network_configure \
+    && create_era_container \
+    && era_network_configure\
     && authentication_source \
-    && pe_auth \
-    && prism_pro_server_deploy \
-    && files_install \
-    && sleep 30 \
-    && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
-    && sleep 30 \
-    && file_analytics_install \
-    && sleep 30 \
-    && create_file_analytics_server \
-    && sleep 30
+    && pe_auth
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -59,9 +56,7 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        deploy_peer_mgmt_server "${PMC}" \
-        && deploy_peer_agent_server "${AGENTA}" \
-        && deploy_peer_agent_server "${AGENTB}"
+
         #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
@@ -72,7 +67,6 @@ case ${1} in
       log "Error ${_error}: in main functional chain, exit!"
       exit ${_error}
     fi
-
   ;;
   PC | pc )
     . lib.pc.sh
@@ -82,12 +76,13 @@ case ${1} in
     export OBJECTS_NW_START="${IPV4_PREFIX}.18"
     export OBJECTS_NW_END="${IPV4_PREFIX}.21"
 
+    export _prio_images_arr=(\
+      ERA-Server-build-1.2.1.qcow2 \
+    )
+
     export QCOW2_IMAGES=(\
-      Windows2016.qcow2 \
-      Win10v1903.qcow2 \
       WinToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
-      CentOS7.qcow2 \
     )
     export ISO_IMAGES=(\
       Nutanix-VirtIO-1.1.5.iso \
@@ -135,13 +130,15 @@ case ${1} in
 
     ssp_auth \
     && calm_enable \
-    && objects_enable \
     && lcm \
     && pc_project \
-    && object_store \
+    && priority_images \
     && images \
     && flow_enable \
     && pc_cluster_img_import \
+    && upload_era_calm_blueprint \
+    && sleep 30 \
+    && deploy_mssql \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
@@ -166,30 +163,3 @@ case ${1} in
     files_install
   ;;
 esac
-#!/usr/bin/env bash
-# -x
-
-#__main()__________
-
-# Source Nutanix environment (PATH + aliases), then common routines + global variables
-. /etc/profile.d/nutanix_env.sh
-. lib.common.sh
-. global.vars.sh
-begin
-
-args_required 'PE_PASSWORD'
-
-case ${1} in
-  PE | pe )
-    . lib.pe.sh
-
-    args_required 'PE_HOST'
-
-    dependencies 'install' 'jq' \
-    && files_install
-
-    log "PE = https://${PE_HOST}:9440"
-  ;;
-esac
-
-finish
