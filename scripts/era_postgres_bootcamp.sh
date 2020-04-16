@@ -136,7 +136,7 @@ case ${1} in
     && sleep 30 \
     && pc_project \
     && priority_images \
-    && images_era_bootcamp \
+    && images \
     && flow_enable \
     && pc_cluster_img_import \
     && upload_era_calm_blueprint \
