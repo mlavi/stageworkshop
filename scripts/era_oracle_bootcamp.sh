@@ -131,6 +131,7 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && lcm \
+    && sleep 30 \
     && pc_project \
     && priority_images \
     && images \
