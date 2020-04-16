@@ -1007,7 +1007,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST 'https://${ERA_HOST}/era/v0.8/resources/networks' --data "${HTTP_JSON_BODY}" )
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data "${HTTP_JSON_BODY}" )
 
 }
 
