@@ -323,6 +323,43 @@ case "${OCTET[0]}.${OCTET[1]}" in
       NW2_VLAN=$((OCTET[2]*10+3))
     fi
       ;;
+  10.136 ) # HPOC us-west = BLR
+    PC_DEV_METAURL='http://10.136.239.13/workshop_staging/nutanix_installer_package_pc-release-euphrates-5.17-stable-x86_64-metadata.json'
+    PC_DEV_URL='http://10.136.239.13/workshop_staging/nutanix_installer_package_pc-release-euphrates-5.17-stable-x86_64.tar'
+    PC_CURRENT_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.16.1.2.json'
+    PC_CURRENT_URL='http://10.136.239.13/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
+    PC_STABLE_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.11.2.1.json'
+    PC_STABLE_URL='http://10.136.239.13/workshop_staging/euphrates-5.11.2.1-stable-prism_central.tar'
+    FILES_METAURL='http://10.136.239.13/workshop_staging/afs-3.6.1.2.json'
+    FILES_URL='http://10.136.239.13/workshop_staging/nutanix-afs-el7.3-release-afs-3.6.1.2-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.136.239.13/workshop_staging/nutanix-file_analytics-el7.6-release-2.1.0-metadata.json'
+    FILE_ANALYTICS_URL='http://10.136.239.13/workshop_staging/nutanix-file_analytics-el7.6-release-2.1.0.qcow2'
+    JQ_REPOS=(\
+         'http://10.136.239.13/workshop_staging/jq-linux64.dms' \
+         'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
+         #'https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64' \
+   )
+    SSHPASS_REPOS=(\
+       'http://10.136.239.131/workshop_staging/sshpass-1.06-2.el7.x86_64.rpm' \
+       #'http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm' \
+    )
+    QCOW2_REPOS=(\
+       'http://10.136.239.13/workshop_staging/' \
+       'https://s3.amazonaws.com/get-ahv-images/' \
+    )
+    AUTODC_REPOS=(\
+     'http://10.136.239.13/workshop_staging/AutoDC2.qcow2' \
+     'https://s3.amazonaws.com/get-ahv-images/AutoDC2.qcow2' \
+    )
+    AUTOAD_REPOS=(\
+     'http://10.136.239.13/workshop_staging/AutoAD.qcow2' \
+     'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
+    )
+    PC_DATA='http://10.136.239.13/workshop_staging/seedPC.zip'
+    BLUEPRINT_URL='http:/10.136.239.13/workshop_staging/CalmBlueprints/'
+    DNS_SERVERS='10.136.239.10,10.136.239.11'
+    OBJECTS_OFFLINE_REPO='http://10.136.239.13/workshop_staging/objects'
+    ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
     JQ_REPOS=(\
          'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
