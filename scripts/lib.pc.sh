@@ -910,7 +910,6 @@ function deploy_mssql() {
   #acli "vm.clone $MSSQL_SourceVM_User[01..$num_sql_vms] clone_from_vm=${MSSQL_SourceVM}"
   #echo "## SQLVM_Clone_Creation_COMPLETE ##"
 
-  fi
 }
 
 #########################################################################################################################################
@@ -946,7 +945,6 @@ function deploy_oracle() {
   acli "vm.on ${Oracle_SourceVM}"
   echo "### Oracle12cVM_Creation_COMPLETE ##"
 
-  fi
 
 }
 
