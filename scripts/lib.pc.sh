@@ -974,6 +974,43 @@ function upload_oracle_patch_images() {
 
 }
 
+#########################################################################################################################################
+# Routine to Upload Era Bootcamp Patch images for Oracle
+#########################################################################################################################################
+
+function configure_era() {
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+  local baseurl=""
+
+##  Create the EraManaged network inside Era ##
+echo "Create ${NW3_NAME} Static Network"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+    "name": "${NW3_NAME}",
+    "type": "Static",
+    "properties": [
+        {
+            "name": "VLAN_GATEWAY",
+            "value": "${NW2_GATEWAY}"
+        },
+        {
+            "name": "VLAN_PRIMARY_DNS",
+            "value": "${DNS_SERVERS}"
+        },
+        {
+            "name": "VLAN_SUBNET_MASK",
+            "value": "${NW2_SUBNET}"
+        }
+    ]
+}
+EOF
+)
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST 'https://${ERA_HOST}/era/v0.8/resources/networks' --data "${HTTP_JSON_BODY}" )
+
+}
+
 ###############################################################################################################################################################################
 # Routine to Create a Project in the Calm part
 ###############################################################################################################################################################################
