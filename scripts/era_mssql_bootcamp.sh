@@ -36,9 +36,9 @@ case ${1} in
     && pe_init \
     && create_era_container \
     && era_network_configure \
-    && deploy_mssql \
     && authentication_source \
-    && pe_auth
+    && pe_auth \
+    && deploy_mssql
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \

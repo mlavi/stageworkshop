@@ -36,10 +36,10 @@ case ${1} in
     && pe_init \
     && create_era_container \
     && era_network_configure \
-    && deploy_oracle \
-    && upload_oracle_patch_images \
     && authentication_source \
-    && pe_auth
+    && pe_auth \
+    && deploy_oracle \
+    && upload_oracle_patch_images
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
