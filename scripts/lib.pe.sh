@@ -90,6 +90,10 @@ function authentication_source() {
         if [[ "${_test}" == "${_autoad_success}" ]]; then
           log "${AUTH_SERVER} is ready."
           sleep ${_sleep}
+          if [[ -z ${NW2_NAME} ]]; then
+            # We are in a SNC environment. So we need to have a second network created
+            secondary_network_SNC
+          fi
           break
         elif (( ${_loop} > ${_attempts} )); then
           log "Error ${_error}: ${AUTH_SERVER} VM running: giving up after ${_loop} tries."
@@ -558,9 +562,6 @@ function network_configure() {
       acli "net.create ${NW2_NAME} vlan=${NW2_VLAN} ip_config=${NW2_SUBNET}"
       acli "net.update_dhcp_dns ${NW2_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
       acli "  net.add_dhcp_pool ${NW2_NAME} start=${NW2_DHCP_START} end=${NW2_DHCP_END}"
-    else
-      # As we are in the SNC environment, run the secondary network via this function
-      secondary_network_SNC
     fi
   fi
 }
