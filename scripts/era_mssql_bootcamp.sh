@@ -35,7 +35,8 @@ case ${1} in
     && pe_license \
     && pe_init \
     && create_era_container \
-    && era_network_configure\
+    && era_network_configure \
+    && deploy_mssql \
     && authentication_source \
     && pe_auth
 
@@ -139,8 +140,7 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && upload_era_calm_blueprint \
-    && sleep 30 \
-    && deploy_mssql \
+    && configure_era \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

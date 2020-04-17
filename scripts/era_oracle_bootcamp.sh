@@ -35,7 +35,9 @@ case ${1} in
     && pe_license \
     && pe_init \
     && create_era_container \
-    && era_network_configure\
+    && era_network_configure \
+    && deploy_oracle \
+    && upload_oracle_patch_images \
     && authentication_source \
     && pe_auth
 
@@ -139,9 +141,7 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && upload_era_calm_blueprint \
-    && sleep 30 \
-    && deploy_oracle \
-    && upload_oracle_patch_images \
+    && configure_era \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

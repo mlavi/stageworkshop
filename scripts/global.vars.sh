@@ -35,7 +35,7 @@ SSH_OPTS+=' -q' # -v'
 ####################################################
 # Era VARs
 ###################################################
-ERA_HOST=${IPV4_PREFIX}.$((${OCTET[3]} - 15))
+
 ERA_USER="admin"
 ERA_PASSWORD="nutanix/4u"
 
@@ -127,6 +127,7 @@ DATA_SERVICE_IP=${IPV4_PREFIX}.$((${OCTET[3]} + 1))
 PC_HOST=${IPV4_PREFIX}.$((${OCTET[3]} + 2))
 FILE_ANALYTICS_HOST=${IPV4_PREFIX}.$((${OCTET[3]} - 22))
 PrismOpsServer_HOST="${IPV4_PREFIX}.$((${OCTET[3]} + 5))"
+ERA_HOST=${IPV4_PREFIX}.$((${OCTET[3]} - 15))
 CITRIX_DDC_HOST=${IPV4_PREFIX}.$((${OCTET[3]} + 8))
 DNS_SERVERS='8.8.8.8'
 NTP_SERVERS='0.us.pool.ntp.org,1.us.pool.ntp.org,2.us.pool.ntp.org,3.us.pool.ntp.org'
