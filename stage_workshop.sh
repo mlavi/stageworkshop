@@ -23,7 +23,7 @@ WORKSHOPS=(\
 "Frame Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
 "Citrix Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
 "In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Development" \
+"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17) = Development" \
 "Databases Era with MSSQL Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Databases Era with Oracle Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Databases Era with Postgres Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
@@ -120,6 +120,11 @@ function stage_clusters() {
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i "^In Development Bootcamp Staging" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='dev_privatecloud_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^In Development SNC (1-Node) Bootcamp Staging" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='dev_privatecloud_bootcamp.sh'
     _pc_launch=${_pe_launch}

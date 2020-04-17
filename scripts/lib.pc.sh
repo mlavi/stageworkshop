@@ -499,7 +499,7 @@ function pc_cluster_img_import() {
      "cluster_reference":{
        "uuid":"${_uuid}",
        "kind":"cluster",
-       "name":"string"}}}],
+       "name":"${CLUSTER_NAME}"}}}],
  "api_version":"3.0"}
 EOF
   )
@@ -881,96 +881,7 @@ EOF
   fi
 }
 
-#########################################################################################################################################
-# Routine to Create Era Bootcamp PreProvisioned MSSQL Server
-#########################################################################################################################################
 
-function deploy_mssql() {
-
-  num_sql_vms=3
-
-  if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${MSSQL_SourceVM_Image} | wc --lines) == 0 )); then
-    log "Import ${MSSQL_SourceVM_Image} image from ${QCOW2_REPOS}..."
-    acli image.create ${MSSQL_SourceVM_Image} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/SQLServer/${MSSQL_SourceVM_Image}.qcow2"
-    acli image.create ${MSSQL_SourceVM_Image1} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/SQLServer/${MSSQL_SourceVM_Image1}.qcow2"
-    acli image.create ${MSSQL_SourceVM_Image2} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/SQLServer/${MSSQL_SourceVM_Image2}.qcow2"
-  else
-    log "Image found, assuming ready. Skipping ${MSSQL_SourceVM} import."
-  fi
-
-  echo "## SQLVM_Creation_INPROGRESS ##"
-  acli "vm.create ${MSSQL_SourceVM} memory=2046M num_cores_per_vcpu=1 num_vcpus=2"
-  acli "vm.disk_create ${MSSQL_SourceVM} clone_from_image=${MSSQL_SourceVM_Image}"
-  acli "vm.nic_create ${MSSQL_SourceVM} network=${NW2_NAME}"
-  echo "## ${MSSQL_SourceVM} - Powering On ##"
-  acli "vm.on ${MSSQL_SourceVM}"
-  echo "## SQLVM_Creation_COMPLETE ##"
-
-  #echo "## SQLVM_Clone_Creation_INPROGRESS ##"
-  #acli "vm.clone $MSSQL_SourceVM_User[01..$num_sql_vms] clone_from_vm=${MSSQL_SourceVM}"
-  #echo "## SQLVM_Clone_Creation_COMPLETE ##"
-
-}
-
-#########################################################################################################################################
-# Routine to Create Era Bootcamp PreProvisioned Oracle Server
-#########################################################################################################################################
-
-function deploy_oracle() {
-
-  if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${Oracle_SourceVM_BootImage} | wc --lines) == 0 )); then
-    log "Import ${Oracle_SourceVM_BootImage} image from ${QCOW2_REPOS}..."
-    acli image.create ${Oracle_SourceVM_BootImage} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle12cSIHA/${Oracle_SourceVM_BootImage}.qcow2"
-    acli image.create ${Oracle_SourceVM_Image1} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle12cSIHA/${Oracle_SourceVM_Image1}.qcow2"
-    acli image.create ${Oracle_SourceVM_Image2} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle12cSIHA/${Oracle_SourceVM_Image2}.qcow2"
-    acli image.create ${Oracle_SourceVM_Image3} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle12cSIHA/${Oracle_SourceVM_Image3}.qcow2"
-    acli image.create ${Oracle_SourceVM_Image4} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle12cSIHA/${Oracle_SourceVM_Image4}.qcow2"
-    acli image.create ${Oracle_SourceVM_Image5} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle12cSIHA/${Oracle_SourceVM_Image5}.qcow2"
-    acli image.create ${Oracle_SourceVM_Image6} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle12cSIHA/${Oracle_SourceVM_Image6}.qcow2"
-  else
-    log "Image found, assuming ready. Skipping ${Oracle_SourceVM} import."
-  fi
-
-  echo "## Oracle12cVM_Creation_INPROGRESS ##"
-  acli "vm.create ${Oracle_SourceVM} memory=32000M num_cores_per_vcpu=2 num_vcpus=2"
-  acli "vm.disk_create ${Oracle_SourceVM} clone_from_image=${Oracle_SourceVM_BootImage}"
-  acli "vm.disk_create ${Oracle_SourceVM} clone_from_image=${Oracle_SourceVM_Image1}"
-  acli "vm.disk_create ${Oracle_SourceVM} clone_from_image=${Oracle_SourceVM_Image2}"
-  acli "vm.disk_create ${Oracle_SourceVM} clone_from_image=${Oracle_SourceVM_Image3}"
-  acli "vm.disk_create ${Oracle_SourceVM} clone_from_image=${Oracle_SourceVM_Image4}"
-  acli "vm.disk_create ${Oracle_SourceVM} clone_from_image=${Oracle_SourceVM_Image5}"
-  acli "vm.disk_create ${Oracle_SourceVM} clone_from_image=${Oracle_SourceVM_Image6}"
-  acli "vm.nic_create ${Oracle_SourceVM} network=${NW2_NAME}"
-  echo "## ${Oracle_SourceVM} - Powering On ##"
-  acli "vm.on ${Oracle_SourceVM}"
-  echo "### Oracle12cVM_Creation_COMPLETE ##"
-
-
-}
-
-#########################################################################################################################################
-# Routine to Upload Era Bootcamp Patch images for Oracle
-#########################################################################################################################################
-
-function upload_oracle_patch_images() {
-
-  if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${Oracle_Patch_BootImage} | wc --lines) == 0 )); then
-    log "Import ${Oracle_Patch_BootImage} image from ${QCOW2_REPOS}..."
-    acli image.create ${Oracle_Patch_BootImage} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_BootImage}.qcow2"
-    acli image.create ${Oracle_Patch_Image1} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image1}.qcow2"
-    acli image.create ${Oracle_Patch_Image2} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image2}.qcow2"
-    acli image.create ${Oracle_Patch_Image3} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image3}.qcow2"
-    acli image.create ${Oracle_Patch_Image4} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image4}.qcow2"
-    acli image.create ${Oracle_Patch_Image5} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image5}.qcow2"
-    acli image.create ${Oracle_Patch_Image6} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image6}.qcow2"
-    acli image.create ${Oracle_Patch_Image7} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image7}.qcow2"
-    acli image.create ${Oracle_Patch_Image8} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image8}.qcow2"
-    acli image.create ${Oracle_Patch_Image9} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/oracle19cSIHA/${Oracle_Patch_Image9}.qcow2"
-  else
-    log "Image found, assuming ready. Skipping ${Oracle_Patch_BootImage} import."
-  fi
-
-}
 
 #########################################################################################################################################
 # Routine to Upload Era Bootcamp Patch images for Oracle
@@ -994,7 +905,7 @@ HTTP_JSON_BODY=$(cat <<EOF
         },
         {
             "name": "VLAN_PRIMARY_DNS",
-            "value": "${DNS_SERVERS}"
+            "value": "${AUTH_HOST}"
         },
         {
             "name": "VLAN_SUBNET_MASK",
@@ -1006,6 +917,19 @@ EOF
 )
 
   _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data "${HTTP_JSON_BODY}" )
+
+echo "Get ${NW3_NAME} Network ID"
+
+  network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X GET "https://${ERA_HOST}/era/v0.8/resources/networks" | jq -r '.[].id' | tr -d \")
+
+echo "Get ${NW3_NAME} Network ID is &{network_id}"
+echo "Adding IP Pool ${NW3_START} - ${NW3_END}"
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks/${network_id}/ip-pool" --data "{"ipPools": [{"startIP": "${NW3_START}","endIP": "${NW3_END}"}]}" )
+
+echo "Create ${NW2_NAME} DHCP/IPAM Network"
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data {"name": "${NW2_NAME}","type": "DHCP"} )
 
 }
 
