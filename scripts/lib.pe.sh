@@ -574,7 +574,7 @@ function secondary_network_SNC(){
     # Set some needed parameters
     SEC_NETW=${OCTET[3]}
     SEC_NETW_VLAN=${OCTET[3]}
-    
+
     # Get the last OCTET from the IP address of the AutoAD server
     payload='{"filter": "vm_name==AutoAD","kind": "vm"}'
     url="https://localhost:9440/api/nutanix/v3/vms/list"
@@ -600,7 +600,7 @@ function secondary_network_SNC(){
     # Add second nic into the AutoAD VM
     url="https://localhost:9440/PrismGateway/services/rest/v2.0/vms/${autoad_uuid}/nics"
     json_payload='{"spec_list":[{"network_uuid":"'${network_uuid}'","requested_ip_address":"10.10.'${SEC_NETW_VLAN}'.'${autoad_ip}'","is_connected":true,"vlan_id":"'${SEC_NETW_VLAN}'"}]}'
-    
+
     task_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.task_uuid' | tr -d \")
     if [[ -z ${task_uuid} ]]; then
         log "The AutoAD didn't receive the second network card..."
@@ -1132,7 +1132,7 @@ function deploy_mssql() {
 
   if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${MSSQL_SourceVM_Image} | wc --lines) == 0 )); then
     log "Import ${MSSQL_SourceVM_Image} image from ${QCOW2_REPOS}..."
-    acli image.create ${MSSQL_SourceVM_Image} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/SQLServer/${MSSQL_SourceVM_Image}.qcow2"
+
     acli image.create ${MSSQL_SourceVM_Image1} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/SQLServer/${MSSQL_SourceVM_Image1}.qcow2"
     acli image.create ${MSSQL_SourceVM_Image2} image_type=kDiskImage wait=true container=${STORAGE_ERA} source_url="${QCOW2_REPOS}era/SQLServer/${MSSQL_SourceVM_Image2}.qcow2"
   else
@@ -1141,7 +1141,8 @@ function deploy_mssql() {
 
   echo "## SQLVM_Creation_INPROGRESS ##"
   acli "vm.create ${MSSQL_SourceVM} memory=2046M num_cores_per_vcpu=1 num_vcpus=2"
-  acli "vm.disk_create ${MSSQL_SourceVM} clone_from_image=${MSSQL_SourceVM_Image}"
+  acli "vm.disk_create ${MSSQL_SourceVM} clone_from_image=${MSSQL_SourceVM_Image1}"
+  acli "vm.disk_create ${MSSQL_SourceVM} clone_from_image=${MSSQL_SourceVM_Image2}"
   acli "vm.nic_create ${MSSQL_SourceVM} network=${NW2_NAME}"
   echo "## ${MSSQL_SourceVM} - Powering On ##"
   acli "vm.on ${MSSQL_SourceVM}"

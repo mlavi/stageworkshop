@@ -40,7 +40,6 @@ ERA_USER="admin"
 ERA_PASSWORD="nutanix/4u"
 
 MSSQL_SourceVM="Win2016SQLSource"
-MSSQL_SourceVM_Image="Win2016SQLSource"
 MSSQL_SourceVM_Image1="MSSQL_1"
 MSSQL_SourceVM_Image2="MSSQL_2"
 

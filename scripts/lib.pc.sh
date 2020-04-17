@@ -489,27 +489,18 @@ function pc_cluster_img_import() {
 
   echo "CLuster UUID is ${_cluster_uuid}"
 
-  _uuid=$(source /etc/profile.d/nutanix_env.sh \
-              && ncli --json=true cluster info | jq -r .data.uuid)
-
-  _http_body=$(cat <<EOF
-{"action_on_failure":"CONTINUE",
- "execution_order":"SEQUENTIAL",
- "api_request_list":[{
-   "operation":"POST",
-   "path_and_params":"/api/nutanix/v3/images/migrate",
-   "body":{
+_http_body=$(cat <<EOF
+{
      "image_reference_list":[],
      "cluster_reference":{
-       "uuid":"${_uuid}",
-       "kind":"cluster",
-       "name":"${CLUSTER_NAME}"}}}],
- "api_version":"3.0"}
+       "uuid":"${_cluster_uuid}",
+       "kind":"cluster"}
+}
 EOF
   )
 
   _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
-    https://localhost:9440/api/nutanix/v3/batch)
+    https://localhost:9440/api/nutanix/v3/images/migrate)
   log "batch _test=|${_test}|"
 }
 
