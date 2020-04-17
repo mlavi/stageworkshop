@@ -91,7 +91,7 @@ function authentication_source() {
           log "${AUTH_SERVER} is ready."
           sleep ${_sleep}
           if [[ -z ${NW2_NAME} ]]; then
-            # We are in a SNC environment. So we need to have a second network created
+            # We are in a SNC environment. So we need to have a second network created and assign a second Nic to AutoAD so we can use that in the secondary network.
             secondary_network_SNC
           fi
           break
