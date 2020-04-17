@@ -558,8 +558,55 @@ function network_configure() {
       acli "net.create ${NW2_NAME} vlan=${NW2_VLAN} ip_config=${NW2_SUBNET}"
       acli "net.update_dhcp_dns ${NW2_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
       acli "  net.add_dhcp_pool ${NW2_NAME} start=${NW2_DHCP_START} end=${NW2_DHCP_END}"
+    else
+      # As we are in the SNC environment, run the secondary network via this function
+      secondary_network_SNC
     fi
   fi
+}
+
+###############################################################################################################################################################################
+# Create the Secondary network based on the 3rd OCTET of the cluster for SNCs
+###############################################################################################################################################################################
+
+function secondary_network_SNC(){
+    # Set some needed parameters
+    SEC_NETW=${OCTET[3]}
+    SEC_NETW_VLAN=${OCTET[3]}
+    
+    # Get the last OCTET from the IP address of the AutoAD server
+    payload='{"filter": "vm_name==AutoAD","kind": "vm"}'
+    url="https://localhost:9440/api/nutanix/v3/vms/list"
+    autoad_ip=$(curl -X POST ${url} -d "${payload}" ${CURL_POST_OPTS} --user ${PE_USER}:${PE_PASSWD} | jq '.entities[].status.resources.nic_list[].ip_endpoint_list[0].ip' | tr -d \"| cut -d '.' -f 4)
+
+    # Get UUID of the AutoAD
+    autoad_uuid=$(curl -X POST ${url} -d "${payload}" ${CURL_POST_OPTS} --user ${PE_USER}:${PE_PASSWD} | jq '.entities[].metadata.uuid' | tr -d \")
+
+    # Set the right information for the network
+    json_payload='{"name":"Secondary","vlanId":"'${SEC_NETW_VLAN}'","ipConfig":{"dhcpOptions":{"domainNameServers":"10.10.'${SEC_NETW_VLAN}'.'${autoad_ip}'","domainSearch":"ntxlab.local","domainName":"ntnxlab.local"},"networkAddress":"10.10.71.0","prefixLength":"24","defaultGateway":"10.10.'${SEC_NETW_VLAN}'.1","pool":[
+                {
+                    "range":"10.10.'${SEC_NETW_VLAN}'.90 10.10.'${SEC_NETW_VLAN}'.200"
+                }
+                ]
+            }
+        }
+    }'
+
+    # Create the network
+    url="https://localhost:9440/api/nutanix/v0.8/networks"
+    network_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PE_USER}:${PE_PASSWD} | jq '.networkUuid' | tr -d \")
+
+    # Add second nic into the AutoAD VM
+    url="https://localhost:9440/PrismGateway/services/rest/v2.0/vms/${autoad_uuid}/nics"
+    json_payload='{"spec_list":[{"network_uuid":"'${network_uuid}'","requested_ip_address":"10.10.'${SEC_NETW_VLAN}'.'${autoad_ip}'","is_connected":true,"vlan_id":"'${SEC_NETW_VLAN}'"}]}'
+    
+    task_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PE_USER}:${PE_PASSWD} | jq '.task_uuid' | tr -d \")
+    if [[ -z ${task_uuid} ]]; then
+        log "The AutoAD didn't receive the second network card..."
+    else
+        log "The AutoAD has it's second network card assigned..."
+    fi
+
 }
 
 ###############################################################################################################################################################################
