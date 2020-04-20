@@ -42,6 +42,7 @@ case ${1} in
     && pe_license \
     && pe_init \
     && network_configure \
+    && secondary_network_SNC \
     && authentication_source \
     && pe_auth \
     && prism_pro_server_deploy \
