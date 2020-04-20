@@ -140,6 +140,7 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && upload_era_calm_blueprint \
+    && sleep 120 \
     && configure_era \
     && prism_check 'PC'
 
