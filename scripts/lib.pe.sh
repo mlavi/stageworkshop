@@ -592,7 +592,7 @@ function secondary_network_SNC(){
     # Create the network
     url="https://localhost:9440/api/nutanix/v0.8/networks"
     network_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD})
-    echo network_uuid
+    echo ${network_uuid}
     if [[ -z ${network_uuid} ]]; then
       log "The secondary network has not been created..."
     else
