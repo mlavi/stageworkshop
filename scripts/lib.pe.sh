@@ -568,8 +568,9 @@ function network_configure() {
 
 function secondary_network_SNC(){
     # Set some needed parameters
-    SEC_NETW=${OCTET[3]}
-    SEC_NETW_VLAN=${OCTET[3]}
+    local SEC_NETW=${OCTET[3]}
+    local SEC_NETW_VLAN=${OCTET[3]}
+    local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
     # Get the last OCTET from the IP address of the AutoAD server
     #payload='{"filter": "vm_name==AutoAD","kind": "vm"}'
@@ -588,10 +589,11 @@ function secondary_network_SNC(){
             }
         }
     }'
+    echo ${json_payload}
 
     # Create the network
     url="https://localhost:9440/api/nutanix/v0.8/networks"
-    network_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD})
+    network_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD})
     echo ${network_uuid}
     if [[ -z ${network_uuid} ]]; then
       log "The secondary network has not been created..."
