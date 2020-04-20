@@ -90,10 +90,6 @@ function authentication_source() {
         if [[ "${_test}" == "${_autoad_success}" ]]; then
           log "${AUTH_SERVER} is ready."
           sleep ${_sleep}
-          if [[ -z ${NW2_NAME} ]]; then
-            # We are in a SNC environment. So we need to have a second network created and assign a second Nic to AutoAD so we can use that in the secondary network.
-            secondary_network_SNC
-          fi
           break
         elif (( ${_loop} > ${_attempts} )); then
           log "Error ${_error}: ${AUTH_SERVER} VM running: giving up after ${_loop} tries."
@@ -576,15 +572,15 @@ function secondary_network_SNC(){
     SEC_NETW_VLAN=${OCTET[3]}
 
     # Get the last OCTET from the IP address of the AutoAD server
-    payload='{"filter": "vm_name==AutoAD","kind": "vm"}'
-    url="https://localhost:9440/api/nutanix/v3/vms/list"
-    autoad_ip=$(curl -X POST ${url} -d "${payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.entities[].status.resources.nic_list[].ip_endpoint_list[0].ip' | tr -d \"| cut -d '.' -f 4)
+    #payload='{"filter": "vm_name==AutoAD","kind": "vm"}'
+    #url="https://localhost:9440/api/nutanix/v3/vms/list"
+    #autoad_ip=$(curl -X POST ${url} -d "${payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.entities[].status.resources.nic_list[].ip_endpoint_list[0].ip' | tr -d \"| cut -d '.' -f 4)
 
     # Get UUID of the AutoAD
-    autoad_uuid=$(curl -X POST ${url} -d "${payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.entities[].metadata.uuid' | tr -d \")
+    #autoad_uuid=$(curl -X POST ${url} -d "${payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.entities[].metadata.uuid' | tr -d \")
 
     # Set the right information for the network
-    json_payload='{"name":"Secondary","vlanId":"'${SEC_NETW_VLAN}'","ipConfig":{"dhcpOptions":{"domainNameServers":"10.10.'${SEC_NETW_VLAN}'.'${autoad_ip}'","domainSearch":"ntxlab.local","domainName":"ntnxlab.local"},"networkAddress":"10.10.'${SEC_NETW_VLAN}'.0","prefixLength":"24","defaultGateway":"10.10.'${SEC_NETW_VLAN}'.1","pool":[
+    json_payload='{"name":"Secondary","vlanId":"'${SEC_NETW_VLAN}'","ipConfig":{"dhcpOptions":{"domainNameServers":"'${AUTH_HOST}'","domainSearch":"ntxlab.local","domainName":"ntnxlab.local"},"networkAddress":"10.10.'${SEC_NETW_VLAN}'.0","prefixLength":"24","defaultGateway":"10.10.'${SEC_NETW_VLAN}'.1","pool":[
                 {
                     "range":"10.10.'${SEC_NETW_VLAN}'.90 10.10.'${SEC_NETW_VLAN}'.200"
                 }
@@ -596,17 +592,22 @@ function secondary_network_SNC(){
     # Create the network
     url="https://localhost:9440/api/nutanix/v0.8/networks"
     network_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.networkUuid' | tr -d \")
+    if [[ -z ${network_uuid} ]]; then
+      log "The secondary network has not been created..."
+    else
+      log "The secondary network has been created..."
+    fi
 
     # Add second nic into the AutoAD VM
-    url="https://localhost:9440/PrismGateway/services/rest/v2.0/vms/${autoad_uuid}/nics"
-    json_payload='{"spec_list":[{"network_uuid":"'${network_uuid}'","requested_ip_address":"10.10.'${SEC_NETW_VLAN}'.'${autoad_ip}'","is_connected":true,"vlan_id":"'${SEC_NETW_VLAN}'"}]}'
+    #url="https://localhost:9440/PrismGateway/services/rest/v2.0/vms/${autoad_uuid}/nics"
+    #json_payload='{"spec_list":[{"network_uuid":"'${network_uuid}'","requested_ip_address":"10.10.'${SEC_NETW_VLAN}'.'${autoad_ip}'","is_connected":true,"vlan_id":"'${SEC_NETW_VLAN}'"}]}'
 
-    task_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.task_uuid' | tr -d \")
-    if [[ -z ${task_uuid} ]]; then
-        log "The AutoAD didn't receive the second network card..."
-    else
-        log "The AutoAD has it's second network card assigned..."
-    fi
+    #task_uuid=$(curl -X POST ${url} -d "${json_payload}" ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} | jq '.task_uuid' | tr -d \")
+    #if [[ -z ${task_uuid} ]]; then
+    #    log "The AutoAD didn't receive the second network card..."
+    #else
+    #    log "The AutoAD has it's second network card assigned..."
+    #fi
 
 }
 
