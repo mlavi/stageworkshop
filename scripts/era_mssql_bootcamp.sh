@@ -136,8 +136,8 @@ case ${1} in
     && priority_images \
     && images \
     && flow_enable \
-    && pc_cluster_img_import \
     && configure_era \
+    && pc_cluster_img_import \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
