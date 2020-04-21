@@ -1132,7 +1132,7 @@ function deploy_era() {
 
 ### Import Image ###
 
-if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${ERAServerName} | wc --lines) == 0 )); then
+if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${ERAServerImage} | wc --lines) == 0 )); then
   log "Import ${ERAServerImage} image from ${QCOW2_REPOS}..."
   acli image.create ${ERAServerImage} \
     image_type=kDiskImage wait=true \

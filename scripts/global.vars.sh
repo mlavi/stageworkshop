@@ -38,7 +38,7 @@ SSH_OPTS+=' -q' # -v'
 
 ERA_Blueprint='EraServerDeployment.json'
 ERAServerImage='ERA-Server-build-1.2.1.qcow2'
-ERAServerName='Era Server'
+ERAServerName='EraServer'
 ERA_USER="admin"
 ERA_PASSWORD="nutanix/4u"
 ERA_Default_PASSWORD="Nutanix/4u"
