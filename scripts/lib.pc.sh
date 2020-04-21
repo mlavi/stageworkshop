@@ -503,7 +503,7 @@ EOF
 
   _test=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
     https://localhost:9440/api/nutanix/v3/images/migrate)
-  log "batch _test=|${_test}|"
+  log "Image Migration = |${_test}|"
 }
 
 ###############################################################################################################################################################################
