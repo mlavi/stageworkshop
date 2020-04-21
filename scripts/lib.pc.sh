@@ -887,10 +887,10 @@ EOF
 
 function configure_era() {
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
-  local baseurl=""
+  
 
 ##  Create the EraManaged network inside Era ##
-echo "Create ${NW3_NAME} Static Network"
+log "Create ${NW3_NAME} Static Network"
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
@@ -916,16 +916,16 @@ EOF
 
   _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data "${HTTP_JSON_BODY}" )
 
-echo "Get ${NW3_NAME} Network ID"
+log "Get ${NW3_NAME} Network ID"
 
   network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X GET "https://${ERA_HOST}/era/v0.8/resources/networks" | jq -r '.[].id' | tr -d \")
 
-echo "Get ${NW3_NAME} Network ID is &{network_id}"
-echo "Adding IP Pool ${NW3_START} - ${NW3_END}"
+log "Get ${NW3_NAME} Network ID is ${network_id}"
+log "Adding IP Pool ${NW3_START} - ${NW3_END}"
 
   _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks/${network_id}/ip-pool" --data "{"ipPools": [{"startIP": "${NW3_START}","endIP": "${NW3_END}"}]}" )
 
-echo "Create ${NW2_NAME} DHCP/IPAM Network"
+log "Create ${NW2_NAME} DHCP/IPAM Network"
 
   _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data {"name": "${NW2_NAME}","type": "DHCP"} )
 
@@ -966,8 +966,8 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  echo "Creating User Group Now"
-  echo $HTTP_JSON_BODY
+  log "Creating User Group Now"
+  log $HTTP_JSON_BODY
 
   _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/user_groups' | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
