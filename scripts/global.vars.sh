@@ -41,6 +41,7 @@ ERAServerImage='ERA-Server-build-1.2.1.qcow2'
 ERAServerName='Era Server'
 ERA_USER="admin"
 ERA_PASSWORD="nutanix/4u"
+ERA_Default_PASSWORD="Nutanix/4u"
 
 MSSQL_SourceVM="Win2016SQLSource"
 MSSQL_SourceVM_Image1="MSSQL_1"

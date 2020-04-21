@@ -888,6 +888,45 @@ EOF
 function configure_era() {
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
+##  Create the EraManaged network inside Era ##
+log "Reset Default Era Password"
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_Default_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/auth/update" --data "{ "password": "${ERA_PASSWORD}"}" )
+
+##  Accept EULA ##
+log "Accept Era EULA"
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/auth/validate" --data '{ "eulaAccepted": true }' )
+
+##  Register Cluster  ##
+log "Register ${CLUSTER_NAME} with Era"
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/clusters" --data "{ "name": "EraCluster","description": "Era Bootcamp Cluster","ip": "${PE_HOST}","username": "${PRISM_ADMIN}","password": "${PE_PASSWORD}","status": "UP","version": "v2","cloudType": "NTNX","properties": [{ "name": "ERA_STORAGE_CONTAINER","value": "${STORAGE_ERA}"}]}" )
+
+##  Get Era Cluster ID  ##
+log "Getting Era Cluster ID"
+
+  _era_cluster_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X GET "https://${ERA_HOST}/era/v0.8/clusters" --data '{}' | jq -r '.[].id' | tr -d \")
+
+log "Era Cluster ID: |${_era_cluster_id}|"
+
+##   Upload Cluster File  ##
+log "Upload Era Cluster JSON"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+    "protocol": "https",
+    "ip_address": "${PE_HOST}",
+    "port": "9440",
+    "creds_bag": {
+      "username": "${PRISM_ADMIN}",
+      "password": "${PE_PASSWORD}"
+    }
+}
+EOF
+)
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/clusters/${_era_cluster_id}/json" --data "${HTTP_JSON_BODY}" )
 
 ##  Create the EraManaged network inside Era ##
 log "Create ${NW3_NAME} Static Network"

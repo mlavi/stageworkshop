@@ -23,7 +23,7 @@ case ${1} in
 	  #export NW2_NAME='EraManaged'
     export NW2_DHCP_START="${IPV4_PREFIX}.132"
     export NW2_DHCP_END="${IPV4_PREFIX}.219"
-	 
+
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
@@ -33,6 +33,7 @@ case ${1} in
     && pe_init \
     && create_era_container \
     && era_network_configure \
+    && deploy_era \
     && authentication_source \
     && pe_auth \
     && deploy_mssql
@@ -76,7 +77,7 @@ case ${1} in
     export OBJECTS_NW_END="${IPV4_PREFIX}.21"
 
     export _prio_images_arr=(\
-      ERA-Server-build-1.2.1.qcow2 \
+      #ERA-Server-build-1.2.1.qcow2 \
     )
 
     export QCOW2_IMAGES=(\
@@ -136,8 +137,8 @@ case ${1} in
     && images \
     && flow_enable \
     && pc_cluster_img_import \
-    && upload_era_calm_blueprint \
-    && sleep 300 \
+    #&& upload_era_calm_blueprint \
+    #&& sleep 300 \
     && configure_era \
     && prism_check 'PC'
 
