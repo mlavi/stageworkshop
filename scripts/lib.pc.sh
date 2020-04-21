@@ -487,9 +487,9 @@ function pc_cluster_img_import() {
 
   #_cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"cluster","filter": "name==${CLUSTER_NAME}"}' | jq --arg CLUSTER_NAME "$CLUSTER_NAME" '.entities[]|select (.status.name==$CLUSTER_NAME)| .metadata.uuid' | tr -d \")
 
-  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"cluster","filter": "name==${CLUSTER_NAME}"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
-  echo "Cluster UUID is ${_cluster_uuid}"
+  log "Cluster UUID is ${_cluster_uuid}"
 
 _http_body=$(cat <<EOF
 {
@@ -887,7 +887,7 @@ EOF
 
 function configure_era() {
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
-  
+
 
 ##  Create the EraManaged network inside Era ##
 log "Create ${NW3_NAME} Static Network"
