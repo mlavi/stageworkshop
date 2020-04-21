@@ -224,40 +224,6 @@ function authentication_source() {
 }
 
 ###############################################################################################################################################################################
-# Routine to deploy PrismProServer
-###############################################################################################################################################################################
-
-function prism_pro_server_deploy() {
-
-### Import Image ###
-
-if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${PrismOpsServer} | wc --lines) == 0 )); then
-  log "Import ${PrismOpsServer} image from ${QCOW2_REPOS}..."
-  acli image.create ${PrismOpsServer} \
-    image_type=kDiskImage wait=true \
-    container=${STORAGE_IMAGES} source_url="${QCOW2_REPOS}${PrismOpsServer}.qcow2"
-else
-  log "Image found, assuming ready. Skipping ${PrismOpsServer} import."
-fi
-
-### Deploy PrismProServer ###
-
-log "Create ${PrismOpsServer} VM based on ${PrismOpsServer} image"
-acli "vm.create ${PrismOpsServer} num_vcpus=2 num_cores_per_vcpu=1 memory=2G"
-# vmstat --wide --unit M --active # suggests 2G sufficient, was 4G
-#acli "vm.disk_create ${VMNAME} cdrom=true empty=true"
-acli "vm.disk_create ${PrismOpsServer} clone_from_image=${PrismOpsServer}"
-#acli "vm.nic_create ${PrismOpsServer} network=${NW1_NAME}"
-acli "vm.nic_create ${PrismOpsServer} network=${NW1_NAME} ip=${PrismOpsServer_HOST}"
-
-log "Power on ${PrismOpsServer} VM..."
-acli "vm.on ${PrismOpsServer}"
-
-
-
-}
-
-###############################################################################################################################################################################
 # Routine to get the Nutanix Files injected
 ###############################################################################################################################################################################
 
@@ -1115,9 +1081,41 @@ function pc_destroy() {
   done
 }
 
-###############################################################################################################################################################################
+###################################################################################################################################################
+# Routine to deploy PrismProServer
+###################################################################################################################################################
+
+function prism_pro_server_deploy() {
+
+### Import Image ###
+
+if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${PrismOpsServer} | wc --lines) == 0 )); then
+  log "Import ${PrismOpsServer} image from ${QCOW2_REPOS}..."
+  acli image.create ${PrismOpsServer} \
+    image_type=kDiskImage wait=true \
+    container=${STORAGE_IMAGES} source_url="${QCOW2_REPOS}${PrismOpsServer}.qcow2"
+else
+  log "Image found, assuming ready. Skipping ${PrismOpsServer} import."
+fi
+
+### Deploy PrismProServer ###
+
+log "Create ${PrismOpsServer} VM based on ${PrismOpsServer} image"
+acli "vm.create ${PrismOpsServer} num_vcpus=2 num_cores_per_vcpu=1 memory=2G"
+# vmstat --wide --unit M --active # suggests 2G sufficient, was 4G
+#acli "vm.disk_create ${VMNAME} cdrom=true empty=true"
+acli "vm.disk_create ${PrismOpsServer} clone_from_image=${PrismOpsServer}"
+#acli "vm.nic_create ${PrismOpsServer} network=${NW1_NAME}"
+acli "vm.nic_create ${PrismOpsServer} network=${NW1_NAME} ip=${PrismOpsServer_HOST}"
+
+log "Power on ${PrismOpsServer} VM..."
+acli "vm.on ${PrismOpsServer}"
+
+}
+
+###################################################################################################################################################
 # Routine create the Era Storage container for the Era Bootcamps.
-###############################################################################################################################################################################
+###################################################################################################################################################
 
 function create_era_container() {
 
@@ -1125,6 +1123,36 @@ function create_era_container() {
   ncli container create name="${STORAGE_ERA}" rf=2 sp-name="${STORAGE_POOL}" enable-compression=true compression-delay=60
 
 }
+
+#########################################################################################################################################
+# Routine to Create Era  Server
+#########################################################################################################################################
+
+function deploy_era() {
+
+### Import Image ###
+
+if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${ERAServerName} | wc --lines) == 0 )); then
+  log "Import ${ERAServerImage} image from ${QCOW2_REPOS}..."
+  acli image.create ${ERAServerImage} \
+    image_type=kDiskImage wait=true \
+    container=${STORAGE_IMAGES} source_url="${QCOW2_REPOS}${ERAServerImage}"
+else
+  log "Image found, assuming ready. Skipping ${ERAServerImage} import."
+fi
+
+### Deploy PrismProServer ###
+
+log "Create ${ERAServerName} VM based on ${ERAServerImage} image"
+acli "vm.create ${ERAServerName} num_vcpus=1 num_cores_per_vcpu=4 memory=4G"
+acli "vm.disk_create ${ERAServerName} clone_from_image=${ERAServerImage}"
+acli "vm.nic_create ${ERAServerName} network=${NW1_NAME} ip=${ERA_HOST}"
+
+log "Power on ${ERAServerName} VM..."
+acli "vm.on ${ERAServerName}"
+
+}
+
 
 #########################################################################################################################################
 # Routine to Create Era Bootcamp PreProvisioned MSSQL Server
