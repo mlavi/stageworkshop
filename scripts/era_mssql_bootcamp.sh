@@ -33,9 +33,9 @@ case ${1} in
     && pe_init \
     && create_era_container \
     && era_network_configure \
-    && deploy_era \
     && authentication_source \
     && pe_auth \
+    && deploy_era \
     && deploy_mssql
 
     if (( $? == 0 )) ; then
