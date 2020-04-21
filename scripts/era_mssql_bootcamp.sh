@@ -137,8 +137,6 @@ case ${1} in
     && images \
     && flow_enable \
     && pc_cluster_img_import \
-    #&& upload_era_calm_blueprint \
-    #&& sleep 300 \
     && configure_era \
     && prism_check 'PC'
 
