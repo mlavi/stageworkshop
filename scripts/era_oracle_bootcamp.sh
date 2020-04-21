@@ -23,10 +23,6 @@ case ${1} in
 	  #export NW2_NAME='EraManaged'
     export NW2_DHCP_START="${IPV4_PREFIX}.132"
     export NW2_DHCP_END="${IPV4_PREFIX}.219"
-	  export NW3_NAME='EraManaged'
-    export NW3_VLAN=${NW2_VLAN}
-    export NW3_START="${IPV4_PREFIX}.220"
-    export NW3_END="${IPV4_PREFIX}.253"
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable

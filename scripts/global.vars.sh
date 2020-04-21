@@ -183,6 +183,11 @@ case "${OCTET[3]}" in
     NW2_GATEWAY="${IPV4_PREFIX}.129"
     NW2_DHCP_START="${IPV4_PREFIX}.132"
     NW2_DHCP_END="${IPV4_PREFIX}.253"
+
+    NW3_NAME='EraManaged'
+    NW3_VLAN=${NW2_VLAN}
+    NW3_START="${IPV4_PREFIX}.220"
+    NW3_END="${IPV4_PREFIX}.253"
     ;;
 
 esac
