@@ -485,9 +485,9 @@ function pc_cluster_img_import() {
   local      _test
   local      _uuid
 
-  #_cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"cluster","filter": "name==${CLUSTER_NAME}"}' | jq --arg CLUSTER_NAME "$CLUSTER_NAME" '.entities[]|select (.status.name==$CLUSTER_NAME)| .metadata.uuid' | tr -d \")
+  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER_NAME "$CLUSTER_NAME" '.entities[]|select (.status.name==$CLUSTER_NAME)| .metadata.uuid' | tr -d \")
 
-  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  #_cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   log "Cluster UUID is ${_cluster_uuid}"
 
