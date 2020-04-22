@@ -254,7 +254,9 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.55.251.38/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.55.251.38/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.55.251.10,10.55.251.11'
-	OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
+    ERA_PRIMARY_DNS='10.55.251.10'
+    ERA_SECONDARY_DNS='10.55.251.11'
+	  OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
     ;;
   10.42 ) # HPOC us-west = PHX
     PC_DEV_METAURL='http://10.42.194.11/workshop_staging/euphrates-5.17-stable-prism_central-metadata.json'
@@ -291,6 +293,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.42.196.10,10.42.194.10'
+    ERA_PRIMARY_DNS='10.42.196.10'
+    ERA_SECONDARY_DNS='10.42.194.10'
     OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
     ;;
   10.38 ) # HPOC us-west = PHX 1-Node Clusters
@@ -328,7 +332,9 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http://10.42.194.11/workshop_staging/CalmBlueprints/'
     DNS_SERVERS="10.42.196.10,10.42.194.10"
-	OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
+    ERA_PRIMARY_DNS='10.42.196.10'
+    ERA_SECONDARY_DNS='10.42.194.10'
+	  OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
 
     # If the third OCTET is between 170 and 199, we need to have the +3 vlan for the secondary
     if [[ ${OCTET[2]} -gt 169 ]]; then
@@ -370,6 +376,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_DATA='http://10.136.239.13/workshop_staging/seedPC.zip'
     BLUEPRINT_URL='http:/10.136.239.13/workshop_staging/CalmBlueprints/'
     DNS_SERVERS='10.136.239.10,10.136.239.11'
+    ERA_PRIMARY_DNS='10.136.239.10'
+    ERA_SECONDARY_DNS='10.136.239.11'
     OBJECTS_OFFLINE_REPO='http://10.136.239.13/workshop_staging/objects'
     ;;
   10.132 ) # https://sewiki.nutanix.com/index.php/SH-COLO-IP-ADDR
