@@ -35,6 +35,8 @@ case ${1} in
     && authentication_source \
     && pe_auth \
     && deploy_era \
+    && deploy_oracle \
+    && upload_oracle_patch_images
 
 
 
@@ -56,8 +58,7 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        && upload_oracle_patch_images \
-        && deploy_oracle
+
         #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
