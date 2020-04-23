@@ -882,11 +882,13 @@ EOF
 
 
 #########################################################################################################################################
-# Routine to Upload Era Bootcamp Patch images for Oracle
+# Routine to to configure Era
 #########################################################################################################################################
 
 function configure_era() {
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+
+set -x
 
 log "PE Cluster IP |${PE_HOST}|"
 log "EraServer IP |${ERA_HOST}|"
@@ -939,12 +941,14 @@ ClusterJSON='{"ip_address": "'${PE_HOST}'","port": "9440","protocol": "https","d
 
 echo $ClusterJSON > cluster.json
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST -H 'Content-Type: multipart/form-data' "https://${ERA_HOST}/era/v0.8/clusters/${_era_cluster_id}/json" -F file="@"cluster.json)
+  _task_id=$(curl -k -H 'Content-Type: multipart/form-data' -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/clusters/${_era_cluster_id}/json" -F file="@"cluster.json)
 
 ##  Add the Secondary Network inside Era ##
 log "Create ${NW2_NAME} DHCP/IPAM Network"
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data {"name": "${NW2_NAME}","type": "DHCP"} )
+  _dhcp_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data {"name": "${NW2_NAME}","type": "DHCP"} | jq -r '.id' | tr -d \")
+
+log "Created ${NW2_NAME} Network with Network ID |${_dhcp_network_id}|"
 
 ##  Create the EraManaged network inside Era ##
 log "Create ${NW3_NAME} Static Network"
@@ -977,18 +981,18 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data "${HTTP_JSON_BODY}" )
+  _static_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
-log "Get ${NW3_NAME} Network ID"
+log "Created ${NW3_NAME} Network with Network ID |${_static_network_id}|"
 
-  network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X GET "https://${ERA_HOST}/era/v0.8/resources/networks" | jq -r '.[].id' | tr -d \")
+  #network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X GET "https://${ERA_HOST}/era/v0.8/resources/networks" | jq -r '.id' | tr -d \")
 
-log "Get ${NW3_NAME} Network ID is ${network_id}"
-log "Adding IP Pool ${NW3_START} - ${NW3_END}"
+#log "Get ${NW3_NAME} Network ID is ${network_id}"
+#log "Adding IP Pool ${NW3_START} - ${NW3_END}"
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks/${network_id}/ip-pool" --data "{"ipPools": [{"startIP": "${NW3_START}","endIP": "${NW3_END}"}]}" )
+  #_task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks/${network_id}/ip-pool" --data "{"ipPools": [{"startIP": "${NW3_START}","endIP": "${NW3_END}"}]}" )
 
-
+set +x
 
 }
 
