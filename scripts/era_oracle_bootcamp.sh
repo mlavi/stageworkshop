@@ -34,8 +34,8 @@ case ${1} in
     && era_network_configure \
     && authentication_source \
     && pe_auth \
-    && deploy_oracle \
-    && upload_oracle_patch_images
+    && deploy_oracle
+
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -55,6 +55,7 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
+        && upload_oracle_patch_images
 
         #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
