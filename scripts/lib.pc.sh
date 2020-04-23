@@ -903,7 +903,7 @@ log "Password Reset |${_reset_passwd}|"
 ##  Accept EULA ##
 log "Accept Era EULA"
 
-  _accept_eula=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/auth/validate" --data '{ "eulaAccepted": true }' | jq -r '.status' | tr -d \")
+  _accept_eula=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/auth/validate" --data "{ "eulaAccepted": true }" | jq -r '.status' | tr -d \")
 
 log "Accept EULA |${_accept_eula}|"
 
@@ -946,7 +946,7 @@ echo $ClusterJSON > cluster.json
 ##  Add the Secondary Network inside Era ##
 log "Create ${NW2_NAME} DHCP/IPAM Network"
 
-  _dhcp_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data {"name": "${NW2_NAME}","type": "DHCP"} | jq -r '.id' | tr -d \")
+  _dhcp_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data "{"name": "${NW2_NAME}","type": "DHCP"}" | jq -r '.id' | tr -d \")
 
 log "Created ${NW2_NAME} Network with Network ID |${_dhcp_network_id}|"
 
