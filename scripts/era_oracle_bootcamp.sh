@@ -35,8 +35,8 @@ case ${1} in
     && authentication_source \
     && pe_auth \
     && deploy_era \
-    && deploy_oracle \
-    && upload_oracle_patch_images
+    && deploy_oracle_12c \
+    && deploy_oracle_19c
 
 
 
