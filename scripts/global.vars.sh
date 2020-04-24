@@ -186,6 +186,7 @@ case "${OCTET[3]}" in
 
     NW3_NAME='EraManaged'
     NW3_VLAN=${NW2_VLAN}
+    NW3_NETMASK='255.255.255.128'
     NW3_START="${IPV4_PREFIX}.220"
     NW3_END="${IPV4_PREFIX}.253"
     ;;
