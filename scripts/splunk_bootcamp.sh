@@ -18,20 +18,7 @@ case ${1} in
   PE | pe )
     . lib.pe.sh
 
-    #export PC_DEV_VERSION='5.10.2'
-    #export PC_DEV_METAURL='http://10.42.8.50/images/pcdeploy-5.10.2.json'
-    #export         PC_URL='http://10.42.8.50/images/euphrates-5.10.2-stable-prism_central.tar'
-    #export PC_DEV_METAURL='https://s3.amazonaws.com/get-ahv-images/pcdeploy-5.10.1.1.json'
-    #export         PC_URL='https://s3.amazonaws.com/get-ahv-images/euphrates-5.10.1.1-stable-prism_central.tar'
-    #export  FILES_VERSION='3.2.0.1'
-    #export  FILES_METAURL='http://10.42.8.50/images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
-    #export      FILES_URL='http://10.42.8.50/images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
-    #export  FILES_METAURL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
-    #export      FILES_URL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
-
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zp'
 
     export _external_nw_name="${1}"
 
@@ -44,7 +31,6 @@ case ${1} in
     && network_configure \
     && authentication_source \
     && pe_auth \
-    && prism_pro_server_deploy \
     && files_install \
     && sleep 30 \
     && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
@@ -96,12 +82,9 @@ case ${1} in
       CentOS7.qcow2 \
       WinToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
-      HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
-      veeam/VeeamAHVProxy2.0.404.qcow2 \
     )
     export ISO_IMAGES=(\
       Nutanix-VirtIO-1.1.5.iso \
-      veeam/VBR_10.0.0.4442.iso \
     )
 
 
@@ -153,10 +136,9 @@ case ${1} in
     && pc_project \
     && object_store \
     && karbon_image_download \
+    && images \
     && flow_enable \
     && pc_cluster_img_import \
-    && seedPC \
-    && images \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
