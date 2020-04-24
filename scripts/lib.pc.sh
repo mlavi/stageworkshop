@@ -1020,7 +1020,7 @@ EOF
 
 log "Created CUSTOM_EXTRA_SMALL Compute Profile with ID |${_xs_compute_profile_id}|"
 
-##  Create the CUSTOM_EXTRA_SMALL Compute Profile inside Era ##
+##  Create the ORACLE_SMALL Compute Profile inside Era ##
 log "Create the ORACLE_SMALL Compute Profile"
 
 HTTP_JSON_BODY=$(cat <<EOF
@@ -1054,6 +1054,56 @@ EOF
   _oracle_small_compute_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created ORACLE_SMALL Compute Profile with ID |${_oracle_small_compute_profile_id}|"
+
+##  Create the NTNXLAB Domain Profile inside Era ##
+log "Create the NTNXLAB Domain Profile"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "type": "WindowsDomain",
+  "topology": "ALL",
+  "dbVersion": "ALL",
+  "systemProfile": false,
+  "properties": [
+    {
+      "name": "DOMAIN_NAME",
+      "value": "ntnxlab.local",
+      "description": "Name of the Windows domain"
+    },
+    {
+      "name": "DOMAIN_USER_NAME",
+      "value": "ntnxlab.local\\Administrator",
+      "description": "Username with permission to join computer to domain"
+    },
+    {
+      "name": "DOMAIN_USER_PASSWORD",
+      "value": "nutanix/4u",
+      "description": "Password for the username with permission to join computer to domain"
+    },
+    {
+      "name": "DB_SERVER_OU_PATH",
+      "value": "",
+      "description": "Custom OU path for database servers"
+    },
+    {
+      "name": "CLUSTER_OU_PATH",
+      "value": "",
+      "description": "Custom OU path for server clusters"
+    },
+    {
+      "name": "ADD_PERMISSION_ON_OU",
+      "value": "",
+      "description": "Grant server clusters permission on OU"
+    }
+  ],
+  "name": "NTNXLAB"
+}
+EOF
+)
+
+  _ntnxlab_domain_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+
+log "Created NTNXLAB Domain Profile with ID |${_ntnxlab_domain_profile_id}|"
 
 set +x
 
