@@ -985,12 +985,75 @@ EOF
 
 log "Created ${NW3_NAME} Network with Network ID |${_static_network_id}|"
 
-  #network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X GET "https://${ERA_HOST}/era/v0.8/resources/networks" | jq -r '.id' | tr -d \")
+##  Create the CUSTOM_EXTRA_SMALL Compute Profile inside Era ##
+log "Create the CUSTOM_EXTRA_SMALL Compute Profile"
 
-#log "Get ${NW3_NAME} Network ID is ${network_id}"
-#log "Adding IP Pool ${NW3_START} - ${NW3_END}"
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "type": "Compute",
+  "topology": "ALL",
+  "dbVersion": "ALL",
+  "systemProfile": false,
+  "properties": [
+    {
+      "name": "CPUS",
+      "value": "1",
+      "description": "Number of CPUs in the VM"
+    },
+    {
+      "name": "CORE_PER_CPU",
+      "value": "2",
+      "description": "Number of cores per CPU in the VM"
+    },
+    {
+      "name": "MEMORY_SIZE",
+      "value": 4,
+      "description": "Total memory (GiB) for the VM"
+    }
+  ],
+  "name": "CUSTOM_EXTRA_SMALL"
+}
+EOF
+)
 
-  #_task_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks/${network_id}/ip-pool" --data "{"ipPools": [{"startIP": "${NW3_START}","endIP": "${NW3_END}"}]}" )
+  _xs_compute_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+
+log "Created CUSTOM_EXTRA_SMALL Compute Profile with ID |${_xs_compute_profile_id}|"
+
+##  Create the CUSTOM_EXTRA_SMALL Compute Profile inside Era ##
+log "Create the ORACLE_SMALL Compute Profile"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "type": "Compute",
+  "topology": "ALL",
+  "dbVersion": "ALL",
+  "systemProfile": false,
+  "properties": [
+    {
+      "name": "CPUS",
+      "value": "1",
+      "description": "Number of CPUs in the VM"
+    },
+    {
+      "name": "CORE_PER_CPU",
+      "value": 4,
+      "description": "Number of cores per CPU in the VM"
+    },
+    {
+      "name": "MEMORY_SIZE",
+      "value": 8,
+      "description": "Total memory (GiB) for the VM"
+    }
+  ],
+  "name": "ORACLE_SMALL"
+}
+EOF
+)
+
+  _oracle_small_compute_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+
+log "Created ORACLE_SMALL Compute Profile with ID |${_oracle_small_compute_profile_id}|"
 
 set +x
 
