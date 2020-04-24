@@ -975,7 +975,11 @@ HTTP_JSON_BODY=$(cat <<EOF
         {
             "name": "VLAN_SUBNET_MASK",
             "value": "${NW3_NETMASK}"
-        }
+        },
+        {
+    		"name": "VLAN_DNS_DOMAIN",
+    		"value": "ntnxlab.local"
+    	  }
     ]
 }
 EOF
