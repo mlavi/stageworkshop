@@ -1015,6 +1015,32 @@ EOF
 
 log "Created Primary-MSSQL-NETWORK Network Profile with ID |${_primary_network_profile_id}|"
 
+##  Create the Primary_ORACLE_NETWORKNetwork Profile inside Era ##
+log "Create the Primary_ORACLE_NETWORK Network Profile"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "engineType": "oracle_database",
+  "type": "Network",
+  "topology": "single",
+  "dbVersion": "ALL",
+  "systemProfile": false,
+  "properties": [
+    {
+      "name": "VLAN_NAME",
+      "value": "Secondary",
+      "description": "Name of the vLAN"
+    }
+  ],
+  "name": "Primary_ORACLE_NETWORK"
+}
+EOF
+)
+
+  _oracle_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+
+log "Created Primary_ORACLE_NETWORK Network Profile with ID |${_oracle_network_profile_id}|"
+
 ##  Create the ERAMANAGED_MSSQL_NETWORK Network Profile inside Era ##
 log "Create the ERAMANAGED_MSSQL_NETWORK Network Profile"
 
