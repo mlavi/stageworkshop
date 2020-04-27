@@ -1187,6 +1187,77 @@ EOF
 
 log "Created NTNXLAB Domain Profile with ID |${_ntnxlab_domain_profile_id}|"
 
+##  Create the ORACLE_SMALL_PARAMS Parameters Profile inside Era ##
+log "Create the ORACLE_SMALL_PARAMS Parameters Profile"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "engineType": "oracle_database",
+  "type": "Database_Parameter",
+  "topology": "ALL",
+  "dbVersion": "ALL",
+  "systemProfile": false,
+  "properties": [
+    {
+      "name": "MEMORY_TARGET",
+      "value": 4096,
+      "description": "Total Memory (MiB): Total memory (AKA MEMORY_TARGET) specifies the Oracle systemwide usable memory. The database tunes memory to the total memory value, reducing or enlarging the SGA and PGA as needed."
+    },
+    {
+      "name": "SGA_TARGET",
+      "value": "",
+      "description": "SGA (MiB): Provide a value here to disable automatic shared memory management. Providing a value enables you to determine how the SGA memory is distributed among the SGA memory components."
+    },
+    {
+      "name": "PGA_AGGREGATE_TARGET",
+      "value": "",
+      "description": "PGA (MiB): Provide a value here to disable automatic shared memory management. Providing a value enables you to determine how the PGA memory is distributed among the PGA memory components."
+    },
+    {
+      "name": "SHARED_SERVERS",
+      "value": "0",
+      "description": "Number of shared servers: Specify this number when the connection mode is set to 'shared'"
+    },
+    {
+      "name": "DB_BLOCK_SIZE",
+      "value": "8",
+      "description": "Block Size (KiB): Oracle Database data is stored in data blocks of the size specified. One data block corresponds to a specific number of bytes of physical space on the disk. Selecting a block size other than the default 8 kilobytes (KiB) value requires advanced knowledge and should be done only when absolutely required."
+    },
+    {
+      "name": "PROCESSES",
+      "value": "300",
+      "description": "Number of processes: Specify the maximum number of processes that can simultaneously connect to the database. Enter a number or accept the default value of 300. The default value for this parameter is appropriate for many environments. The value you select should allow for all background processes, user processes, and parallel execution processes."
+    },
+    {
+      "name": "TEMP_TABLESPACE",
+      "value": "256",
+      "description": "Temp Tablespace (MiB)"
+    },
+    {
+      "name": "UNDO_TABLESPACE",
+      "value": 256,
+      "description": "Undo Tablespace (MiB)"
+    },
+    {
+      "name": "NLS_LANGUAGE",
+      "value": "AMERICAN",
+      "description": "Default Language: The default language determines how the database supports locale-sensitive information such as day and month abbreviations, default sorting sequence for character data, and reading direction (left to right ir right to left)."
+    },
+    {
+      "name": "NLS_TERRITORY",
+      "value": "AMERICA",
+      "description": "Default Territory: Select the name of the territory whose conventions are to be followed for day and week numbering or accept the default. The default territory also establishes the default date format, the default decimal character and group separator, and the default International Standardization Organization (ISO) and local currency symbols."
+    }
+  ],
+  "name": "ORACLE_SMALL_PARAMS"
+}
+EOF
+)
+
+  _oracle_param_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+
+log "Created ORACLE_SMALL_PARAMS Parameters Profile with ID |${_oracle_param_profile_id}|"
+
 set +x
 
 }
