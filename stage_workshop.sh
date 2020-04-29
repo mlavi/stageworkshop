@@ -20,7 +20,7 @@ WORKSHOPS=(\
 "Databases Era with MSSQL Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Databases Era with Oracle Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Databases Era with Postgres Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
-"Databases with Era Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
+"Databases Era -Stage All- Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Files Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
 "Calm Workshop (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 "Frame Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
@@ -83,7 +83,7 @@ function stage_clusters() {
     _pe_launch='privatecloud_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
-  if (( $(echo ${_workshop} | grep -i "^Databases" | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "^Databases Era -Stage All- Bootcamp" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='era_bootcamp.sh'
     _pc_launch=${_pe_launch}

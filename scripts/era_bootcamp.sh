@@ -23,11 +23,6 @@ case ${1} in
 	  #export NW2_NAME='EraManaged'
     export NW2_DHCP_START="${IPV4_PREFIX}.132"
     export NW2_DHCP_END="${IPV4_PREFIX}.219"
-	  export NW3_NAME='EraManaged'
-    export NW3_VLAN=${NW2_VLAN}
-    #export NW3_SUBNET="${IPV4_PREFIX}.129/25"
-    export NW3_START="${IPV4_PREFIX}.220"
-    export NW3_END="${IPV4_PREFIX}.253"
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
@@ -35,9 +30,14 @@ case ${1} in
     dependencies 'install' 'sshpass' && dependencies 'install' 'jq' \
     && pe_license \
     && pe_init \
+    && create_era_container \
     && era_network_configure\
     && authentication_source \
-    && pe_auth
+    && pe_auth \
+    && deploy_era \
+    && deploy_mssql \
+    && deploy_oracle_19c
+
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -82,9 +82,6 @@ case ${1} in
     )
 
     export QCOW2_IMAGES=(\
-      MSSQL-2016-VM.qcow2 \
-      Windows2016.qcow2 \
-      CentOS7.qcow2 \
       WinToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
     )
@@ -140,8 +137,7 @@ case ${1} in
     && images \
     && flow_enable \
     && pc_cluster_img_import \
-    && upload_era_calm_blueprint \
-    && sleep 30 \
+    && configure_era \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
