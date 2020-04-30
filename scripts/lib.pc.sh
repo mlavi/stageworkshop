@@ -1154,7 +1154,7 @@ HTTP_JSON_BODY=$(cat <<EOF
     },
     {
       "name": "DOMAIN_USER_NAME",
-      "value": "ntnxlab.local\\Administrator",
+      "value": "Administrator@ntnxlab.local",
       "description": "Username with permission to join computer to domain"
     },
     {
