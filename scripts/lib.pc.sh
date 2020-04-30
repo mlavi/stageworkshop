@@ -313,16 +313,16 @@ function object_store() {
 
 
     # Enable Dark Site Repo and wait 3 seconds
-    mspctl airgap --enable --lcm-server=${OBJECTS_OFFLINE_REPO}
-    sleep 3
+    #mspctl airgap --enable --lcm-server=${OBJECTS_OFFLINE_REPO}
+    #sleep 3
     # Confirm airgap is enabled
-    _response=$(mspctl airgap --status | grep "\"enable\":true" | wc -l)
+    #_response=$(mspctl airgap --status | grep "\"enable\":true" | wc -l)
 
-    if [ $_response -eq 1 ]; then
-      log "Objects dark site staging successfully enabled. Response is $_response. "
-    else
-      log "Objects failed to enable dark site staging. Will use standard WAN download (this will take longer). Response is $_response."
-    fi
+    #if [ $_response -eq 1 ]; then
+    #  log "Objects dark site staging successfully enabled. Response is $_response. "
+    #else
+    #  log "Objects failed to enable dark site staging. Will use standard WAN download (this will take longer). Response is $_response."
+    #fi
 
     # Payload for the _json_data
     _json_data='{"kind":"subnet"}'
