@@ -31,7 +31,7 @@ case ${1} in
     && pe_license \
     && pe_init \
     && create_era_container \
-    && era_network_configure\
+    && era_network_configure \
     && authentication_source \
     && pe_auth \
     && deploy_era \
