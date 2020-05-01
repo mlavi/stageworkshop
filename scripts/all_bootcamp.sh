@@ -42,7 +42,7 @@ case ${1} in
     && file_analytics_install \
     && sleep 30 \
     && create_file_analytics_server \
-    && sleep 30
+    && sleep 30 \
     && deploy_era \
     && deploy_mssql \
     && deploy_oracle_19c
