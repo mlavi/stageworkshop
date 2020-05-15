@@ -1160,8 +1160,6 @@ acli "vm.on ${ERAServerName}"
 
 function deploy_mssql() {
 
-  num_sql_vms=3
-
   if (( $(source /etc/profile.d/nutanix_env.sh && acli image.list | grep ${MSSQL_SourceVM_Image} | wc --lines) == 0 )); then
     log "Import ${MSSQL_SourceVM_Image} image from ${QCOW2_REPOS}..."
 
