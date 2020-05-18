@@ -153,6 +153,7 @@ case ${1} in
     && pc_project \
     && object_store \
     && karbon_image_download \
+    && priority_images \
     && flow_enable \
     && pc_cluster_img_import \
     && configure_era \
