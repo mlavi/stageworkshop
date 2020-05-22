@@ -354,7 +354,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
          #'https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64' \
    )
     SSHPASS_REPOS=(\
-       'http://10.136.239.131/workshop_staging/sshpass-1.06-2.el7.x86_64.rpm' \
+       'http://10.136.239.13/workshop_staging/sshpass-1.06-2.el7.x86_64.rpm' \
        #'http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm' \
     )
     QCOW2_REPOS=(\
