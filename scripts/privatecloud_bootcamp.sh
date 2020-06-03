@@ -19,8 +19,8 @@ case ${1} in
     . lib.pe.sh
 
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zp'
+    export PrismOpsServer='PrismOpsServer517latest'
+    export SeedPC='seedPC517latest.zip'
 
     export _external_nw_name="${1}"
 
