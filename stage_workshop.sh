@@ -12,7 +12,7 @@ begin
 # - PC #.#
 WORKSHOPS=(\
 "Basic / API Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.16.1.2) = Current" \
-"Private Cloud Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17) = Development" \
+"Private Cloud Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.2) = Development" \
 "Databases Era with MSSQL Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Databases Era with Oracle Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Databases Era with Postgres Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
@@ -27,7 +27,7 @@ WORKSHOPS=(\
 
 "Cloud Native Application Modernization Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
-"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17) = Development" \
+"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.2) = Development" \
 "In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17) = Development" \
 
 #"SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
@@ -55,7 +55,7 @@ function stage_clusters() {
   # Map to latest and greatest of each point release
   # Metadata URLs MUST be specified in lib.common.sh function: ntnx_download
   # TODO: make WORKSHOPS and map a JSON configuration file?
-  if (( $(echo ${_workshop} | grep -i "PC 5.17" | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "PC 5.17.0.2" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_DEV_VERSION}"
   elif (( $(echo ${_workshop} | grep -i "PC 5.16.1.2" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_CURRENT_VERSION}"

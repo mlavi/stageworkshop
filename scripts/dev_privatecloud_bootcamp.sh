@@ -48,7 +48,7 @@ case ${1} in
     && prism_pro_server_deploy \
     && files_install \
     && sleep 30 \
-    && create_file_server "${NW1_NAME}" "${NW2_NAME}" \
+    && create_file_server "${NW1_NAME}" "${NW1_NAME}" \
     && sleep 30 \
     && file_analytics_install \
     && sleep 30 \
