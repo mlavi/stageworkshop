@@ -2,7 +2,7 @@
 
 # shellcheck disable=SC2034
 RELEASE='release.json'
-PC_DEV_VERSION='5.17.0.2'
+PC_DEV_VERSION='5.17.0.3'
 PC_CURRENT_VERSION='5.16.1.2'
 PC_STABLE_VERSION='5.11.2.1'
 FILES_VERSION='3.6.3'
@@ -42,6 +42,7 @@ ERAServerName='EraServer'
 ERA_USER="admin"
 ERA_PASSWORD="nutanix/4u"
 ERA_Default_PASSWORD="Nutanix/4u"
+ERA_Container_RF="2"
 
 MSSQL_SourceVM="Win2016SQLSource"
 MSSQL_SourceVM_Image1="MSSQL_1"
@@ -152,6 +153,11 @@ case "${OCTET[3]}" in
     NW2_SUBNET=''
     NW2_DHCP_START=''
     NW2_DHCP_END=''
+    NW3_NAME=''
+    NW3_NETMASK=''
+    NW3_START=""
+    NW3_END=""
+    ERA_Container_RF="1"
     ;;
 
   71 ) # We are in Partition 2
@@ -164,6 +170,11 @@ case "${OCTET[3]}" in
     NW2_SUBNET=''
     NW2_DHCP_START=''
     NW2_DHCP_END=''
+    NW3_NAME=''
+    NW3_NETMASK=''
+    NW3_START=""
+    NW3_END=""
+    ERA_Container_RF="1"
     ;;
 
   135 ) # We are in Partition 3
@@ -176,6 +187,11 @@ case "${OCTET[3]}" in
     NW2_SUBNET=''
     NW2_DHCP_START=''
     NW2_DHCP_END=''
+    NW3_NAME=''
+    NW3_NETMASK=''
+    NW3_START=""
+    NW3_END=""
+    ERA_Container_RF="1"
     ;;
 
   199 ) # We are in Partition 4
@@ -188,6 +204,11 @@ case "${OCTET[3]}" in
     NW2_SUBNET=''
     NW2_DHCP_START=''
     NW2_DHCP_END=''
+    NW3_NAME=''
+    NW3_NETMASK=''
+    NW3_START=""
+    NW3_END=""
+    ERA_Container_RF="1"
     ;;
 
 
@@ -236,8 +257,8 @@ AUTH_ADMIN_GROUP='SSP Admins'
 case "${OCTET[0]}.${OCTET[1]}" in
 
   10.55 ) # HPOC us-east = DUR
-    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.17.0.2.json'
-    PC_DEV_URL='http://10.55.251.38/workshop_staging/euphrates-5.17.0.2-stable-prism_central.tar'
+    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.17.0.3.json'
+    PC_DEV_URL='http://10.55.251.38/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_CURRENT_URL='http://10.55.251.38/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
     PC_STABLE_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.11.2.1.json'
@@ -275,8 +296,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
 	  OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
     ;;
   10.42 ) # HPOC us-west = PHX
-    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.2.json'
-    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.17.0.2-stable-prism_central.tar'
+    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.3.json'
+    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
@@ -314,8 +335,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
     OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
     ;;
   10.38 ) # HPOC us-west = PHX 1-Node Clusters
-    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.2.json'
-    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.17.0.2-stable-prism_central.tar'
+    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.3.json'
+    PC_DEV_URL='http://10.42.194.11/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.11.2.1.json'
@@ -358,8 +379,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
     fi
       ;;
   10.136 ) # HPOC us-west = BLR
-    PC_DEV_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.17.0.2.json'
-    PC_DEV_URL='http://10.136.239.13/workshop_staging/euphrates-5.17.0.2-stable-prism_central.tar'
+    PC_DEV_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.17.0.3.json'
+    PC_DEV_URL='http://10.136.239.13/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
     PC_CURRENT_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.16.1.2.json'
     PC_CURRENT_URL='http://10.136.239.13/workshop_staging/euphrates-5.16.1.2-stable-prism_central.tar'
     PC_STABLE_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.11.2.1.json'

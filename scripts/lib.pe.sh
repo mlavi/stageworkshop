@@ -1121,7 +1121,7 @@ acli "vm.on ${PrismOpsServer}"
 function create_era_container() {
 
   log "Creating Era Storage Container"
-  ncli container create name="${STORAGE_ERA}" rf=2 sp-name="${STORAGE_POOL}" enable-compression=true compression-delay=60
+  ncli container create name="${STORAGE_ERA}" rf="${ERA_Container_RF}" sp-name="${STORAGE_POOL}" enable-compression=true compression-delay=60
 
 }
 
