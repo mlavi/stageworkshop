@@ -28,8 +28,8 @@ WORKSHOPS=(\
 
 "Cloud Native Application Modernization Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
 "Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
-"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.2) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17) = Development" \
+"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
+"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
 
 #"SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 #"Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
