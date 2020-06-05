@@ -33,6 +33,12 @@ SSH_OPTS='-o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserK
 SSH_OPTS+=' -q' # -v'
 
 ####################################################
+# OBJECTS VARs
+###################################################
+
+
+
+####################################################
 # Era VARs
 ###################################################
 
@@ -130,6 +136,10 @@ FILE_ANALYTICS_HOST=${IPV4_PREFIX}.$((${OCTET[3]} - 22))
 PrismOpsServer_HOST="${IPV4_PREFIX}.$((${OCTET[3]} + 5))"
 ERA_HOST=${IPV4_PREFIX}.$((${OCTET[3]} + 7))
 CITRIX_DDC_HOST=${IPV4_PREFIX}.$((${OCTET[3]} + 8))
+BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
+BUCKETS_VIP="${IPV4_PREFIX}.17"
+OBJECTS_NW_START="${IPV4_PREFIX}.18"
+OBJECTS_NW_END="${IPV4_PREFIX}.21"
 DNS_SERVERS='8.8.8.8'
 NTP_SERVERS='0.us.pool.ntp.org,1.us.pool.ntp.org,2.us.pool.ntp.org,3.us.pool.ntp.org'
 SUBNET_MASK="255.255.255.128"
@@ -160,6 +170,10 @@ case "${OCTET[3]}" in
     NW3_END=""
     ERA_NETWORK="Primary"
     ERA_Container_RF="1"
+    BUCKETS_DNS_IP=${IPV4_PREFIX}.$((${OCTET[3]} + 25))
+    BUCKETS_VIP=${IPV4_PREFIX}.$((${OCTET[3]} + 26))
+    OBJECTS_NW_START=${IPV4_PREFIX}.$((${OCTET[3]} + 27))
+    OBJECTS_NW_END=${IPV4_PREFIX}.$((${OCTET[3]} + 30))
     ;;
 
   71 ) # We are in Partition 2
@@ -178,6 +192,10 @@ case "${OCTET[3]}" in
     NW3_END=""
     ERA_NETWORK="Primary"
     ERA_Container_RF="1"
+    BUCKETS_DNS_IP=${IPV4_PREFIX}.$((${OCTET[3]} + 25))
+    BUCKETS_VIP=${IPV4_PREFIX}.$((${OCTET[3]} + 26))
+    OBJECTS_NW_START=${IPV4_PREFIX}.$((${OCTET[3]} + 27))
+    OBJECTS_NW_END=${IPV4_PREFIX}.$((${OCTET[3]} + 30))
     ;;
 
   135 ) # We are in Partition 3
@@ -196,6 +214,10 @@ case "${OCTET[3]}" in
     NW3_END=""
     ERA_NETWORK="Primary"
     ERA_Container_RF="1"
+    BUCKETS_DNS_IP=${IPV4_PREFIX}.$((${OCTET[3]} + 25))
+    BUCKETS_VIP=${IPV4_PREFIX}.$((${OCTET[3]} + 26))
+    OBJECTS_NW_START=${IPV4_PREFIX}.$((${OCTET[3]} + 27))
+    OBJECTS_NW_END=${IPV4_PREFIX}.$((${OCTET[3]} + 30))
     ;;
 
   199 ) # We are in Partition 4
@@ -214,6 +236,10 @@ case "${OCTET[3]}" in
     NW3_END=""
     ERA_NETWORK="Primary"
     ERA_Container_RF="1"
+    BUCKETS_DNS_IP=${IPV4_PREFIX}.$((${OCTET[3]} + 25))
+    BUCKETS_VIP=${IPV4_PREFIX}.$((${OCTET[3]} + 26))
+    OBJECTS_NW_START=${IPV4_PREFIX}.$((${OCTET[3]} + 27))
+    OBJECTS_NW_END=${IPV4_PREFIX}.$((${OCTET[3]} + 30))
     ;;
 
 
