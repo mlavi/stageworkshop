@@ -42,6 +42,7 @@ ERAServerName='EraServer'
 ERA_USER="admin"
 ERA_PASSWORD="nutanix/4u"
 ERA_Default_PASSWORD="Nutanix/4u"
+ERA_NETWORK="Secondary"
 ERA_Container_RF="2"
 
 MSSQL_SourceVM="Win2016SQLSource"
@@ -157,6 +158,7 @@ case "${OCTET[3]}" in
     NW3_NETMASK=''
     NW3_START=""
     NW3_END=""
+    ERA_NETWORK="Primary"
     ERA_Container_RF="1"
     ;;
 
@@ -174,6 +176,7 @@ case "${OCTET[3]}" in
     NW3_NETMASK=''
     NW3_START=""
     NW3_END=""
+    ERA_NETWORK="Primary"
     ERA_Container_RF="1"
     ;;
 
@@ -191,6 +194,7 @@ case "${OCTET[3]}" in
     NW3_NETMASK=''
     NW3_START=""
     NW3_END=""
+    ERA_NETWORK="Primary"
     ERA_Container_RF="1"
     ;;
 
@@ -208,6 +212,7 @@ case "${OCTET[3]}" in
     NW3_NETMASK=''
     NW3_START=""
     NW3_END=""
+    ERA_NETWORK="Primary"
     ERA_Container_RF="1"
     ;;
 

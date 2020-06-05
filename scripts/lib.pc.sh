@@ -1002,7 +1002,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   "properties": [
     {
       "name": "VLAN_NAME",
-      "value": "Secondary",
+      "value": "${ERA_NETWORK}",
       "description": "Name of the vLAN"
     }
   ],
@@ -1028,7 +1028,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   "properties": [
     {
       "name": "VLAN_NAME",
-      "value": "Secondary",
+      "value": "${ERA_NETWORK}",
       "description": "Name of the vLAN"
     }
   ],
@@ -1054,7 +1054,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   "properties": [
     {
       "name": "VLAN_NAME",
-      "value": "Secondary",
+      "value": "${ERA_NETWORK}",
       "description": "Name of the vLAN"
     }
   ],
