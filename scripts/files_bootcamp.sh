@@ -77,10 +77,10 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
-    export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
-    export BUCKETS_VIP="${IPV4_PREFIX}.17"
-    export OBJECTS_NW_START="${IPV4_PREFIX}.18"
-    export OBJECTS_NW_END="${IPV4_PREFIX}.21"
+    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
+    #export BUCKETS_VIP="${IPV4_PREFIX}.17"
+    #export OBJECTS_NW_START="${IPV4_PREFIX}.18"
+    #export OBJECTS_NW_END="${IPV4_PREFIX}.21"
 
     export QCOW2_IMAGES=(\
       Windows2016.qcow2 \
