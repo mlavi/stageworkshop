@@ -19,8 +19,6 @@ case ${1} in
     . lib.pe.sh
 
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zip'
 
     args_required 'EMAIL PE_HOST PE_PASSWORD PC_VERSION'
     ssh_pubkey & # non-blocking, parallel suitable

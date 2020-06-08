@@ -16,7 +16,7 @@ STORAGE_IMAGES='Images'
 STORAGE_ERA='Era'
 ATTEMPTS=40
 SLEEP=60
-PrismOpsServer='PrismProLabUtilityServer'
+PrismOpsServer='PrismOpsServer'
 SeedPC='seedPC.zip'
 CALM_RSA_KEY_FILE='calm_rsa_key.env'
 

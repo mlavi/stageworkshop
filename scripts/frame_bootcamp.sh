@@ -19,8 +19,6 @@ case ${1} in
     . lib.pe.sh
 
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zip'
 
     # Networking needs for Frame Bootcamp
     export NW2_DHCP_START="${IPV4_PREFIX}.132"

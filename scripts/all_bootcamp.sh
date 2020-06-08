@@ -19,8 +19,6 @@ case ${1} in
     . lib.pe.sh
 
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zp'
     export NW2_DHCP_START="${IPV4_PREFIX}.132"
     export NW2_DHCP_END="${IPV4_PREFIX}.219"
     export _external_nw_name="${1}"

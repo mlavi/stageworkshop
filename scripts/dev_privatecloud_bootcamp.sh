@@ -30,8 +30,6 @@ case ${1} in
     #export      FILES_URL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
 
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='PrismOpsServer517'
-    export SeedPC='seedPC517.zip'
 
     export _external_nw_name="${1}"
 
