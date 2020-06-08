@@ -11,23 +11,23 @@ begin
 # - Calm || Bootcamp || Citrix || Summit
 # - PC #.#
 WORKSHOPS=(\
-"Basic / API Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"Private Cloud Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"Leap Add-On Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"Databases Era with MSSQL Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Development" \
-"Databases Era with Oracle Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Development" \
-"Databases Era with Postgres Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Development" \
-"Databases Era -Stage All- Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Development" \
-"Files Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"Calm Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"Frame Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"Citrix Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Development" \
-"Stage-All Bootcamps (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
+"Basic / API Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
+"Private Cloud Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
+"Leap Add-On Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
+"Databases Era with MSSQL Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Current" \
+"Databases Era with Oracle Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Current" \
+"Databases Era with Postgres Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Current" \
+"Databases Era -Stage All- Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Current" \
+"Files Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
+"Calm Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
+"Frame Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
+"Citrix Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
+"Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Current" \
+"Stage-All Bootcamps (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
 "Legacy Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 
-"Cloud Native Application Modernization Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
-"Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.11.x/AHV PC 5.16.1.2) = Current" \
+"Cloud Native Application Modernization Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Current" \
+"Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.11.x/AHV PC 5.17.0.3) = Current" \
 "In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
 "In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
 
@@ -58,7 +58,7 @@ function stage_clusters() {
   # TODO: make WORKSHOPS and map a JSON configuration file?
   if (( $(echo ${_workshop} | grep -i "PC 5.17.0.3" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_DEV_VERSION}"
-  elif (( $(echo ${_workshop} | grep -i "PC 5.16.1.2" | wc ${WC_ARG}) > 0 )); then
+  elif (( $(echo ${_workshop} | grep -i "PC 5.17.0.3" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_CURRENT_VERSION}"
   elif (( $(echo ${_workshop} | grep -i "PC 5.11.2.1" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_STABLE_VERSION}"
