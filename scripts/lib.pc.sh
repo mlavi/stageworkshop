@@ -1316,7 +1316,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   "spec": {
     "resources": {
       "directory_service_user_group": {
-        "distinguished_name": "cn=ssp admins,cn=users,dc=ntnxlab,dc=local"
+        "distinguished_name": "cn=ssp custom,cn=users,dc=ntnxlab,dc=local"
       }
     }
   }
@@ -1391,7 +1391,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   				"user_group_reference_list": [
         		{
         			"kind": "user_group",
-        			"name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
+        			"name": "CN=SSP Custom,CN=Users,DC=ntnxlab,DC=local",
         			"uuid": "${_user_group_uuid}"
         		}
     			]
@@ -1419,7 +1419,7 @@ HTTP_JSON_BODY=$(cat <<EOF
     	"external_user_group_reference_list": [
         {
           "kind": "user_group",
-          "name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
+          "name": "CN=SSP Custom,CN=Users,DC=ntnxlab,DC=local",
           "uuid": "${_user_group_uuid}"
         }
     	]
