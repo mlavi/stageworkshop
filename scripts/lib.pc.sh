@@ -458,8 +458,9 @@ EOF
   log "directories: _test=|${_test}|_http_body=|${_http_body}|"
 
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
-  #TODO:20 hardcoded role mappings
-  for _group in 'SSP Admins' 'SSP Power Users' 'SSP Developers' 'SSP Basic Users'; do
+  #TODO:20 hardcoded role mapping
+  groups=('SSP Admins' 'SSP Developers' 'SSP Consumers' 'SSP Operators' 'SSP Custom' 'Bootcamp Users')
+  for _group in "${groups[@]}"; do
     _http_body=$(cat <<EOF
     {
       "directoryName":"${AUTH_SERVER}",
