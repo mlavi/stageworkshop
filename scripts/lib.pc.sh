@@ -459,7 +459,8 @@ EOF
 
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
   #TODO:20 hardcoded role mapping
-  groups=('SSP Admins' 'SSP Developers' 'SSP Consumers' 'SSP Operators' 'SSP Custom' 'Bootcamp Users')
+  #groups=('SSP Admins' 'SSP Developers' 'SSP Consumers' 'SSP Operators' 'SSP Custom' 'Bootcamp Users')
+  groups=('SSP Admins')
   for _group in "${groups[@]}"; do
     _http_body=$(cat <<EOF
     {
