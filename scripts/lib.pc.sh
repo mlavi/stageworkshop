@@ -424,6 +424,7 @@ function pc_auth() {
   local  _http_body
   local _pc_version
   local       _test
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
   # TODO:50 FUTURE: pass AUTH_SERVER argument
 
@@ -459,6 +460,10 @@ EOF
 
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
   #TODO:20 hardcoded role mappings
+
+  # Get Role UUID #
+  _role_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/roles/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"role","filter": "name==Prism Admin"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
   for _group in 'SSP Admins' 'SSP Power Users' 'SSP Developers' 'SSP Basic Users'; do
     _http_body=$(cat <<EOF
     {
@@ -469,9 +474,7 @@ EOF
     }
 EOF
     )
-    _test=$(curl ${CURL_POST_OPTS} \
-      --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
-      https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_SERVER}/role_mappings)
+    _test=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_SERVER}/role_mappings)
     log "Cluster Admin=${_group}, _test=|${_test}|"
   done
 }
