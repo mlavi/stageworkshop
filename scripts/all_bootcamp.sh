@@ -100,6 +100,7 @@ case ${1} in
     )
     export ISO_IMAGES=(\
       Nutanix-VirtIO-1.1.5.iso \
+      Windows2016.iso \
       veeam/VBR_10.0.0.4442.iso \
     )
 

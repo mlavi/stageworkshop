@@ -459,12 +459,10 @@ EOF
   log "directories: _test=|${_test}|_http_body=|${_http_body}|"
 
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
-  #TODO:20 hardcoded role mappings
-
-  # Get Role UUID #
-  _role_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/roles/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"role","filter": "name==Prism Admin"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-
-  for _group in 'SSP Admins' 'SSP Power Users' 'SSP Developers' 'SSP Basic Users'; do
+  #TODO:20 hardcoded role mapping
+  #groups=('SSP Admins' 'SSP Developers' 'SSP Consumers' 'SSP Operators' 'SSP Custom' 'Bootcamp Users')
+  groups=('SSP Admins')
+  for _group in "${groups[@]}"; do
     _http_body=$(cat <<EOF
     {
       "directoryName":"${AUTH_SERVER}",
@@ -1318,7 +1316,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   "spec": {
     "resources": {
       "directory_service_user_group": {
-        "distinguished_name": "cn=ssp admins,cn=users,dc=ntnxlab,dc=local"
+        "distinguished_name": "cn=ssp custom,cn=users,dc=ntnxlab,dc=local"
       }
     }
   }
@@ -1393,7 +1391,7 @@ HTTP_JSON_BODY=$(cat <<EOF
   				"user_group_reference_list": [
         		{
         			"kind": "user_group",
-        			"name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
+        			"name": "CN=SSP Custom,CN=Users,DC=ntnxlab,DC=local",
         			"uuid": "${_user_group_uuid}"
         		}
     			]
@@ -1421,7 +1419,7 @@ HTTP_JSON_BODY=$(cat <<EOF
     	"external_user_group_reference_list": [
         {
           "kind": "user_group",
-          "name": "CN=SSP Admins,CN=Users,DC=ntnxlab,DC=local",
+          "name": "CN=SSP Custom,CN=Users,DC=ntnxlab,DC=local",
           "uuid": "${_user_group_uuid}"
         }
     	]
