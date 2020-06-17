@@ -163,7 +163,6 @@ case ${1} in
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
-    pc_project
     pc_admin
     # ntnx_download 'AOS' # function in lib.common.sh
 
