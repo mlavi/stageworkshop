@@ -25,7 +25,7 @@ WORKSHOPS=(\
 "Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
 "Stage-All Bootcamps (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
 "Legacy Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-
+"Calm Bootcamp Test(AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
 "Cloud Native Application Modernization Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
 "Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Current" \
 "In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
@@ -124,6 +124,11 @@ function stage_clusters() {
   if (( $(echo ${_workshop} | grep -i "^Calm" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='calm_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^Calm Bootcamp Test" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='calm_bootcamp_test.sh'
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i "^Citrix" | wc ${WC_ARG}) > 0 )); then
