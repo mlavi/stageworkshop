@@ -216,13 +216,13 @@ function authentication_source() {
         done
 
         # Adding the needed group and users for the Calm Script part Project 
-        group_name="SSP Custom"
+        
         remote_exec 'SSH' 'AUTH_SERVER' \
-          "samba-tool group add ${group_name}"\
+          'samba-tool group add "SSP Custom"' \
           'OPTIONAL'
         sleep ${_sleep}
         remote_exec 'SSH' 'AUTH_SERVER' \
-          "for i in `samba-tool user list | grep ^user`; do samba-tool group addmembers ${group_name} $i;done" \
+          'for i in `samba-tool user list | grep ^user`; do samba-tool group addmembers "SSP Custom" $i;done' \
           'OPTIONAL'
          sleep ${_sleep}
 
