@@ -215,6 +215,17 @@ function authentication_source() {
           fi
         done
 
+        # Adding the needed group and users for the Calm Script part Project 
+        group_name="SSP Custom"
+        remote_exec 'SSH' 'AUTH_SERVER' \
+          "samba-tool group add ${group_name}"\
+          'OPTIONAL'
+        sleep ${_sleep}
+        remote_exec 'SSH' 'AUTH_SERVER' \
+          "for i in `samba-tool user list | grep ^user`; do samba-tool group addmembers ${group_name} $i;done" \
+          'OPTIONAL'
+         sleep ${_sleep}
+
       fi
       ;;
     'OpenLDAP')
