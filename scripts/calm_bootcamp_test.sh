@@ -124,7 +124,7 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && objects_enable \
-    && karbon \
+    && karbon_enable \
     && lcm \
     && pc_project \
     && object_store \
