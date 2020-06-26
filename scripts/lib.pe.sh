@@ -792,7 +792,7 @@ function cluster_check() {
         exit 1
       fi
    done
-   log "PE has been registered to PC... Progressing..."
+   log "PE has been registered to PC... Proceeding..."
 }
 
 ###############################################################################################################################################################################
