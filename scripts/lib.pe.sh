@@ -215,8 +215,7 @@ function authentication_source() {
           fi
         done
 
-        # Adding the needed group and users for the Calm Script part Project 
-        
+        # Adding the needed group and users to the AutoDC that may be used. Calm would otherwise have no BootInfra Project        
         remote_exec 'SSH' 'AUTH_SERVER' \
           'samba-tool group add "SSP Custom"' \
           'OPTIONAL'
