@@ -132,9 +132,9 @@ function lcm() {
                   version=($(jq --arg uuid "$uuid" '.group_results[].entity_results[] | select (.data[].values[].values[]==$uuid) .data[] | select (.name=="version") .values[].values[]' reply_json_ver.json | sort |tail -1 | tr -d \"))
                   # If no version upgrade available add a blank item in the array
                   if [[ -z $version ]]; then 
-                    version=' '
+                    version=''
                   fi
-                  version_ar+=$version
+                  version_ar+=($version)
                 done
               # Copy the right info into the to be used array
         fi
