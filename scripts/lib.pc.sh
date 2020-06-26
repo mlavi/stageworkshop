@@ -149,7 +149,7 @@ function lcm() {
        count=0
        while [ $count -lt ${#uuid_arr[@]} ]
        do
-          if [ ! -z ${version_ar[$count]} ]; then
+          if [[ ! -z ${version_ar[$count]} ]]; then
             _json_data+="[\\\"${uuid_arr[$count]}\\\",\\\"${version_ar[$count]}\\\"],"
             log "Found UUID ${uuid_arr[$count]} and version ${version_ar[$count]}"
           fi
