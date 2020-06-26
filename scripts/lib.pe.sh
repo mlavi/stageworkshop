@@ -783,7 +783,7 @@ function cluster_check() {
       _pc_ip_addr=$(curl -X POST $CURL_HTTP_OPTS --user ${PRISM_ADMIN}:${PE_PASSWORD} https://localhost:9440/PrismGateway/services/rest/v1/multicluster/cluster_external_state | jq '.[].clusterDetails.ipAddresses[0]' | tr -d \")
       sleep 5
       log "Sleeping for 5 seconds before retrying...$_loop/$_attempts"
-      if [[ $_loop >= $_attempts ]]
+      if [[ $_loop -gt $_attempts ]]
         log "We have tried 10 times and the cluster is not able to register... Exiting the script!!"
         exit 1
       fi
