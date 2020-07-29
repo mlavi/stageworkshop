@@ -1294,6 +1294,104 @@ set +x
 
 }
 
+#########################################################################################################################################
+# Routine to Clone MSSQL Source VMs
+#########################################################################################################################################
+
+function clone_mssql_source_vms() {
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+
+log "PE Cluster IP |${PE_HOST}|"
+log "PC IP |${PC_HOST}|"
+
+set -x
+
+## Get Source VM UUID ##
+log "Get ${MSSQL_SourceVM} ID"
+
+  _mssql_sourcevm_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/vms/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"vm","filter": "vm_name==Win2016SQLSource"}'  | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+log "${MSSQL_SourceVM} ID: |${_mssql_sourcevm_id}|"
+
+## Deploy UserXX Clones ##
+log "Cloning ${MSSQL_SourceVM}"
+
+for _user in "${USERS[@]}" ; do
+
+  ClonedVM="${_user}_LinuxMint"
+
+  log "Cloning ${MSSQL_SourceVM} for $_user started.."
+  log "Cloned VMs Name will be ${ClonedVM}"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "spec_list": [
+    {
+      "name": "${ClonedVM}"
+    }
+  ]
+}
+EOF
+)
+
+  log "Cloning VM Now"
+  log $HTTP_JSON_BODY
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  log "Task uuid for Cloning ${MSSQL_SourceVM} is $_task_id  ....."
+
+  if [ -z "$_task_id" ]; then
+       log "Cloning ${MSSQL_SourceVM} has encountered an error..."
+  else
+       log "Cloning ${MSSQL_SourceVM} started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+       # Run the progess checker
+       loop
+  fi
+
+## Get Newly Cloned VM"s UUID ##
+
+log "Get ${_user}_LinuxMint ID"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "kind":"vm",
+  "vm_name==${ClonedVM}"
+}
+EOF
+)
+
+  log "Getting UUID Now"
+  log $HTTP_JSON_BODY
+
+  _cloned_vm_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/vms/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}"  | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+log "${ClonedVM} ID: |${_cloned_vm_id}|"
+
+## Power Cloned VM On ##
+
+log "Powering on VM Now"
+
+_task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_cloned_vm_id}/set_power_state" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"transition": "ON"}' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+log "Task uuid for Powering on VM is $_task_id  ....."
+
+if [ -z "$_task_id" ]; then
+     log "Powering on VM has encountered an error..."
+else
+     log "Powering on VM started.."
+     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+     # Run the progess checker
+     loop
+fi
+
+done
+
+set +x
+
+}
+
 ###############################################################################################################################################################################
 # Routine to Create a Project in the Calm part
 ###############################################################################################################################################################################

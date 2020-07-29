@@ -33,10 +33,17 @@ SSH_OPTS='-o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserK
 SSH_OPTS+=' -q' # -v'
 
 ####################################################
-# OBJECTS VARs
+# Users for Tools VMs and Source VM Clones
 ###################################################
 
-
+USERS=(\
+   User01 \
+   User02 \
+   User03 \
+   User04 \
+   User05 \
+   User06 \
+)
 
 ####################################################
 # Era VARs

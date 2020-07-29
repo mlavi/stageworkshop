@@ -138,6 +138,7 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && configure_era \
+    && clone_mssql_source_vms \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
