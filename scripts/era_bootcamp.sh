@@ -84,6 +84,12 @@ case ${1} in
     export QCOW2_IMAGES=(\
       WinToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
+      CentOS7_05272020.qcow2 \
+      Win10v1903_05272020.qcow2 \
+      Win10v1909_05272020.qcow2 \
+      WinTools_05272020.qcow2 \
+      Linux_ToolsVM_05272020.qcow2
+      LinuxMint_ToolsVM.qcow2 \
     )
     export ISO_IMAGES=(\
       Nutanix-VirtIO-1.1.5.iso \
