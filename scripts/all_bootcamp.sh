@@ -86,15 +86,17 @@ case ${1} in
     #export OBJECTS_NW_END="${IPV4_PREFIX}.21"
 
     export _prio_images_arr=(\
-            Windows2016.qcow2 \
+            Windows2016_05272020.qcow2 \
             Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
             )
 
     export QCOW2_IMAGES=(\
-      CentOS7.qcow2 \
-      Win10v1903.qcow2 \
-      WinToolsVM.qcow2 \
-      Linux_ToolsVM.qcow2 \
+      CentOS7_05272020.qcow2 \
+      Win10v1903_05272020.qcow2 \
+      Win10v1909_05272020.qcow2 \
+      WinTools_05272020.qcow2 \
+      Linux_ToolsVM_05272020.qcow2
+      LinuxMint_ToolsVM.qcow2 \
       HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
       veeam/VeeamAHVProxy2.0.404.qcow2 \
     )
