@@ -131,7 +131,7 @@ function lcm() {
                   # Get the latest version from the to be updated uuid. Put always a value in the array otherwise we loose/have skewed verrsions to products
                   version=($(jq --arg uuid "$uuid" '.group_results[].entity_results[] | select (.data[].values[].values[]==$uuid) .data[] | select (.name=="version") .values[].values[]' reply_json_ver.json | sort |tail -1 | tr -d \"))
                   # If no version upgrade available add a blank item in the array
-                  if [[ -z $version ]]; then 
+                  if [[ -z $version ]]; then
                     version='NA'
                   fi
                   version_ar+=($version)
@@ -902,14 +902,14 @@ log "EraServer IP |${ERA_HOST}|"
 ##  Create the EraManaged network inside Era ##
 log "Reset Default Era Password"
 
-  _reset_passwd=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_Default_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/auth/update" --data '{ "password": "'${ERA_PASSWORD}'"}' | jq -r '.status' | tr -d \")
+  _reset_passwd=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_Default_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/auth/update" --data '{ "password": "'${ERA_PASSWORD}'"}' | jq -r '.status' | tr -d \")
 
 log "Password Reset |${_reset_passwd}|"
 
 ##  Accept EULA ##
 log "Accept Era EULA"
 
-  _accept_eula=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/auth/validate" --data '{ "eulaAccepted": true }' | jq -r '.status' | tr -d \")
+  _accept_eula=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/auth/validate" --data '{ "eulaAccepted": true }' | jq -r '.status' | tr -d \")
 
 log "Accept EULA |${_accept_eula}|"
 
@@ -936,7 +936,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _era_cluster_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/clusters" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _era_cluster_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/clusters" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Era Cluster ID: |${_era_cluster_id}|"
 
@@ -947,12 +947,12 @@ ClusterJSON='{"ip_address": "'${PE_HOST}'","port": "9440","protocol": "https","d
 
 echo $ClusterJSON > cluster.json
 
-  _task_id=$(curl -k -H 'Content-Type: multipart/form-data' -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/clusters/${_era_cluster_id}/json" -F file="@"cluster.json)
+  _task_id=$(curl -k -H 'Content-Type: multipart/form-data' -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/clusters/${_era_cluster_id}/json" -F file="@"cluster.json)
 
 ##  Add the Secondary Network inside Era ##
 log "Create ${NW2_NAME} DHCP/IPAM Network"
 
-  _dhcp_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data '{"name": "'${NW2_NAME}'","type": "DHCP"}' | jq -r '.id' | tr -d \")
+  _dhcp_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/resources/networks" --data '{"name": "'${NW2_NAME}'","type": "DHCP"}' | jq -r '.id' | tr -d \")
 
 log "Created ${NW2_NAME} Network with Network ID |${_dhcp_network_id}|"
 
@@ -991,7 +991,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _static_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/resources/networks" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _static_network_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/resources/networks" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created ${NW3_NAME} Network with Network ID |${_static_network_id}|"
 
@@ -1017,7 +1017,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _primary_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _primary_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created Primary-MSSQL-NETWORK Network Profile with ID |${_primary_network_profile_id}|"
 
@@ -1043,7 +1043,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _postgres_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _postgres_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created Primary_PGSQL_NETWORK Network Profile with ID |${_postgres_network_profile_id}|"
 
@@ -1069,7 +1069,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _oracle_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _oracle_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created Primary_ORACLE_NETWORK Network Profile with ID |${_oracle_network_profile_id}|"
 
@@ -1095,7 +1095,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _eramanagaed_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _eramanagaed_network_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created ERAMANAGED_MSSQL_NETWORK Network Profile with ID |${_eramanagaed_network_profile_id}|"
 
@@ -1130,7 +1130,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _xs_compute_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _xs_compute_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created CUSTOM_EXTRA_SMALL Compute Profile with ID |${_xs_compute_profile_id}|"
 
@@ -1165,7 +1165,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _oracle_small_compute_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _oracle_small_compute_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created ORACLE_SMALL Compute Profile with ID |${_oracle_small_compute_profile_id}|"
 
@@ -1215,7 +1215,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _ntnxlab_domain_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _ntnxlab_domain_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created NTNXLAB Domain Profile with ID |${_ntnxlab_domain_profile_id}|"
 
@@ -1286,7 +1286,7 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  _oracle_param_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.8/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+  _oracle_param_profile_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/profiles" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
 
 log "Created ORACLE_SMALL_PARAMS Parameters Profile with ID |${_oracle_param_profile_id}|"
 
