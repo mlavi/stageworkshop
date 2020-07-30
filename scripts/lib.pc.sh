@@ -902,7 +902,7 @@ log "EraServer IP |${ERA_HOST}|"
 ##  Create the EraManaged network inside Era ##
 log "Reset Default Era Password"
 
-  _reset_passwd=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_Default_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/auth/update" --data '{ "password": "'${ERA_PASSWORD}'"}' | jq -r '.status' | tr -d \")
+  _reset_passwd=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_Default_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/auth/update" --data '{ "password": "'${PE_PASSWORD}'"}' | jq -r '.status' | tr -d \")
 
 log "Password Reset |${_reset_passwd}|"
 
@@ -1340,15 +1340,15 @@ EOF
   _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
   log "Task uuid for Cloning ${MSSQL_SourceVM} is $_task_id  ....."
-
-  if [ -z "$_task_id" ]; then
-       log "Cloning ${MSSQL_SourceVM} has encountered an error..."
-  else
-       log "Cloning ${MSSQL_SourceVM} started.."
-       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-       # Run the progess checker
-       loop
-  fi
+  sleep 120
+  #if [ -z "$_task_id" ]; then
+  #     log "Cloning ${MSSQL_SourceVM} has encountered an error..."
+  #else
+  #     log "Cloning ${MSSQL_SourceVM} started.."
+  #     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+  #     # Run the progess checker
+  #     loop
+  #fi
 
 ## Get Newly Cloned VM"s UUID ##
 
