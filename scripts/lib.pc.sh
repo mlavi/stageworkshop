@@ -1318,7 +1318,7 @@ log "Cloning ${MSSQL_SourceVM}"
 
 for _user in "${USERS[@]}" ; do
 
-  ClonedVM="${_user}_LinuxMint"
+  ClonedVM="${_user}_${MSSQL_SourceVM}"
 
   log "Cloning ${MSSQL_SourceVM} for $_user started.."
   log "Cloned VMs Name will be ${ClonedVM}"
@@ -1352,7 +1352,7 @@ EOF
 
 ## Get Newly Cloned VM"s UUID ##
 
-log "Get ${_user}_LinuxMint ID"
+log "Get ${ClonedVM} ID"
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
