@@ -215,7 +215,7 @@ function authentication_source() {
           fi
         done
 
-        # Adding the needed group and users to the AutoDC that may be used. Calm would otherwise have no BootInfra Project        
+        # Adding the needed group and users to the AutoDC that may be used. Calm would otherwise have no BootInfra Project
         remote_exec 'SSH' 'AUTH_SERVER' \
           'samba-tool group add "SSP Custom"' \
           'OPTIONAL'
@@ -632,132 +632,6 @@ function era_network_configure() {
 }
 
 ###############################################################################################################################################################################
-# Routine to create the networks for frame bootcamp
-###############################################################################################################################################################################
-
-
-function frame_network_configure() {
-  local _network_name="${NW1_NAME}"
-
-  if [[ ! -z "${NW2_NAME}" ]]; then
-    #TODO: accommodate for X networks!
-    _network_name="${NW2_NAME}"
-  fi
-
-  if [[ ! -z $(acli "net.list" | grep ${_network_name}) ]]; then
-    log "IDEMPOTENCY: ${_network_name} network set, skip."
-  else
-    args_required 'AUTH_DOMAIN IPV4_PREFIX AUTH_HOST'
-
-    if [[ ! -z $(acli "net.list" | grep 'Rx-Automation-Network') ]]; then
-      log "Remove Rx-Automation-Network..."
-      acli "-y net.delete Rx-Automation-Network"
-    fi
-
-    log "Create primary network: Name: ${NW1_NAME}, VLAN: ${NW1_VLAN}, Subnet: ${NW1_SUBNET}, Domain: ${AUTH_DOMAIN}, Pool: ${NW1_DHCP_START} to ${NW1_DHCP_END}"
-    acli "net.create ${NW1_NAME} vlan=${NW1_VLAN} ip_config=${NW1_SUBNET}"
-    acli "net.update_dhcp_dns ${NW1_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-    acli "  net.add_dhcp_pool ${NW1_NAME} start=${NW1_DHCP_START} end=${NW1_DHCP_END}"
-
-    if [[ ! -z "${NW2_NAME}" ]]; then
-      log "Create secondary network: Name: ${NW2_NAME}, VLAN: ${NW2_VLAN}, Subnet: ${NW2_SUBNET}, Pool: ${NW2_DHCP_START} to ${NW2_DHCP_END}"
-      acli "net.create ${NW2_NAME} vlan=${NW2_VLAN} ip_config=${NW2_SUBNET}"
-      acli "net.update_dhcp_dns ${NW2_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      acli "  net.add_dhcp_pool ${NW2_NAME} start=${NW2_DHCP_START} end=${NW2_DHCP_END}"
-      acli "  net.add_dhcp_pool ${NW2_NAME} start=${NW2_DHCP_START2} end=${NW2_DHCP_END2}"
-    fi
-
-    if [[ ! -z "${USERNW01_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW01_NAME}, VLAN: ${USERNW01_VLAN}, Subnet: ${USERNW01_SUBNET}, Pool: ${USERNW01_DHCP_START} to ${USERNW01_DHCP_END}"
-      acli "net.create ${USERNW01_NAME} vlan=${USERNW01_VLAN}"
-      #acli "net.create ${USERNW01_NAME} vlan=${USERNW01_VLAN} ip_config=${USERNW01_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW01_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW01_NAME} start=${USERNW01_DHCP_START} end=${USERNW01_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW02_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW02_NAME}, VLAN: ${USERNW02_VLAN}, Subnet: ${USERNW02_SUBNET}, Pool: ${USERNW02_DHCP_START} to ${USERNW02_DHCP_END}"
-      acli "net.create ${USERNW02_NAME} vlan=${USERNW02_VLAN}"
-      #acli "net.create ${USERNW02_NAME} vlan=${USERNW02_VLAN} ip_config=${USERNW02_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW02_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW02_NAME} start=${USERNW02_DHCP_START} end=${USERNW02_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW03_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW03_NAME}, VLAN: ${USERNW03_VLAN}, Subnet: ${USERNW03_SUBNET}, Pool: ${USERNW03_DHCP_START} to ${USERNW03_DHCP_END}"
-      acli "net.create ${USERNW03_NAME} vlan=${USERNW03_VLAN}"
-      #acli "net.create ${USERNW03_NAME} vlan=${USERNW03_VLAN} ip_config=${USERNW03_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW03_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW03_NAME} start=${USERNW03_DHCP_START} end=${USERNW03_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW04_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW04_NAME}, VLAN: ${USERNW04_VLAN}, Subnet: ${USERNW04_SUBNET}, Pool: ${USERNW04_DHCP_START} to ${USERNW04_DHCP_END}"
-      acli "net.create ${USERNW04_NAME} vlan=${USERNW04_VLAN}"
-      #acli "net.create ${USERNW04_NAME} vlan=${USERNW04_VLAN} ip_config=${USERNW04_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW04_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW04_NAME} start=${USERNW04_DHCP_START} end=${USERNW04_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW05_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW05_NAME}, VLAN: ${USERNW05_VLAN}, Subnet: ${USERNW05_SUBNET}, Pool: ${USERNW05_DHCP_START} to ${USERNW05_DHCP_END}"
-      acli "net.create ${USERNW05_NAME} vlan=${USERNW05_VLAN}"
-      #acli "net.create ${USERNW05_NAME} vlan=${USERNW05_VLAN} ip_config=${USERNW05_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW05_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW05_NAME} start=${USERNW05_DHCP_START} end=${USERNW05_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW06_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW06_NAME}, VLAN: ${USERNW06_VLAN}, Subnet: ${USERNW06_SUBNET}, Pool: ${USERNW06_DHCP_START} to ${USERNW06_DHCP_END}"
-      acli "net.create ${USERNW06_NAME} vlan=${USERNW06_VLAN}"
-      #acli "net.create ${USERNW06_NAME} vlan=${USERNW06_VLAN} ip_config=${USERNW06_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW06_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW06_NAME} start=${USERNW06_DHCP_START} end=${USERNW06_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW07_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW07_NAME}, VLAN: ${USERNW07_VLAN}, Subnet: ${USERNW07_SUBNET}, Pool: ${USERNW07_DHCP_START} to ${USERNW07_DHCP_END}"
-      acli "net.create ${USERNW07_NAME} vlan=${USERNW07_VLAN}"
-      #acli "net.create ${USERNW07_NAME} vlan=${USERNW07_VLAN} ip_config=${USERNW07_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW07_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW07_NAME} start=${USERNW07_DHCP_START} end=${USERNW07_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW08_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW08_NAME}, VLAN: ${USERNW08_VLAN}, Subnet: ${USERNW08_SUBNET}, Pool: ${USERNW08_DHCP_START} to ${USERNW08_DHCP_END}"
-      acli "net.create ${USERNW08_NAME} vlan=${USERNW08_VLAN}"
-      #acli "net.create ${USERNW08_NAME} vlan=${USERNW08_VLAN} ip_config=${USERNW08_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW08_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW08_NAME} start=${USERNW08_DHCP_START} end=${USERNW08_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW09_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW09_NAME}, VLAN: ${USERNW09_VLAN}, Subnet: ${USERNW09_SUBNET}, Pool: ${USERNW09_DHCP_START} to ${USERNW09_DHCP_END}"
-      acli "net.create ${USERNW09_NAME} vlan=${USERNW09_VLAN}"
-      #acli "net.create ${USERNW09_NAME} vlan=${USERNW09_VLAN} ip_config=${USERNW09_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW09_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW09_NAME} start=${USERNW09_DHCP_START} end=${USERNW09_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW10_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW10_NAME}, VLAN: ${USERNW10_VLAN}, Subnet: ${USERNW10_SUBNET}, Pool: ${USERNW10_DHCP_START} to ${USERNW10_DHCP_END}"
-      acli "net.create ${USERNW10_NAME} vlan=${USERNW10_VLAN}"
-      #acli "net.create ${USERNW10_NAME} vlan=${USERNW10_VLAN} ip_config=${USERNW10_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW10_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW10_NAME} start=${USERNW10_DHCP_START} end=${USERNW10_DHCP_END}"
-    fi
-
-    if [[ ! -z "${USERNW11_NAME}" ]]; then
-      log "Create User network: Name: ${USERNW11_NAME}, VLAN: ${USERNW11_VLAN}, Subnet: ${USERNW11_SUBNET}, Pool: ${USERNW11_DHCP_START} to ${USERNW11_DHCP_END}"
-      acli "net.create ${USERNW11_NAME} vlan=${USERNW11_VLAN}"
-      #acli "net.create ${USERNW11_NAME} vlan=${USERNW11_VLAN} ip_config=${USERNW11_SUBNET}"
-      #acli "net.update_dhcp_dns ${USERNW11_NAME} servers=${AUTH_HOST},${DNS_SERVERS} domains=${AUTH_FQDN}"
-      #acli "  net.add_dhcp_pool ${USERNW11_NAME} start=${USERNW11_DHCP_START} end=${USERNW11_DHCP_END}"
-    fi
-  fi
-}
-
-###############################################################################################################################################################################
 # Routine to check if the registration of PE was successful
 ###############################################################################################################################################################################
 
@@ -774,10 +648,10 @@ function cluster_check() {
    # Enable the PE to PC registration
    _json_data="{\"ipAddresses\":[\"${PC_HOST}\"],\"username\":\"${PRISM_ADMIN}\",\"password\":\"${PE_PASSWORD}\",\"port\":null}"
    _response=$(curl -X POST $CURL_HTTP_OPTS --user ${PRISM_ADMIN}:${PE_PASSWORD} https://localhost:9440/PrismGateway/services/rest/v1/multicluster/add_to_multicluster -d $_json_data | jq '.value')
-   
+
    # Let's sleep a few seconds before moving on
    sleep 5
-   
+
    _pc_ip_addr=$(curl $CURL_HTTP_OPTS --user ${PRISM_ADMIN}:${PE_PASSWORD} https://localhost:9440/PrismGateway/services/rest/v1/multicluster/cluster_external_state | jq '.[].clusterDetails.ipAddresses[0]' | tr -d \")
    while [[ -z $_pc_ip_addr ]]
    do
