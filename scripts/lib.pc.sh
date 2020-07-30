@@ -902,7 +902,7 @@ log "EraServer IP |${ERA_HOST}|"
 ##  Create the EraManaged network inside Era ##
 log "Reset Default Era Password"
 
-  _reset_passwd=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_Default_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/auth/update" --data '{ "password": "'${PE_PASSWORD}'"}' | jq -r '.status' | tr -d \")
+  _reset_passwd=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_Default_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/auth/update" --data '{ "password": "'${ERA_PASSWORD}'"}' | jq -r '.status' | tr -d \")
 
 log "Password Reset |${_reset_passwd}|"
 
