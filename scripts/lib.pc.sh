@@ -1420,18 +1420,18 @@ EOF
   log "Cloning VM Now"
   log $HTTP_JSON_BODY
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
+  _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
 
   log "Task uuid for Cloning ${MSSQL_SourceVM} is $_task_id  ....."
-  sleep 120
-  #if [ -z "$_task_id" ]; then
-  #     log "Cloning ${MSSQL_SourceVM} has encountered an error..."
-  #else
-  #     log "Cloning ${MSSQL_SourceVM} started.."
-  #     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-  #     # Run the progess checker
-  #     loop
-  #fi
+  #sleep 240
+  if [ -z "$_task_id" ]; then
+       log "Cloning ${MSSQL_SourceVM} has encountered an error..."
+  else
+       log "Cloning ${MSSQL_SourceVM} started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+       # Run the progess checker
+       loop
+  fi
 
 ## Get Newly Cloned VM"s UUID ##
 
