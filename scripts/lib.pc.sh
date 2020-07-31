@@ -896,6 +896,8 @@ function configure_era() {
 
 set -x
 
+log "Starting Era Config"
+
 log "PE Cluster IP |${PE_HOST}|"
 log "EraServer IP |${ERA_HOST}|"
 
@@ -1174,6 +1176,7 @@ log "Create the NTNXLAB Domain Profile"
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
+  "engineType": "sqlserver_database",
   "type": "WindowsDomain",
   "topology": "ALL",
   "dbVersion": "ALL",
@@ -1182,32 +1185,74 @@ HTTP_JSON_BODY=$(cat <<EOF
     {
       "name": "DOMAIN_NAME",
       "value": "ntnxlab.local",
+      "secure": false,
       "description": "Name of the Windows domain"
     },
     {
       "name": "DOMAIN_USER_NAME",
       "value": "Administrator@ntnxlab.local",
+      "secure": false,
       "description": "Username with permission to join computer to domain"
     },
     {
       "name": "DOMAIN_USER_PASSWORD",
       "value": "nutanix/4u",
+      "secure": false,
       "description": "Password for the username with permission to join computer to domain"
     },
     {
       "name": "DB_SERVER_OU_PATH",
       "value": "",
+      "secure": false,
       "description": "Custom OU path for database servers"
     },
     {
       "name": "CLUSTER_OU_PATH",
       "value": "",
+      "secure": false,
       "description": "Custom OU path for server clusters"
     },
     {
-      "name": "ADD_PERMISSION_ON_OU",
+      "name": "SQL_SERVICE_ACCOUNT_USER",
+      "value": "Administrator@ntnxlab.local",
+      "secure": false,
+      "description": "Sql service account username"
+    },
+    {
+      "name": "SQL_SERVICE_ACCOUNT_PASSWORD",
+      "value": "nutanix/4u",
+      "secure": false,
+      "description": "Sql service account password"
+    },
+    {
+      "name": "ALLOW_SERVICE_ACCOUNT_OVERRRIDE",
+      "value": false,
+      "secure": false,
+      "description": "Allow override of sql service account in provisioning workflows"
+    },
+    {
+      "name": "ERA_WORKER_SERVICE_USER",
+      "value": "Administrator@ntnxlab.local",
+      "secure": false,
+      "description": "Era worker service account username"
+    },
+    {
+      "name": "ERA_WORKER_SERVICE_PASSWORD",
+      "value": "nutanix/4u",
+      "secure": false,
+      "description": "Era worker service account password"
+    },
+    {
+      "name": "RESTART_SERVICE",
       "value": "",
-      "description": "Grant server clusters permission on OU"
+      "secure": false,
+      "description": "Restart sql service on the dbservers"
+    },
+    {
+      "name": "UPDATE_CREDENTIALS_IN_DBSERVERS",
+      "value": "true",
+      "secure": false,
+      "description": "Update the credentials in all the dbservers"
     }
   ],
   "name": "NTNXLAB"
@@ -1290,6 +1335,42 @@ EOF
 
 log "Created ORACLE_SMALL_PARAMS Parameters Profile with ID |${_oracle_param_profile_id}|"
 
+## Get the Super Admin Role ID ##
+log "Getting the Super Admin Role ID"
+
+  _role_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X GET "https://${ERA_HOST}/era/v0.9/roles" --data '{}' | jq '.[] | select(.name == "Super Admin") | .id' | tr -d \")
+
+log "Super Admin Role ID |${_role_id}|"
+
+## Create Users with Super Admin Role ##
+log "Creating Era Users with Super Admin Role"
+
+for _user in "${USERS[@]}" ; do
+
+log "Creating l${_user}"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+  "internalUser": false,
+  "roles": [
+    "${_role_id}"
+  ],
+  "isExternalAuth": false,
+  "username": "${_user}",
+  "password": "${ERA_PASSWORD}",
+  "passwordExpired": true
+}
+EOF
+)
+
+  _user_id=$(curl ${CURL_HTTP_OPTS} -u ${ERA_USER}:${ERA_PASSWORD} -X POST "https://${ERA_HOST}/era/v0.9/users" --data "${HTTP_JSON_BODY}" | jq -r '.id' | tr -d \")
+
+log "Created User ${_user} with ID |${_user_id}|"
+
+done
+
+log "Era Config Complete"
+
 set +x
 
 }
@@ -1300,6 +1381,8 @@ set +x
 
 function clone_mssql_source_vms() {
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+
+log "Start Cloning ${MSSQL_SourceVM}"
 
 log "PE Cluster IP |${PE_HOST}|"
 log "PC IP |${PC_HOST}|"
@@ -1387,6 +1470,8 @@ else
 fi
 
 done
+
+log "Cloning ${MSSQL_SourceVM} Comnplete"
 
 set +x
 
