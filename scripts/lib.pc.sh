@@ -894,7 +894,7 @@ EOF
 function configure_era() {
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
-set -x
+#set -x
 
 log "Starting Era Config"
 
@@ -1371,7 +1371,7 @@ done
 
 log "Era Config Complete"
 
-set +x
+#set +x
 
 }
 
@@ -1420,7 +1420,7 @@ EOF
   log "Cloning VM Now"
   log $HTTP_JSON_BODY
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
+  _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.' | tr -d \")
 
   log "Task uuid for Cloning ${MSSQL_SourceVM} is $_task_id  ....."
   #sleep 240
@@ -1456,7 +1456,7 @@ log "${ClonedVM} ID: |${_cloned_vm_id}|"
 
 log "Powering on VM Now"
 
-_task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_cloned_vm_id}/set_power_state" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"transition": "ON"}' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+_task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_cloned_vm_id}/set_power_state" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"transition": "ON"}' | jq -r '.' | tr -d \")
 
 log "Task uuid for Powering on VM is $_task_id  ....."
 
@@ -1492,46 +1492,6 @@ function pc_project() {
   local _nw_uuid
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
-# Creating User Group
-log "Creating User Group"
-
-HTTP_JSON_BODY=$(cat <<EOF
-{
-  "api_version": "3.1.0",
-  "metadata": {
-    "kind": "user_group"
-    },
-  "spec": {
-    "resources": {
-      "directory_service_user_group": {
-        "distinguished_name": "cn=ssp custom,cn=users,dc=ntnxlab,dc=local"
-      }
-    }
-  }
-}
-EOF
-)
-
-  log "Creating User Group Now"
-  log $HTTP_JSON_BODY
-
-  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/user_groups' | jq -r '.status.execution_context.task_uuid' | tr -d \")
-
-  log "Task uuid for the User Group Create is $_task_id  ....."
-
-  if [ -z "$_task_id" ]; then
-       log "User Group Create has encountered an error..."
-  else
-       log "User Group Create started.."
-       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-       # Run the progess checker
-       loop
-  fi
-
-# Get the User Group UUID
-log "Get User Group UUID"
-
-_user_group_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/user_groups/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 # Get the Network UUIDs
 log "Get cluster network UUID"
@@ -1546,7 +1506,7 @@ _role_uuid=$(curl ${CURL_HTTP_OPTS}--request POST 'https://localhost:9440/api/nu
 # Get the PC Account UUIDs
 log "Get PC Account  UUID"
 
-_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/accounts/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"account","filter":"type==nutanix_pc"}' | jq -r '.entities[] | .status.resources.data.cluster_account_reference_list[0].resources.data.pc_account_uuid' | tr -d \")
+_pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/accounts/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"account","filter":"type==nutanix_pc"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 log "Create BootcampInfra Project ..."
 log "User Group UUID = ${_user_group_uuid}"
@@ -1557,65 +1517,37 @@ log "PC Account UUID = ${_pc_account_uuid}"
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
-  "api_version": "3.1",
-  "metadata": {
-	"kind": "project"
-  },
-  "spec": {
-  	"access_control_policy_list": [
-  	{
-  		"operation": "ADD",
-  		"metadata": {
-			"kind": "access_control_policy"
-		},
-  		"acp": {
-  			"name": "${_name}",
-  			"resources": {
-  				"role_reference": {
-  					"kind": "role",
-					  "name": "Project Admin",
-					  "uuid": "${_role_uuid}"
-  				},
-  				"user_group_reference_list": [
-        		{
-        			"kind": "user_group",
-        			"name": "CN=SSP Custom,CN=Users,DC=ntnxlab,DC=local",
-        			"uuid": "${_user_group_uuid}"
-        		}
-    			]
-  			}
-  		}
-  	}
-  	],
-	"project_detail": {
-  	"name": "${_name}",
-  	"resources": {
-    	"account_reference_list": [
-      	{
-        	"kind": "account",
-			    "name": "nutanix_pc",
-			    "uuid": "${_pc_account_uuid}"
-      	}
-    	],
-    	"subnet_reference_list": [
-      	{
-        	"kind": "subnet",
-        	"name": "Primary",
-        	"uuid": "${_nw_uuid}"
-      	}
-    	],
-    	"external_user_group_reference_list": [
-        {
-          "kind": "user_group",
-          "name": "CN=SSP Custom,CN=Users,DC=ntnxlab,DC=local",
-          "uuid": "${_user_group_uuid}"
-        }
-    	]
-  	}
-	},
-	"user_list": [],
-	"user_group_list": []
-  }
+   "api_version":"3.1.0",
+   "metadata":{
+      "kind":"project"
+   },
+   "spec":{
+      "name":"BootcampInfra",
+      "resources":{
+         "account_reference_list":[
+            {
+               "uuid":"${_pc_account_uuid}",
+               "kind":"account",
+               "name":"nutanix_pc"
+            }
+         ],
+         "subnet_reference_list":[
+            {
+               "kind":"subnet",
+               "name": "Primary",
+        	   "uuid": "${_nw_uuid}"
+            }
+         ],
+         "user_reference_list":[
+            {
+               "kind":"user",
+               "name":"admin",
+               "uuid":"00000000-0000-0000-0000-000000000000"
+            }
+         ],
+         "environment_reference_list":[]
+      }
+   }
 }
 EOF
 )
@@ -1623,7 +1555,7 @@ EOF
   echo "Creating Calm Project Create Now"
   echo $HTTP_JSON_BODY
 
-  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/projects_internal' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST  --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/projects' | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
   log "Task uuid for the Calm Project Create is " $_task_id " ....."
   #Sleep 60
