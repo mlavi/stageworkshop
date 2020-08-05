@@ -1390,6 +1390,7 @@ log "PC IP |${PC_HOST}|"
 set -x
 
 ## Get Source VM UUID ##
+log "-------------------------------------"
 log "Get ${MSSQL_SourceVM} ID"
 
   _mssql_sourcevm_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/vms/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"vm","filter": "vm_name==Win2016SQLSource"}'  | jq -r '.entities[] | .metadata.uuid' | tr -d \")
@@ -1397,6 +1398,7 @@ log "Get ${MSSQL_SourceVM} ID"
 log "${MSSQL_SourceVM} ID: |${_mssql_sourcevm_id}|"
 
 ## Deploy UserXX Clones ##
+log "-------------------------------------"
 log "Cloning ${MSSQL_SourceVM}"
 
 for _user in "${USERS[@]}" ; do
@@ -1417,8 +1419,9 @@ HTTP_JSON_BODY=$(cat <<EOF
 EOF
 )
 
-  log "Cloning VM Now"
-  log $HTTP_JSON_BODY
+log "Cloning VM Now"
+log "-------------------------------------"
+log $HTTP_JSON_BODY
 
   _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
 
@@ -1434,7 +1437,7 @@ EOF
   fi
 
 ## Get Newly Cloned VM"s UUID ##
-
+sleep 60
 log "Get ${ClonedVM} ID"
 
 HTTP_JSON_BODY=$(cat <<EOF
@@ -1510,27 +1513,35 @@ function pc_project() {
   local _nw_uuid
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
+set -x
 
 # Get the Network UUIDs
+log "-------------------------------------"
 log "Get cluster network UUID"
 
 _nw_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
+log "NW UUID = ${_nw_uuid}"
+
 # Get the Role UUIDs
+log "-------------------------------------"
 log "Get Role UUID"
 
 _role_uuid=$(curl ${CURL_HTTP_OPTS}--request POST 'https://localhost:9440/api/nutanix/v3/roles/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"role","filter":"name==Project Admin"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
+log "Role UUID = ${_role_uuid}"
+
 # Get the PC Account UUIDs
+log "-------------------------------------"
 log "Get PC Account  UUID"
 
 _pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/accounts/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"account","filter":"type==nutanix_pc"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
-log "Create BootcampInfra Project ..."
-log "NW UUID = ${_nw_uuid}"
-log "Role UUID = ${_role_uuid}"
 log "PC Account UUID = ${_pc_account_uuid}"
 
+## Create Project ##
+log "-------------------------------------"
+log "Create BootcampInfra Project ..."
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
@@ -1589,6 +1600,8 @@ EOF
   fi
 
   log "_ssp_connect=|${_ssp_connect}|"
+
+set +x
 
 }
 
