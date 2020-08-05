@@ -1456,7 +1456,25 @@ log "${ClonedVM} ID: |${_cloned_vm_id}|"
 
 log "Powering on VM Now"
 
-_task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_cloned_vm_id}/set_power_state" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"transition": "ON"}' | jq -r '.task_uuid' | tr -d \")
+HTTP_JSON_BODY=$(cat <<EOF
+{
+    "spec": {
+        "name": "${ClonedVM}",
+        "resources": {
+            "hardware_clock_timezone": "UTC",
+            "power_state": "ON"
+        }
+    },
+    "api_version": "3.0",
+    "metadata": {
+        "kind": "vm",
+        "spec_version": 0
+    }
+}
+EOF
+)
+
+_task_id=$(curl ${CURL_HTTP_OPTS} --request PUT "https://${PE_HOST}:9440/api/nutanix/v3/vms/${_cloned_vm_id}" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
 log "Task uuid for Powering on VM is $_task_id  ....."
 
