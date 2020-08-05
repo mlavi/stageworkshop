@@ -1527,7 +1527,6 @@ log "Get PC Account  UUID"
 _pc_account_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/accounts/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"account","filter":"type==nutanix_pc"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
 log "Create BootcampInfra Project ..."
-log "User Group UUID = ${_user_group_uuid}"
 log "NW UUID = ${_nw_uuid}"
 log "Role UUID = ${_role_uuid}"
 log "PC Account UUID = ${_pc_account_uuid}"
