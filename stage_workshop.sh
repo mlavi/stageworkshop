@@ -11,25 +11,26 @@ begin
 # - Calm || Bootcamp || Citrix || Summit
 # - PC #.#
 WORKSHOPS=(\
-"Basic / API Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Private Cloud Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Leap Add-On Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Databases Era with MSSQL Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Databases Era with Oracle Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Databases Era with Postgres Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Databases Era -Stage All- Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Files Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Calm Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Frame Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Citrix Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Stage-All Bootcamps (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
+"Basic / API Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Private Cloud Bootcamp (AOS AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Leap Add-On Bootcamp (AOS AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Databases Era with MSSQL Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Databases Era with Oracle Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Databases Era with Postgres Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Databases Era -Stage All- Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Files Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Calm IaaS Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Calm Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Frame Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Citrix Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Stage-All Bootcamps (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
 #"Legacy Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-"Calm Bootcamp Test(AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Current" \
-"Cloud Native Application Modernization Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
-"In Development Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 5.17.0.3) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.11.x|5.15.x|5.16.x/AHV PC 2020.7) = Development" \
+"Calm Bootcamp Test(AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Current" \
+"Cloud Native Application Modernization Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"In Development Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"In Development SNC (1-Node) Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8 ) = Development" \
 
 #"SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 #"Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
@@ -56,7 +57,7 @@ function stage_clusters() {
   # Map to latest and greatest of each point release
   # Metadata URLs MUST be specified in lib.common.sh function: ntnx_download
   # TODO: make WORKSHOPS and map a JSON configuration file?
-  if (( $(echo ${_workshop} | grep -i "PC 2020.7" | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "PC 2020.8.0.1" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_DEV_VERSION}"
   elif (( $(echo ${_workshop} | grep -i "PC 5.17.0.3" | wc ${WC_ARG}) > 0 )); then
     export PC_VERSION="${PC_CURRENT_VERSION}"
@@ -124,6 +125,11 @@ function stage_clusters() {
   if (( $(echo ${_workshop} | grep -i "^Calm" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='calm_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
+  if (( $(echo ${_workshop} | grep -i "^Calm IaaS Bootcamp" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='calm_iaas_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i "^Calm Bootcamp Test" | wc ${WC_ARG}) > 0 )); then
