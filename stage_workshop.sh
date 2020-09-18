@@ -18,26 +18,20 @@ WORKSHOPS=(\
 "Databases Era with Oracle Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Databases Era with Postgres Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Databases Era -Stage All- Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Consolidated Storage Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Files Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Objects Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Calm IaaS Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Calm Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Karbon Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Frame Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Citrix Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Stage-All Bootcamps (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
-#"Legacy Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-"Calm Bootcamp Test(AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Current" \
 "Cloud Native Application Modernization Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 "In Development Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1 ) = Development" \
 
-#"SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-#"Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-#"Previous SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-#"Tech Summit 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-#"SNC_GTS 2020 (AOS 5.11.x/AHV PC 5.11.2.1) = Development" \
-#"Tech Summit 2019 (AOS 5.10+/AHV PC 5.10+) = Stable" \
 ) # Adjust function stage_clusters, below, for file/script mappings as needed
 
 function stage_clusters() {
@@ -72,14 +66,9 @@ function stage_clusters() {
     _pe_launch='all_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
-  if (( $(echo ${_workshop} | grep -i "^Legacy Bootcamp Staging" | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "^Consolidated Storage Bootcamp" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='bootcamp.sh'
-    _pc_launch=${_pe_launch}
-  fi
-  if (( $(echo ${_workshop} | grep -i "^SNC" | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='snc_bootcamp.sh'
+    _pe_launch='Consolidated_Storage_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i "^Basic / API Bootcamp" | wc ${WC_ARG}) > 0 )); then
@@ -122,6 +111,11 @@ function stage_clusters() {
     _pe_launch='files_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
+  if (( $(echo ${_workshop} | grep -i "^Objects" | wc ${WC_ARG}) > 0 )); then
+    _libraries+='lib.pe.sh lib.pc.sh'
+    _pe_launch='objects_bootcamp.sh'
+    _pc_launch=${_pe_launch}
+  fi
   if (( $(echo ${_workshop} | grep -i "^Calm" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='calm_bootcamp.sh'
@@ -132,9 +126,9 @@ function stage_clusters() {
     _pe_launch='calm_iaas_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
-  if (( $(echo ${_workshop} | grep -i "^Calm Bootcamp Test" | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "^Karbon Bootcamp" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='calm_bootcamp_test.sh'
+    _pe_launch='karbon_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
   if (( $(echo ${_workshop} | grep -i "^Citrix" | wc ${WC_ARG}) > 0 )); then
@@ -165,21 +159,6 @@ function stage_clusters() {
   if (( $(echo ${_workshop} | grep -i "^In Development Bootcamp Staging" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='dev_privatecloud_bootcamp.sh'
-    _pc_launch=${_pe_launch}
-  fi
-  if (( $(echo ${_workshop} | grep -i "^In Development SNC (1-Node) Bootcamp Staging" | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='dev_privatecloud_bootcamp.sh'
-    _pc_launch=${_pe_launch}
-  fi
-  if (( $(echo ${_workshop} | grep -i Summit | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='ts2020.sh'
-    _pc_launch=${_pe_launch}
-  fi
-  if (( $(echo ${_workshop} | grep -i "^SNC_GTS" | wc ${WC_ARG}) > 0 )); then
-    _libraries+='lib.pe.sh lib.pc.sh'
-    _pe_launch='snc_ts2020.sh'
     _pc_launch=${_pe_launch}
   fi
 

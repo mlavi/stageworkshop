@@ -18,43 +18,7 @@ case ${1} in
   PE | pe )
     . lib.pe.sh
 
-    #export PC_DEV_VERSION='5.10.2'
-    #export PC_DEV_METAURL='http://10.42.8.50/images/pcdeploy-5.10.2.json'
-    #export         PC_URL='http://10.42.8.50/images/euphrates-5.10.2-stable-prism_central.tar'
-    #export PC_DEV_METAURL='https://s3.amazonaws.com/get-ahv-images/pcdeploy-5.10.1.1.json'
-    #export         PC_URL='https://s3.amazonaws.com/get-ahv-images/euphrates-5.10.1.1-stable-prism_central.tar'
-    #export  FILES_VERSION='3.2.0.1'
-    #export  FILES_METAURL='http://10.42.8.50/images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
-    #export      FILES_URL='http://10.42.8.50/images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
-    #export  FILES_METAURL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable-metadata.json'
-    #export      FILES_URL='https://s3.amazonaws.com/get-ahv-images/nutanix-afs-el7.3-release-afs-3.2.0.1-stable.qcow2'
-
-    # Single Node Cluster Options
-
-    export NW1_SUBNET="${IPV4_PREFIX}.$((${OCTET[3]} - 6))/26"
-    export NW1_GATEWAY="${IPV4_PREFIX}.$((${OCTET[3]} - 5))"
-    export NW1_DHCP_START="${IPV4_PREFIX}.$((${OCTET[3]} + 33))"
-    export NW1_DHCP_END="${IPV4_PREFIX}.$((${OCTET[3]} + 53))"
-    export SUBNET_MASK="255.255.255.192"
-    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.$((${OCTET[3]} + 25))"
-    #export BUCKETS_VIP="${IPV4_PREFIX}.$((${OCTET[3]} + 26))"
-    #export OBJECTS_NW_START="${IPV4_PREFIX}.$((${OCTET[3]} + 27))"
-    #export OBJECTS_NW_END="${IPV4_PREFIX}.$((${OCTET[3]} + 30))"
-
-    export NW2_NAME=''
-    export NW2_VLAN=''
-    export NW2_SUBNET=''
-    export NW2_DHCP_START=''
-    export NW2_DHCP_END=''
-
-    #export NW2_DHCP_START="${IPV4_PREFIX}.132"
-    #export NW2_DHCP_END="${IPV4_PREFIX}.229"
-
     export AUTH_SERVER='AutoAD'
-    export PrismOpsServer='GTSPrismOpsLabUtilityServer'
-    export SeedPC='GTSseedPC.zp'
-
-    export _external_nw_name="${1}"
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
@@ -64,8 +28,7 @@ case ${1} in
     && pe_init \
     && network_configure \
     && authentication_source \
-    && pe_auth \
-    && prism_pro_server_deploy
+    && pe_auth
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
@@ -85,11 +48,7 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        files_install && sleep 30
-
-        create_file_server "${NW1_NAME}" "${NW2_NAME}" && sleep 30
-
-        file_analytics_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
+        #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
       fi
@@ -104,30 +63,14 @@ case ${1} in
     . lib.pc.sh
 
     export QCOW2_IMAGES=(\
-      CentOS7.qcow2 \
       Windows2016.qcow2 \
-      Windows2012R2.qcow2 \
-      Windows10-1709.qcow2 \
-      ToolsVM.qcow2 \
+      CentOS7.qcow2 \
+      WinToolsVM.qcow2 \
       Linux_ToolsVM.qcow2 \
-      ERA-Server-build-1.2.0.1.qcow2 \
-      MSSQL-2016-VM.qcow2 \
-      HYCU/Mine/HYCU-4.0.3-Demo.qcow2 \
-      VeeamAvailability_1.0.457.vmdk \
-      move-3.4.1.qcow2 \
-      AutoXD.qcow2 \
     )
     export ISO_IMAGES=(\
-      CentOS7.iso \
-      Windows2016.iso \
-      Windows2012R2.iso \
-      Windows10.iso \
       Nutanix-VirtIO-1.1.5.iso \
-      SQLServer2014SP3.iso \
-      Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
-      VeeamBR_9.5.4.2615.Update4.iso \
     )
-
 
     run_once
 
@@ -141,10 +84,6 @@ case ${1} in
     export   NUCLEI_SERVER='localhost'
     export NUCLEI_USERNAME="${PRISM_ADMIN}"
     export NUCLEI_PASSWORD="${PE_PASSWORD}"
-    export BUCKETS_DNS_IP="${IPV4_PREFIX}.$((${OCTET[3]} + 25))"
-    export BUCKETS_VIP="${IPV4_PREFIX}.$((${OCTET[3]} + 26))"
-    export OBJECTS_NW_START="${IPV4_PREFIX}.$((${OCTET[3]} + 27))"
-    export OBJECTS_NW_END="${IPV4_PREFIX}.$((${OCTET[3]} + 30))"
     # nuclei -debug -username admin -server localhost -password x vm.list
 
     if [[ -z "${PE_HOST}" ]]; then # -z ${CLUSTER_NAME} || #TOFIX
@@ -175,17 +114,11 @@ case ${1} in
 
     ssp_auth \
     && calm_enable \
-    && karbon_enable \
-    && objects_enable \
     && lcm \
-    && object_store \
-    && karbon_image_download \
-    && images \
+    && pc_project \
     && flow_enable \
     && pc_cluster_img_import \
-    && seedPC \
-    && pc_project \
-    && upload_era_calm_blueprint \
+    && images \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

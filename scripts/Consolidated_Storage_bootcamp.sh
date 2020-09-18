@@ -3,7 +3,7 @@
 
 #__main()__________
 
-# Source Nutanix environment (PATH + aliases), then common routines + global variables
+# Source Nutanix environment (PATH + aliases), then Workshop common routines + global variables
 . /etc/profile.d/nutanix_env.sh
 . lib.common.sh
 . global.vars.sh
@@ -18,24 +18,9 @@ case ${1} in
   PE | pe )
     . lib.pe.sh
 
-    ## Export Overrides needed for Single Node Clusters
-    export NW1_SUBNET="${IPV4_PREFIX}.$((${OCTET[3]} - 6))/26"
-    export NW1_GATEWAY="${IPV4_PREFIX}.$((${OCTET[3]} - 5))"
-    export NW1_DHCP_START="${IPV4_PREFIX}.$((${OCTET[3]} + 33))"
-    export NW1_DHCP_END="${IPV4_PREFIX}.$((${OCTET[3]} + 53))"
-    export SUBNET_MASK="255.255.255.192"
-    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.$((${OCTET[3]} + 25))"
-    #export BUCKETS_VIP="${IPV4_PREFIX}.$((${OCTET[3]} + 26))"
-    #export OBJECTS_NW_START="${IPV4_PREFIX}.$((${OCTET[3]} + 27))"
-    #export OBJECTS_NW_END="${IPV4_PREFIX}.$((${OCTET[3]} + 30))"
+    export AUTH_SERVER='AutoAD'
 
-    export NW2_NAME=''
-    export NW2_VLAN=''
-    export NW2_SUBNET=''
-    export NW2_DHCP_START=''
-    export NW2_DHCP_END=''
-
-    args_required 'PE_HOST PC_LAUNCH'
+    args_required 'EMAIL PE_HOST PE_PASSWORD PC_VERSION'
     ssh_pubkey & # non-blocking, parallel suitable
 
     dependencies 'install' 'sshpass' && dependencies 'install' 'jq' \
@@ -44,22 +29,21 @@ case ${1} in
     && network_configure \
     && authentication_source \
     && pe_auth \
-    && prism_pro_server_deploy
+    && prism_pro_server_deploy \
+    && files_install \
+    && sleep 30 \
+    && create_file_server "${NW1_NAME}" "${NW1_NAME}" \
+    && sleep 30 \
+    && file_analytics_install \
+    && sleep 30 \
+    && create_file_analytics_server \
+    && sleep 30
 
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
       && prism_check 'PC' \
 
       if (( $? == 0 )) ; then
-        ## TODO: If Debug is set we should run with bash -x. Maybe this???? Or are we going to use a fourth parameter
-        # if [ ! -z DEBUG ]; then
-        #    bash_cmd='bash'
-        # else
-        #    bash_cmd='bash -x'
-        # fi
-        # _command="EMAIL=${EMAIL} \
-        #   PC_HOST=${PC_HOST} PE_HOST=${PE_HOST} PE_PASSWORD=${PE_PASSWORD} \
-        #   PC_LAUNCH=${PC_LAUNCH} PC_VERSION=${PC_VERSION} nohup ${bash_cmd} ${HOME}/${PC_LAUNCH} IMAGES"
         _command="EMAIL=${EMAIL} \
            PC_HOST=${PC_HOST} PE_HOST=${PE_HOST} PE_PASSWORD=${PE_PASSWORD} \
            PC_LAUNCH=${PC_LAUNCH} PC_VERSION=${PC_VERSION} nohup bash ${HOME}/${PC_LAUNCH} IMAGES"
@@ -73,11 +57,10 @@ case ${1} in
         log "PE = https://${PE_HOST}:9440"
         log "PC = https://${PC_HOST}:9440"
 
-        files_install && sleep 30
-
-        create_file_server "${NW1_NAME}" "${NW1_NAME}" && sleep 30
-
-        file_analytics_install && sleep 30 && dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
+        deploy_peer_mgmt_server "${PMC}" \
+        && deploy_peer_agent_server "${AGENTA}" \
+        && deploy_peer_agent_server "${AGENTB}"
+        #&& dependencies 'remove' 'jq' & # parallel, optional. Versus: $0 'files' &
         #dependencies 'remove' 'sshpass'
         finish
       fi
@@ -87,9 +70,26 @@ case ${1} in
       log "Error ${_error}: in main functional chain, exit!"
       exit ${_error}
     fi
+
   ;;
   PC | pc )
     . lib.pc.sh
+
+    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
+    #export BUCKETS_VIP="${IPV4_PREFIX}.17"
+    #export OBJECTS_NW_START="${IPV4_PREFIX}.18"
+    #export OBJECTS_NW_END="${IPV4_PREFIX}.21"
+
+    export QCOW2_IMAGES=(\
+      Windows2016.qcow2 \
+      Win10v1903.qcow2 \
+      WinToolsVM.qcow2 \
+      Linux_ToolsVM.qcow2 \
+      CentOS7.qcow2 \
+    )
+    export ISO_IMAGES=(\
+      Nutanix-VirtIO-1.1.5.iso \
+    )
 
     run_once
 
@@ -103,10 +103,6 @@ case ${1} in
     export   NUCLEI_SERVER='localhost'
     export NUCLEI_USERNAME="${PRISM_ADMIN}"
     export NUCLEI_PASSWORD="${PE_PASSWORD}"
-    export BUCKETS_DNS_IP="${IPV4_PREFIX}.$((${OCTET[3]} + 25))"
-    export BUCKETS_VIP="${IPV4_PREFIX}.$((${OCTET[3]} + 26))"
-    export OBJECTS_NW_START="${IPV4_PREFIX}.$((${OCTET[3]} + 27))"
-    export OBJECTS_NW_END="${IPV4_PREFIX}.$((${OCTET[3]} + 30))"
     # nuclei -debug -username admin -server localhost -password x vm.list
 
     if [[ -z "${PE_HOST}" ]]; then # -z ${CLUSTER_NAME} || #TOFIX
@@ -137,20 +133,17 @@ case ${1} in
 
     ssp_auth \
     && calm_enable \
-    && karbon_enable \
-    && lcm \
     && objects_enable \
+    && lcm \
+    && pc_project \
     && object_store \
-    && karbon_image_download \
     && images \
     && flow_enable \
     && pc_cluster_img_import \
-    && seedPC \
-    && prism_check 'PC' \
-    && finish_staging
+    && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
-    pc_project
+    #pc_project
     pc_admin
     # ntnx_download 'AOS' # function in lib.common.sh
 
@@ -171,3 +164,30 @@ case ${1} in
     files_install
   ;;
 esac
+#!/usr/bin/env bash
+# -x
+
+#__main()__________
+
+# Source Nutanix environment (PATH + aliases), then common routines + global variables
+. /etc/profile.d/nutanix_env.sh
+. lib.common.sh
+. global.vars.sh
+begin
+
+args_required 'PE_PASSWORD'
+
+case ${1} in
+  PE | pe )
+    . lib.pe.sh
+
+    args_required 'PE_HOST'
+
+    dependencies 'install' 'jq' \
+    && files_install
+
+    log "PE = https://${PE_HOST}:9440"
+  ;;
+esac
+
+finish
