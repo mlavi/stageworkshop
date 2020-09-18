@@ -11,26 +11,26 @@ begin
 # - Calm || Bootcamp || Citrix || Summit
 # - PC #.#
 WORKSHOPS=(\
-"Basic / API Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Private Cloud Bootcamp (AOS AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Leap Add-On Bootcamp (AOS AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Databases Era with MSSQL Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Databases Era with Oracle Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Databases Era with Postgres Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Databases Era -Stage All- Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Files Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Calm IaaS Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Calm Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Frame Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Citrix Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Stage-All Bootcamps (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
+"Basic / API Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Private Cloud Bootcamp (AOS AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Leap Add-On Bootcamp (AOS AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Databases Era with MSSQL Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Databases Era with Oracle Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Databases Era with Postgres Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Databases Era -Stage All- Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Files Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Calm IaaS Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Calm Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Frame Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Citrix Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Private Cloud Splunk on AHV with Objects Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Stage-All Bootcamps (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
 #"Legacy Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
-"Calm Bootcamp Test(AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Current" \
-"Cloud Native Application Modernization Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"In Development Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8) = Development" \
-"In Development SNC (1-Node) Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8 ) = Development" \
+"Calm Bootcamp Test(AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Current" \
+"Cloud Native Application Modernization Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"Cloud Native CI/CD with Calm and Karbon Bootcamp (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"In Development Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1) = Development" \
+"In Development SNC (1-Node) Bootcamp Staging (AOS 5.15.x|5.16.x|5.17.x|5.18.x/AHV PC 2020.8.0.1 ) = Development" \
 
 #"SNC (1-Node) Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
 #"Previous Bootcamp Staging (AOS 5.11.x/AHV PC 5.11.2.1) = Stable" \
