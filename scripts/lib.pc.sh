@@ -472,22 +472,19 @@ EOF
   log "directories: _task_id=|${_task_id}|_http_body=|${_http_body}|"
 
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
-  #TODO:20 hardcoded role mapping
-  #groups=('SSP Admins' 'SSP Developers' 'SSP Consumers' 'SSP Operators' 'SSP Custom' 'Bootcamp Users')
-  groups=('SSP Admins')
-  for _group in "${groups[@]}"; do
+
     _http_body=$(cat <<EOF
     {
       "directoryName":"${AUTH_SERVER}",
       "role":"ROLE_CLUSTER_ADMIN",
       "entityType":"GROUP",
-      "entityValues":["${_group}"]
+      "entityValues":["SSP Admins"]
     }
 EOF
     )
     _test=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_SERVER}/role_mappings)
     log "Cluster Admin=${_group}, _test=|${_test}|"
-  done
+    
 }
 
 ###################################################################################################################################################
