@@ -91,8 +91,7 @@ case ${1} in
       WinToolsVM.qcow2 \
     )
     export ISO_IMAGES=(\
-      FrameCCA-2.1.0.iso \
-      FrameCCA-2.1.6.iso \
+      FrameCCA-3.0.0.iso \
       FrameGuestAgentInstaller_1.0.2.7.iso \
       Nutanix-VirtIO-1.1.5.iso \
     )
