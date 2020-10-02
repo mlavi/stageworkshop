@@ -435,33 +435,41 @@ function pc_auth() {
 
   log "Add Directory ${AUTH_DOMAIN}"
   _http_body=$(cat <<EOF
-{"name":"${AUTH_DOMAIN}","domain":"${AUTH_FQDN}","directoryType":"ACTIVE_DIRECTORY","connectionType":"LDAP",
+{
+  "api_version": "3.1",
+    "metadata": {
+        "kind": "directory_service"
+    },
+  "spec": {
+    "name": "${AUTH_DOMAIN}",
+    "resources": {
+      "url": "ldap://${AUTH_HOST}:${LDAP_PORT}",
+      "directory_type": "ACTIVE_DIRECTORY",
+      "domain_name": "${AUTH_FQDN}",
+      "service_account": {
+        "username": "${AUTH_ADMIN_USER}",
+        "password": "${AUTH_ADMIN_PASS}"
+      }
+    }
+  }
+}
 EOF
   )
 
-  # shellcheck disable=2206
-  _pc_version=(${PC_VERSION//./ })
+  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/directory_services)
 
-  log "Checking if PC_VERSION ${PC_VERSION} >= 5.9"
-  if (( ${_pc_version[0]} >= 5 && ${_pc_version[1]} >= 9 )); then
-    _http_body+=$(cat <<EOF
-"groupSearchType":"RECURSIVE","directoryUrl":"ldap://${AUTH_HOST}:${LDAP_PORT}",
-EOF
-)
+  log "Task uuid for the Auth Source Create is " $_task_id " ....."
+
+  if [ -z "$_task_id" ]; then
+       log "Auth Source Create has encountered an error..."
   else
-    _http_body+=" \"directoryUrl\":\"ldaps://${AUTH_HOST}/\","
+       log "Auth Source Create started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+       # Run the progess checker
+       loop
   fi
 
-  _http_body+=$(cat <<EOF
-    "serviceAccountUsername":"${AUTH_ADMIN_USER}",
-    "serviceAccountPassword":"${AUTH_ADMIN_PASS}"
-  }
-EOF
-  )
-
-  _test=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" \
-    https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories)
-  log "directories: _test=|${_test}|_http_body=|${_http_body}|"
+  log "directories: _task_id=|${_task_id}|_http_body=|${_http_body}|"
 
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
   #TODO:20 hardcoded role mapping
