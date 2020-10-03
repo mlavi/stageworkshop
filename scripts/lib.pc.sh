@@ -475,16 +475,31 @@ EOF
 
     _http_body=$(cat <<EOF
     {
-      "directoryName":"${AUTH_SERVER}",
-      "role":"ROLE_CLUSTER_ADMIN",
-      "entityType":"GROUP",
-      "entityValues":["SSP Admins"]
-    }
+    "directoryName": "${AUTH_DOMAIN}",
+    "role": "ROLE_CLUSTER_ADMIN",
+    "entityType": "GROUP",
+    "entityValues": [
+        "${AUTH_ADMIN_GROUP}"
+    ]
+}
 EOF
     )
-    _test=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_SERVER}/role_mappings)
-    log "Cluster Admin=${_group}, _test=|${_test}|"
-    
+
+  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_SERVER}/role_mappings)
+
+  #log "Task uuid for the Auth Source Create is " $_task_id " ....."
+
+  #if [ -z "$_task_id" ]; then
+  #     log "Role Create has encountered an error..."
+  #else
+  #     log "Role Create started.."
+  #     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+  #     # Run the progess checker
+  #     loop
+  #fi
+
+  log "Cluster Admin=${_group}, _test=|${_test}|"
+
 }
 
 ###################################################################################################################################################
