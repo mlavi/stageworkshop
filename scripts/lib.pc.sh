@@ -474,7 +474,7 @@ EOF
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
 
     _http_body=$(cat <<EOF
-    {
+{
     "directoryName": "${AUTH_DOMAIN}",
     "role": "ROLE_CLUSTER_ADMIN",
     "entityType": "GROUP",
@@ -485,7 +485,7 @@ EOF
 EOF
     )
 
-  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_SERVER}/role_mappings)
+  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_DOMAIN}/role_mappings)
 
   #log "Task uuid for the Auth Source Create is " $_task_id " ....."
 
