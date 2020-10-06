@@ -462,14 +462,14 @@ EOF
 
   log "Task uuid for the Auth Source Create is " $_task_id " ....."
 
-  if [ -z "$_task_id" ]; then
-       log "Auth Source Create has encountered an error..."
-  else
-       log "Auth Source Create started.."
-       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-       # Run the progess checker
-       loop
-  fi
+  #if [ -z "$_task_id" ]; then
+  #     log "Auth Source Create has encountered an error..."
+  #else
+  #     log "Auth Source Create started.."
+  #     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+  #     # Run the progess checker
+  #     loop
+  #fi
 
   log "directories: _task_id=|${_task_id}|_http_body=|${_http_body}|"
 
