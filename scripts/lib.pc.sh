@@ -433,6 +433,8 @@ function pc_auth() {
 
   # TODO:50 FUTURE: pass AUTH_SERVER argument
 
+set -x
+
   log "Add Directory ${AUTH_DOMAIN}"
   _http_body=$(cat <<EOF
 {
@@ -485,7 +487,7 @@ EOF
 EOF
     )
 
-  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_DOMAIN}/role_mappings)
+  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/PrismGateway/services/rest/v1/authconfig/directories/${AUTH_DOMAIN}/role_mappings?entityType=GROUP&role=ROLE_CLUSTER_ADMIN)
 
   #log "Task uuid for the Auth Source Create is " $_task_id " ....."
 
@@ -498,7 +500,9 @@ EOF
   #     loop
   #fi
 
-  log "Cluster Admin=${_group}, _test=|${_test}|"
+  log "Cluster Admin=${AUTH_ADMIN_GROUP}, _task_id=|${_task_id}|_http_body=|${_http_body}| "
+
+set +x
 
 }
 
