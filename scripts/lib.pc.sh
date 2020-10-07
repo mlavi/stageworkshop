@@ -458,7 +458,7 @@ set -x
 EOF
   )
 
-  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/directory_services | jq -r 'status.execution_context.task_uuid' | tr -d \")
+  _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/directory_services | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
   log "Task uuid for the Auth Source Create is " $_task_id " ....."
 
