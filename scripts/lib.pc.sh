@@ -460,18 +460,20 @@ EOF
 
   _task_id=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${_http_body}" https://localhost:9440/api/nutanix/v3/directory_services | jq -r '.status.execution_context.task_uuid' | tr -d \")
 
-  log "Task uuid for the Auth Source Create is " $_task_id " ....."
+  #log "Task uuid for the Auth Source Create is " $_task_id " ....."
 
-  if [ -z "$_task_id" ]; then
-       log "Auth Source Create has encountered an error..."
-  else
-       log "Auth Source Create started.."
-       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+  #if [ -z "$_task_id" ]; then
+  #     log "Auth Source Create has encountered an error..."
+  #else
+  #     log "Auth Source Create started.."
+  #     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
        # Run the progess checker
-       loop
-  fi
+  #     loop
+  #fi
 
-  log "directories: _task_id=|${_task_id}|_http_body=|${_http_body}|"
+  #log "directories: _task_id=|${_task_id}|_http_body=|${_http_body}|"
+
+  sleep 60
 
   log "Add Role Mappings to Groups for PC logins (not projects, which are separate)..."
 
