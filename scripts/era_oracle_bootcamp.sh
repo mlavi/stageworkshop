@@ -125,7 +125,6 @@ case ${1} in
     && calm_enable \
     && lcm \
     && sleep 30 \
-    && pc_project \
     && priority_images \
     && images \
     && flow_enable \

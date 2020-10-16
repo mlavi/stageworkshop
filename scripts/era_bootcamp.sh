@@ -138,7 +138,6 @@ case ${1} in
     ssp_auth \
     && calm_enable \
     && lcm \
-    && pc_project \
     && priority_images \
     && images \
     && flow_enable \
