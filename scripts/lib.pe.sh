@@ -1113,7 +1113,7 @@ function deploy_oracle_12c() {
 
   SourceVM="${_user}_${Oracle_12c_SourceVM}"
 
-  echo "## Oracle12cVM_Creation_INPROGRESS ##"
+  echo "## ${SourceVM} Creation_INPROGRESS ##"
   acli "vm.create ${SourceVM} memory=4G num_cores_per_vcpu=2 num_vcpus=2"
   acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_12c_SourceVM_BootImage}"
   acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image1}"
@@ -1127,7 +1127,7 @@ function deploy_oracle_12c() {
   acli "vm.on ${SourceVM}"
   echo "### ${SourceVM} Creation_COMPLETE ##"
 
-done
+  done
 
 }
 
@@ -1157,8 +1157,8 @@ function deploy_oracle_19c() {
 
   SourceVM="${_user}_${Oracle_19c_SourceVM}"
 
-  echo "## Oracle19cVM_Creation_INPROGRESS ##"
-  acli "vm.create ${Oracle_19c_SourceVM} memory=8G num_cores_per_vcpu=1 num_vcpus=2"
+  echo "## ${SourceVM} Creation_INPROGRESS ##"
+  acli "vm.create ${SourceVM} memory=8G num_cores_per_vcpu=1 num_vcpus=2"
   acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_BootImage}"
   acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image1}"
   acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image2}"
@@ -1174,7 +1174,7 @@ function deploy_oracle_19c() {
   acli "vm.on ${SourceVM}"
   echo "### ${SourceVM} Creation_COMPLETE ##"
 
-done
+  done
 
 }
 
