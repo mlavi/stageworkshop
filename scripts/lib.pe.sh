@@ -1073,18 +1073,20 @@ function deploy_mssql() {
     log "Image found, assuming ready. Skipping ${MSSQL_SourceVM} import."
   fi
 
-  echo "## SQLVM_Creation_INPROGRESS ##"
-  acli "vm.create ${MSSQL_SourceVM} memory=2046M num_cores_per_vcpu=1 num_vcpus=2"
-  acli "vm.disk_create ${MSSQL_SourceVM} clone_from_image=${MSSQL_SourceVM_Image1}"
-  acli "vm.disk_create ${MSSQL_SourceVM} clone_from_image=${MSSQL_SourceVM_Image2}"
-  acli "vm.nic_create ${MSSQL_SourceVM} network=${NW1_NAME}"
-  echo "## ${MSSQL_SourceVM} - Powering On ##"
-  acli "vm.on ${MSSQL_SourceVM}"
-  echo "## SQLVM_Creation_COMPLETE ##"
+  for _user in "${USERS[@]}" ; do
 
-  #echo "## SQLVM_Clone_Creation_INPROGRESS ##"
-  #acli "vm.clone $MSSQL_SourceVM_User[01..$num_sql_vms] clone_from_vm=${MSSQL_SourceVM}"
-  #echo "## SQLVM_Clone_Creation_COMPLETE ##"
+  SourceVM="${_user}_${MSSQL_SourceVM}"
+
+  echo "## ${SourceVM} Creation_INPROGRESS ##"
+  acli "vm.create ${SourceVM} memory=2046M num_cores_per_vcpu=1 num_vcpus=2"
+  acli "vm.disk_create ${ourceVM} clone_from_image=${MSSQL_SourceVM_Image1}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${MSSQL_SourceVM_Image2}"
+  acli "vm.nic_create ${SourceVM} network=${NW1_NAME}"
+  echo "## ${SourceVM} - Powering On ##"
+  acli "vm.on ${SourceVM}"
+  echo "## ${SourceVM} Creation_COMPLETE ##"
+
+  done
 
 }
 
@@ -1107,20 +1109,25 @@ function deploy_oracle_12c() {
     log "Image found, assuming ready. Skipping ${Oracle_SourceVM} import."
   fi
 
-  echo "## Oracle12cVM_Creation_INPROGRESS ##"
-  acli "vm.create ${Oracle_12c_SourceVM} memory=4G num_cores_per_vcpu=2 num_vcpus=2"
-  acli "vm.disk_create ${Oracle_12c_SourceVM} clone_from_image=${Oracle_12c_SourceVM_BootImage}"
-  acli "vm.disk_create ${Oracle_12c_SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image1}"
-  acli "vm.disk_create ${Oracle_12c_SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image2}"
-  acli "vm.disk_create ${Oracle_12c_SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image3}"
-  acli "vm.disk_create ${Oracle_12c_SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image4}"
-  acli "vm.disk_create ${Oracle_12c_SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image5}"
-  acli "vm.disk_create ${Oracle_12c_SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image6}"
-  acli "vm.nic_create ${Oracle_12c_SourceVM} network=${NW1_NAME}"
-  echo "## ${Oracle_12c_SourceVM} - Powering On ##"
-  acli "vm.on ${Oracle_12c_SourceVM}"
-  echo "### Oracle12cVM_Creation_COMPLETE ##"
+  for _user in "${USERS[@]}" ; do
 
+  SourceVM="${_user}_${Oracle_12c_SourceVM}"
+
+  echo "## Oracle12cVM_Creation_INPROGRESS ##"
+  acli "vm.create ${SourceVM} memory=4G num_cores_per_vcpu=2 num_vcpus=2"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_12c_SourceVM_BootImage}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image1}"
+  acli "vm.disk_create ${SourceVM}clone_from_image=${Oracle_12c_SourceVM_Image2}"
+  acli "vm.disk_create ${SourceVM}clone_from_image=${Oracle_12c_SourceVM_Image3}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image4}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image5}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_12c_SourceVM_Image6}"
+  acli "vm.nic_create ${SourceVM} network=${NW1_NAME}"
+  echo "## ${SourceVM} - Powering On ##"
+  acli "vm.on ${SourceVM}"
+  echo "### ${SourceVM} Creation_COMPLETE ##"
+
+done
 
 }
 
@@ -1146,22 +1153,28 @@ function deploy_oracle_19c() {
     log "Image found, assuming ready. Skipping ${Oracle_19c_SourceVM_BootImage} import."
   fi
 
+  for _user in "${USERS[@]}" ; do
+
+  SourceVM="${_user}_${Oracle_19c_SourceVM}"
+
   echo "## Oracle19cVM_Creation_INPROGRESS ##"
   acli "vm.create ${Oracle_19c_SourceVM} memory=8G num_cores_per_vcpu=1 num_vcpus=2"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_BootImage}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image1}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image2}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image3}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image4}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image5}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image6}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image7}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image8}"
-  acli "vm.disk_create ${Oracle_19c_SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image9}"
-  acli "vm.nic_create ${Oracle_19c_SourceVM} network=${NW1_NAME}"
-  echo "## ${Oracle_19c_SourceVM} - Powering On ##"
-  acli "vm.on ${Oracle_19c_SourceVM}"
-  echo "### Oracle19cVM_Creation_COMPLETE ##"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_BootImage}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image1}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image2}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image3}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image4}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image5}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image6}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image7}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image8}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${Oracle_19c_SourceVM_Image9}"
+  acli "vm.nic_create ${SourceVM} network=${NW1_NAME}"
+  echo "## ${SourceVM} - Powering On ##"
+  acli "vm.on ${SourceVM}"
+  echo "### ${SourceVM} Creation_COMPLETE ##"
+
+done
 
 }
 

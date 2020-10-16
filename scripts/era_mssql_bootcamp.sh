@@ -24,7 +24,6 @@ case ${1} in
     export NW2_DHCP_START="${IPV4_PREFIX}.132"
     export NW2_DHCP_END="${IPV4_PREFIX}.219"
 
-
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
 
@@ -71,13 +70,7 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
-    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
-    #export BUCKETS_VIP="${IPV4_PREFIX}.17"
-    #export OBJECTS_NW_START="${IPV4_PREFIX}.18"
-    #export OBJECTS_NW_END="${IPV4_PREFIX}.21"
-
     export _prio_images_arr=(\
-      #ERA-Server-build-1.2.1.qcow2 \
     )
 
     export QCOW2_IMAGES=(\
@@ -138,7 +131,6 @@ case ${1} in
     && flow_enable \
     && pc_cluster_img_import \
     && configure_era \
-    && clone_mssql_source_vms \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
@@ -158,8 +150,5 @@ case ${1} in
       log "Error ${_error}: failed to reach PC!"
       exit ${_error}
     fi
-  ;;
-  FILES | files | afs )
-    files_install
   ;;
 esac

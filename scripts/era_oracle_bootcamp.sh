@@ -37,8 +37,6 @@ case ${1} in
     && deploy_era \
     && deploy_oracle_19c
 
-
-
     if (( $? == 0 )) ; then
       pc_install "${NW1_NAME}" \
       && prism_check 'PC' \
@@ -72,13 +70,7 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
-    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
-    #export BUCKETS_VIP="${IPV4_PREFIX}.17"
-    #export OBJECTS_NW_START="${IPV4_PREFIX}.18"
-    #export OBJECTS_NW_END="${IPV4_PREFIX}.21"
-
     export _prio_images_arr=(\
-      ERA-Server-build-1.2.1.qcow2 \
     )
 
     export QCOW2_IMAGES=(\
@@ -158,8 +150,5 @@ case ${1} in
       log "Error ${_error}: failed to reach PC!"
       exit ${_error}
     fi
-  ;;
-  FILES | files | afs )
-    files_install
   ;;
 esac
