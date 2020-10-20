@@ -363,7 +363,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
      'https://s3.amazonaws.com/get-ahv-images/AutoDC2.qcow2' \
     )
     AUTOAD_REPOS=(\
-     'http://10.42.194.11/workshop_staging/AutoAD_10192020.qcow2' \
+     'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
@@ -402,7 +402,7 @@ case "${OCTET[0]}.${OCTET[1]}" in
        'https://s3.amazonaws.com/get-ahv-images/AutoDC2.qcow2' \
     )
     AUTOAD_REPOS=(\
-     'http://10.42.194.11/workshop_staging/AutoAD.qcow2' \
+     'http://10.42.194.11/workshop_staging/AutoAD_10192020.qcow2' \
      'https://s3.amazonaws.com/get-ahv-images/AutoAD.qcow2' \
     )
     PC_DATA='http://10.42.194.11/workshop_staging/seedPC.zip'
