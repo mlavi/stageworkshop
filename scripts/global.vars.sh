@@ -16,7 +16,7 @@ STORAGE_IMAGES='Images'
 STORAGE_ERA='Era'
 ATTEMPTS=40
 SLEEP=60
-PrismOpsServer='PrismOpsLabUtilityServer'
+PrismOpsServer='PrismOpsLabUtilityServer_20208'
 SeedPC='seedPC_10202020.zip'
 CALM_RSA_KEY_FILE='calm_rsa_key.env'
 
@@ -88,8 +88,8 @@ Oracle_19c_SourceVM_Image9="19c-disk9"
 # 3rd Party images used at GTS or Add-On Labs
 ###################################################
 #Peer Software
-PeerMgmtServer='Windows2016-PeerMgmt-18feb20'
-PeerAgentServer='Windows2016-PeerAgent-18feb20'
+PeerMgmtServer='Windows2016-PeerMgmt-30sep20'
+PeerAgentServer='Windows2016-PeerAgent-30sep20'
 PMC="PeerMgmt"
 AGENTA="PeerAgent-Files"
 AGENTB="PeerAgent-Win"
