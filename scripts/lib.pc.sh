@@ -651,8 +651,8 @@ function seedPC() {
     unzip /home/nutanix/${SeedPC}
     pushd /home/nutanix/lab/
 
-    #_setup=$(/home/nutanix/lab/setupEnv.sh ${PC_HOST} > /dev/null 2>&1)
-    _setup=$(/home/nutanix/lab/initialize_lab.sh ${PC_HOST} > /dev/null 2>&1)
+    #_setup=$(/home/nutanix/lab/initialize_lab.sh ${PC_HOST} > /dev/null 2>&1)
+    _setup=$(/home/nutanix/lab/initialize_lab.sh ${PC_HOST} admin ${PE_PASSWORD} ${PE_HOST} nutanix ${PE_PASSWORD} > /dev/null 2>&1)
     log "Running Setup Script|$_setup"
 
     popd

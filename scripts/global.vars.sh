@@ -17,7 +17,7 @@ STORAGE_ERA='Era'
 ATTEMPTS=40
 SLEEP=60
 PrismOpsServer='PrismOpsLabUtilityServer'
-SeedPC='seedPC.zip'
+SeedPC='seedPC_10202020.zip'
 CALM_RSA_KEY_FILE='calm_rsa_key.env'
 
 Citrix_Blueprint='CitrixBootcampInfra.json'
