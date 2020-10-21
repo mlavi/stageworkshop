@@ -80,20 +80,15 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
-    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
-    #export BUCKETS_VIP="${IPV4_PREFIX}.17"
-    #export OBJECTS_NW_START="${IPV4_PREFIX}.18"
-    #export OBJECTS_NW_END="${IPV4_PREFIX}.21"
-
     export _prio_images_arr=(\
-            Windows2016_05272020.qcow2 \
+            Windows2016_10202020.qcow2 \
             Citrix_Virtual_Apps_and_Desktops_7_1912.iso \
             )
 
     export QCOW2_IMAGES=(\
       CentOS7_05272020.qcow2 \
-      Win10v1903_05272020.qcow2 \
-      Win10v1909_05272020.qcow2 \
+      Windows2019.qcow2 \
+      Win10v1909_10192020.qcow2 \
       WinTools_05272020.qcow2 \
       Linux_ToolsVM_05272020.qcow2
       LinuxMint_ToolsVM.qcow2 \
