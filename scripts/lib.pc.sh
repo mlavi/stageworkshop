@@ -942,6 +942,53 @@ function deploy_pocworkshop_vms() {
   ## Creating the VMs ##
   Log "Creating the Windows and Linux VMs for use in the SE POC Guide"
 
+  ## Creating the First WinServer VM ##
+
+  VMName="WinServer"
+
+  Log "Creating ${VMName}"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+    "api_version": "3.0",
+    "metadata": {
+        "categories": { },
+        "kind": "vm"
+    },
+    "spec": {
+        "cluster_reference": {
+            "kind": "cluster",
+            "uuid": "${_cluster_uuid}"
+        },
+        "name": "${VMName}",
+        "resources": {
+            "memory_size_mib": 4096,
+            "nic_list": [
+            ],
+            "num_sockets": 2,
+            "num_vcpus_per_socket": 1,
+            "power_state": "ON"
+        }
+    }
+}
+EOF
+)
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/vms' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  if [ -z "$_task_id" ]; then
+       log "${VMName} Deployment has encountered an error..."
+  else
+       log "${VMName} Deployment started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+       # Run the progess checker
+       loop
+  fi
+
+  log "${VMName} Deployment Completed"
+
+  ## Creating WinServer VMs 1-5 ##
+
   for _vm in "${VMS[@]}" ; do
 
   VMName="WinServer-${_vm}"
@@ -950,7 +997,26 @@ function deploy_pocworkshop_vms() {
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
-
+    "api_version": "3.0",
+    "metadata": {
+        "categories": { },
+        "kind": "vm"
+    },
+    "spec": {
+        "cluster_reference": {
+            "kind": "cluster",
+            "uuid": "${_cluster_uuid}"
+        },
+        "name": "${VMName}",
+        "resources": {
+            "memory_size_mib": 4096,
+            "nic_list": [
+            ],
+            "num_sockets": 2,
+            "num_vcpus_per_socket": 1,
+            "power_state": "ON"
+        }
+    }
 }
 EOF
 )
@@ -969,7 +1035,57 @@ EOF
 
   log "${VMName} Deployment Completed"
 
-done
+  done
+
+  ## Creating the CentOS VM ##
+
+  VMName="CentOS"
+
+  Log "Creating ${VMName}"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+    "api_version": "3.0",
+    "metadata": {
+        "categories": { },
+        "kind": "vm"
+    },
+    "spec": {
+        "cluster_reference": {
+            "kind": "cluster",
+            "uuid": "${_cluster_uuid}"
+        },
+        "name": "${VMName}",
+        "resources": {
+            "memory_size_mib": 4096,
+            "nic_list": [
+            ],
+            "num_sockets": 2,
+            "num_vcpus_per_socket": 1,
+            "power_state": "ON"
+        }
+    }
+}
+EOF
+)
+
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/vms' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  if [ -z "$_task_id" ]; then
+       log "${VMName} Deployment has encountered an error..."
+  else
+       log "${VMName} Deployment started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+       # Run the progess checker
+       loop
+  fi
+
+  log "${VMName} Deployment Completed"
+
+
+
+
+
 
 }
 
