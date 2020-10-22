@@ -33,7 +33,7 @@ SSH_OPTS='-o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserK
 SSH_OPTS+=' -q' # -v'
 
 ####################################################
-# Users for Tools VMs and Source VM Clones
+# Users for Tools VMs and Source VMs
 ###################################################
 
 USERS=(\
