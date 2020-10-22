@@ -19,6 +19,7 @@ case ${1} in
     . lib.pe.sh
 
     export AUTH_SERVER='AutoAD'
+    export NW2_NAME='Xray'
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
@@ -26,7 +27,7 @@ case ${1} in
     dependencies 'install' 'sshpass' && dependencies 'install' 'jq' \
     && pe_license \
     && pe_init \
-    && network_configure \
+    && pocguide_network_configure \
     && authentication_source \
     && pe_auth \
 
@@ -62,16 +63,16 @@ case ${1} in
   PC | pc )
     . lib.pc.sh
 
-    #export BUCKETS_DNS_IP="${IPV4_PREFIX}.16"
-    #export BUCKETS_VIP="${IPV4_PREFIX}.17"
-    #export OBJECTS_NW_START="${IPV4_PREFIX}.18"
-    #export OBJECTS_NW_END="${IPV4_PREFIX}.21"
+    export _prio_images_arr=(\
+      Windows2016.qcow2 \
+      CentOS7.qcow2 \
+    )
 
     export QCOW2_IMAGES=(\
-
+      Windows2019.qcow2 \
     )
     export ISO_IMAGES=(\
-
+      Nutanix-VirtIO-1.1.5.iso \
     )
 
     run_once
@@ -115,8 +116,8 @@ case ${1} in
     && pc_smtp
 
     ssp_auth \
-    && calm_enable \
-    && lcm \
+    && priority_images \
+    && images \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."
