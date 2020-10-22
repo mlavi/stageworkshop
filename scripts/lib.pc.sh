@@ -911,10 +911,70 @@ EOF
   fi
 }
 
+#########################################################################################################################################
+# Routine to Deploy VMs for POC Workshop
+#########################################################################################################################################
 
+function deploy_pocworkshop_vms() {
+  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
+
+  #set -x
+
+  log "Starting SE POC Guide Base VM Deployments"
+  log "PE Cluster IP |${PE_HOST}|"
+
+  ## Get Cluster UUID ##
+  log "Get Cluster UUID"
+
+  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER_NAME "$CLUSTER_NAME" '.entities[]|select (.status.name==$CLUSTER_NAME)| .metadata.uuid' | tr -d \")
+
+  log "Cluster UUID |${_cluster_uuid}|"
+
+  ## VM Name Vars ##
+  VMS=(\
+     1 \
+     2 \
+     3 \
+     4 \
+     5 \
+  )
+
+  ## Creating the VMs ##
+  Log "Creating the Windows and Linux VMs for use in the SE POC Guide"
+
+  for _vm in "${VMS[@]}" ; do
+
+  VMName="WinServer-${_vm}"
+
+  log "Creating ${VMName} Now"
+
+HTTP_JSON_BODY=$(cat <<EOF
+{
+
+}
+EOF
+)
+
+  # Run the upgrade to have the latest versions
+  _task_id=$(curl ${CURL_HTTP_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X POST --data "${HTTP_JSON_BODY}" 'https://localhost:9440/api/nutanix/v3/vms' | jq -r '.status.execution_context.task_uuid' | tr -d \")
+
+  if [ -z "$_task_id" ]; then
+       log "${VMName} Deployment has encountered an error..."
+  else
+       log "${VMName} Deployment started.."
+       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
+       # Run the progess checker
+       loop
+  fi
+
+  log "${VMName} Deployment Completed"
+
+done
+
+}
 
 #########################################################################################################################################
-# Routine to to configure Era
+# Routine to configure Era
 #########################################################################################################################################
 
 function configure_era() {
@@ -1398,129 +1458,6 @@ done
 log "Era Config Complete"
 
 #set +x
-
-}
-
-#########################################################################################################################################
-# Routine to Clone MSSQL Source VMs
-#########################################################################################################################################
-
-function clone_mssql_source_vms() {
-  local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
-
-log "Start Cloning ${MSSQL_SourceVM}"
-
-log "PE Cluster IP |${PE_HOST}|"
-log "PC IP |${PC_HOST}|"
-
-set -x
-
-## Get Source VM UUID ##
-log "-------------------------------------"
-log "Get ${MSSQL_SourceVM} ID"
-
-  _mssql_sourcevm_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/vms/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"vm","filter": "vm_name==Win2016SQLSource"}'  | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-
-log "${MSSQL_SourceVM} ID: |${_mssql_sourcevm_id}|"
-
-## Deploy UserXX Clones ##
-log "-------------------------------------"
-log "Cloning ${MSSQL_SourceVM}"
-
-for _user in "${USERS[@]}" ; do
-
-  ClonedVM="${_user}_${MSSQL_SourceVM}"
-
-  log "Cloning ${MSSQL_SourceVM} for $_user started.."
-  log "Cloned VMs Name will be ${ClonedVM}"
-
-HTTP_JSON_BODY=$(cat <<EOF
-{
-  "spec_list": [
-    {
-      "name": "${ClonedVM}"
-    }
-  ]
-}
-EOF
-)
-
-log "Cloning VM Now"
-log "-------------------------------------"
-log $HTTP_JSON_BODY
-
-  _task_id=$(curl ${CURL_HTTP_OPTS} --request POST "https://${PE_HOST}:9440/PrismGateway/services/rest/v2.0/vms/${_mssql_sourcevm_id}/clone" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.task_uuid' | tr -d \")
-
-  log "Task uuid for Cloning ${MSSQL_SourceVM} is $_task_id  ....."
-  #sleep 240
-  if [ -z "$_task_id" ]; then
-       log "Cloning ${MSSQL_SourceVM} has encountered an error..."
-  else
-       log "Cloning ${MSSQL_SourceVM} started.."
-       set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-       # Run the progess checker
-       loop
-  fi
-
-## Get Newly Cloned VM"s UUID ##
-sleep 60
-log "Get ${ClonedVM} ID"
-
-HTTP_JSON_BODY=$(cat <<EOF
-{
-  "kind":"vm",
-  "vm_name==${ClonedVM}"
-}
-EOF
-)
-
-  log "Getting UUID Now"
-  log $HTTP_JSON_BODY
-
-  _cloned_vm_id=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/vms/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}"  | jq -r '.entities[] | .metadata.uuid' | tr -d \")
-
-log "${ClonedVM} ID: |${_cloned_vm_id}|"
-
-## Power Cloned VM On ##
-
-log "Powering on VM Now"
-
-HTTP_JSON_BODY=$(cat <<EOF
-{
-    "spec": {
-        "name": "${ClonedVM}",
-        "resources": {
-            "hardware_clock_timezone": "UTC",
-            "power_state": "ON"
-        }
-    },
-    "api_version": "3.0",
-    "metadata": {
-        "kind": "vm",
-        "spec_version": 0
-    }
-}
-EOF
-)
-
-_task_id=$(curl ${CURL_HTTP_OPTS} --request PUT "https://${PE_HOST}:9440/api/nutanix/v3/vms/${_cloned_vm_id}" --user ${PRISM_ADMIN}:${PE_PASSWORD} --data "${HTTP_JSON_BODY}" | jq -r '.status.execution_context.task_uuid' | tr -d \")
-
-log "Task uuid for Powering on VM is $_task_id  ....."
-
-if [ -z "$_task_id" ]; then
-     log "Powering on VM has encountered an error..."
-else
-     log "Powering on VM started.."
-     set _loops=0 # Reset the loop counter so we restart the amount of loops we need to run
-     # Run the progess checker
-     loop
-fi
-
-done
-
-log "Cloning ${MSSQL_SourceVM} Comnplete"
-
-set +x
 
 }
 
