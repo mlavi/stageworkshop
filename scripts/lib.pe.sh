@@ -1079,7 +1079,7 @@ function deploy_mssql() {
 
   echo "## ${SourceVM} Creation_INPROGRESS ##"
   acli "vm.create ${SourceVM} memory=2046M num_cores_per_vcpu=1 num_vcpus=2"
-  acli "vm.disk_create ${ourceVM} clone_from_image=${MSSQL_SourceVM_Image1}"
+  acli "vm.disk_create ${SourceVM} clone_from_image=${MSSQL_SourceVM_Image1}"
   acli "vm.disk_create ${SourceVM} clone_from_image=${MSSQL_SourceVM_Image2}"
   acli "vm.nic_create ${SourceVM} network=${NW1_NAME}"
   echo "## ${SourceVM} - Powering On ##"
