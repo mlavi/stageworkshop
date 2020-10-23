@@ -671,10 +671,7 @@ function ssp_auth() {
   local _ssp_connect
 
   log "Find ${AUTH_SERVER} uuid"
-  _ldap_uuid=$(PATH=${PATH}:${HOME}; curl ${CURL_POST_OPTS} \
-    --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{ "kind": "directory_service" }' \
-    https://localhost:9440/api/nutanix/v3/directory_services/list \
-    | jq -r .entities[0].metadata.uuid)
+  _ldap_uuid=$(PATH=${PATH}:${HOME}; curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{ "kind": "directory_service" }' https://localhost:9440/api/nutanix/v3/directory_services/list | jq -r .entities[0].metadata.uuid)
   log "_ldap_uuid=|${_ldap_uuid}|"
 
   # TODO:110 get directory service name _ldap_name
@@ -793,9 +790,7 @@ EOF
   }
 EOF
     )
-    _ssp_connect=$(curl ${CURL_POST_OPTS} \
-      --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT --data "${_http_body}" \
-      https://localhost:9440/api/nutanix/v3/directory_services/${_ldap_uuid})
+    _ssp_connect=$(curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} -X PUT --data "${_http_body}" https://localhost:9440/api/nutanix/v3/directory_services/${_ldap_uuid})
     log "_ssp_connect=|${_ssp_connect}|"
 
 }
@@ -1225,7 +1220,7 @@ EOF
 
 
 
-
+#set +x
 
 }
 
