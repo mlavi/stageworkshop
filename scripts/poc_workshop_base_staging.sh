@@ -118,6 +118,7 @@ case ${1} in
     ssp_auth \
     && priority_images \
     && images \
+    && deploy_pocworkshop_vms \
     && prism_check 'PC'
 
     log "Non-blocking functions (in development) follow."

@@ -924,11 +924,36 @@ function deploy_pocworkshop_vms() {
   log "PE Cluster IP |${PE_HOST}|"
 
   ## Get Cluster UUID ##
+  log "-------------------------------------"
   log "Get Cluster UUID"
 
   _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER_NAME "$CLUSTER_NAME" '.entities[]|select (.status.name==$CLUSTER_NAME)| .metadata.uuid' | tr -d \")
 
   log "Cluster UUID |${_cluster_uuid}|"
+
+  ## Get Primary Network UUID ##
+  log "-------------------------------------"
+  log "Get cluster network UUID"
+
+  _nw_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/subnets/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"subnet","filter": "name==Primary"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  log "NW UUID = ${_nw_uuid}"
+
+  ## Get Windows Image UUID ##
+  log "-------------------------------------"
+  log "Get Windows Image UUID"
+
+  _windows2016_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==Windows2016.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  log "Windows Image UUID |${_windows2016_uuid}|"
+
+  ## Get CentOS7 Image UUID ##
+  log "-------------------------------------"
+  log "Get CentOS7 Image UUID"
+
+  _centos7_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==CentOS7.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+
+  log "CentOS7 Image UUID |${_centos7_uuid}|"
 
   ## VM Name Vars ##
   VMS=(\
@@ -940,6 +965,7 @@ function deploy_pocworkshop_vms() {
   )
 
   ## Creating the VMs ##
+  log "-------------------------------------"
   Log "Creating the Windows and Linux VMs for use in the SE POC Guide"
 
   ## Creating the First WinServer VM ##
@@ -950,9 +976,9 @@ function deploy_pocworkshop_vms() {
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
-    "api_version": "3.0",
+    "api_version": "3.1.0",
     "metadata": {
-        "categories": { },
+        "categories": {},
         "kind": "vm"
     },
     "spec": {
@@ -963,11 +989,51 @@ HTTP_JSON_BODY=$(cat <<EOF
         "name": "${VMName}",
         "resources": {
             "memory_size_mib": 4096,
-            "nic_list": [
-            ],
             "num_sockets": 2,
             "num_vcpus_per_socket": 1,
-            "power_state": "ON"
+            "power_state": "ON",
+            "guest_customization": {
+                "sysprep": {
+                    "install_type": "PREPARED",
+                    "unattend_xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjx1bmF0dGVuZCB4bWxucz0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp1bmF0dGVuZCI+DQogICA8c2V0dGluZ3MgcGFzcz0ib29iZVN5c3RlbSI+DQogICAgICA8Y29tcG9uZW50IG5hbWU9Ik1pY3Jvc29mdC1XaW5kb3dzLVNoZWxsLVNldHVwIiB4bWxuczp3Y209Imh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vV01JQ29uZmlnLzIwMDIvU3RhdGUiIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHByb2Nlc3NvckFyY2hpdGVjdHVyZT0iYW1kNjQiIHB1YmxpY0tleVRva2VuPSIzMWJmMzg1NmFkMzY0ZTM1IiBsYW5ndWFnZT0ibmV1dHJhbCIgdmVyc2lvblNjb3BlPSJub25TeFMiPg0KICAgICAgICAgPE9PQkU+DQogICAgICAgICAgICA8SGlkZUVVTEFQYWdlPnRydWU8L0hpZGVFVUxBUGFnZT4NCiAgICAgICAgICAgIDxIaWRlT0VNUmVnaXN0cmF0aW9uU2NyZWVuPnRydWU8L0hpZGVPRU1SZWdpc3RyYXRpb25TY3JlZW4+DQogICAgICAgICAgICA8SGlkZU9ubGluZUFjY291bnRTY3JlZW5zPnRydWU8L0hpZGVPbmxpbmVBY2NvdW50U2NyZWVucz4NCiAgICAgICAgICAgIDxIaWRlV2lyZWxlc3NTZXR1cEluT09CRT50cnVlPC9IaWRlV2lyZWxlc3NTZXR1cEluT09CRT4NCiAgICAgICAgICAgIDxOZXR3b3JrTG9jYXRpb24+V29yazwvTmV0d29ya0xvY2F0aW9uPg0KICAgICAgICAgICAgPFNraXBNYWNoaW5lT09CRT50cnVlPC9Ta2lwTWFjaGluZU9PQkU+DQogICAgICAgICA8L09PQkU+DQogICAgICAgICA8VXNlckFjY291bnRzPg0KICAgICAgICAgICAgPEFkbWluaXN0cmF0b3JQYXNzd29yZD4NCiAgICAgICAgICAgICAgIDxWYWx1ZT5udXRhbml4LzR1PC9WYWx1ZT4NCiAgICAgICAgICAgICAgIDxQbGFpblRleHQ+dHJ1ZTwvUGxhaW5UZXh0Pg0KICAgICAgICAgICAgPC9BZG1pbmlzdHJhdG9yUGFzc3dvcmQ+DQogICAgICAgICA8L1VzZXJBY2NvdW50cz4NCiAgICAgICAgIDxGaXJzdExvZ29uQ29tbWFuZHM+DQogICAgICAgICAgICA8U3luY2hyb25vdXNDb21tYW5kIHdjbTphY3Rpb249ImFkZCI+DQogICAgICAgICAgICAgICA8Q29tbWFuZExpbmU+Y21kLmV4ZSAvYyBuZXRzaCBmaXJld2FsbCBhZGQgcG9ydG9wZW5pbmcgVENQIDU5ODUgIlBvcnQgNTk4NSI8L0NvbW1hbmRMaW5lPg0KICAgICAgICAgICAgICAgPERlc2NyaXB0aW9uPldpbiBSTSBwb3J0IG9wZW48L0Rlc2NyaXB0aW9uPg0KICAgICAgICAgICAgICAgPE9yZGVyPjE8L09yZGVyPg0KICAgICAgICAgICAgICAgPFJlcXVpcmVzVXNlcklucHV0PnRydWU8L1JlcXVpcmVzVXNlcklucHV0Pg0KICAgICAgICAgICAgPC9TeW5jaHJvbm91c0NvbW1hbmQ+DQogICAgICAgICAgICA8U3luY2hyb25vdXNDb21tYW5kIHdjbTphY3Rpb249ImFkZCI+DQogICAgICAgICAgICAgICA8Q29tbWFuZExpbmU+cG93ZXJzaGVsbCAtQ29tbWFuZCAiRW5hYmxlLVBTUmVtb3RpbmcgLVNraXBOZXR3b3JrUHJvZmlsZUNoZWNrIC1Gb3JjZSI8L0NvbW1hbmRMaW5lPg0KICAgICAgICAgICAgICAgPERlc2NyaXB0aW9uPkVuYWJsZSBQUy1SZW1vdGluZzwvRGVzY3JpcHRpb24+DQogICAgICAgICAgICAgICA8T3JkZXI+MjwvT3JkZXI+DQogICAgICAgICAgICAgICA8UmVxdWlyZXNVc2VySW5wdXQ+dHJ1ZTwvUmVxdWlyZXNVc2VySW5wdXQ+DQogICAgICAgICAgICA8L1N5bmNocm9ub3VzQ29tbWFuZD4NCiAgICAgICAgICAgIDxTeW5jaHJvbm91c0NvbW1hbmQgd2NtOmFjdGlvbj0iYWRkIj4NCiAgICAgICAgICAgICAgIDxDb21tYW5kTGluZT5wb3dlcnNoZWxsIC1Db21tYW5kICJTZXQtRXhlY3V0aW9uUG9saWN5IC1FeGVjdXRpb25Qb2xpY3kgUmVtb3RlU2lnbmVkIjwvQ29tbWFuZExpbmU+DQogICAgICAgICAgICAgICA8RGVzY3JpcHRpb24+RW5hYmxlIFJlbW90ZS1TaWduaW5nPC9EZXNjcmlwdGlvbj4NCiAgICAgICAgICAgICAgIDxPcmRlcj4zPC9PcmRlcj4NCiAgICAgICAgICAgICAgIDxSZXF1aXJlc1VzZXJJbnB1dD5mYWxzZTwvUmVxdWlyZXNVc2VySW5wdXQ+DQogICAgICAgICAgICA8L1N5bmNocm9ub3VzQ29tbWFuZD4NCiAgICAgICAgIDwvRmlyc3RMb2dvbkNvbW1hbmRzPiAgIA0KICAgICAgPC9jb21wb25lbnQ+DQogICAgICA8Y29tcG9uZW50IG5hbWU9Ik1pY3Jvc29mdC1XaW5kb3dzLUludGVybmF0aW9uYWwtQ29yZSIgeG1sbnM6d2NtPSJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL1dNSUNvbmZpZy8yMDAyL1N0YXRlIiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiBwcm9jZXNzb3JBcmNoaXRlY3R1cmU9ImFtZDY0IiBwdWJsaWNLZXlUb2tlbj0iMzFiZjM4NTZhZDM2NGUzNSIgbGFuZ3VhZ2U9Im5ldXRyYWwiIHZlcnNpb25TY29wZT0ibm9uU3hTIj4NCiAgICAgICAgIDxJbnB1dExvY2FsZT5lbi1VUzwvSW5wdXRMb2NhbGU+DQogICAgICAgICA8U3lzdGVtTG9jYWxlPmVuLVVTPC9TeXN0ZW1Mb2NhbGU+DQogICAgICAgICA8VUlMYW5ndWFnZUZhbGxiYWNrPmVuLXVzPC9VSUxhbmd1YWdlRmFsbGJhY2s+DQogICAgICAgICA8VUlMYW5ndWFnZT5lbi1VUzwvVUlMYW5ndWFnZT4NCiAgICAgICAgIDxVc2VyTG9jYWxlPmVuLVVTPC9Vc2VyTG9jYWxlPg0KICAgICAgPC9jb21wb25lbnQ+DQogICA8L3NldHRpbmdzPg0KICAgPHNldHRpbmdzIHBhc3M9InNwZWNpYWxpemUiPg0KICAgICAgPGNvbXBvbmVudCBuYW1lPSJNaWNyb3NvZnQtV2luZG93cy1TaGVsbC1TZXR1cCIgeG1sbnM6d2NtPSJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL1dNSUNvbmZpZy8yMDAyL1N0YXRlIiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiBwcm9jZXNzb3JBcmNoaXRlY3R1cmU9ImFtZDY0IiBwdWJsaWNLZXlUb2tlbj0iMzFiZjM4NTZhZDM2NGUzNSIgbGFuZ3VhZ2U9Im5ldXRyYWwiIHZlcnNpb25TY29wZT0ibm9uU3hTIj4NCiAgICAgICAgIDxDb21wdXRlck5hbWU+V2luZG93czIwMTY8L0NvbXB1dGVyTmFtZT4NCiAgICAgICAgIDxSZWdpc3RlcmVkT3JnYW5pemF0aW9uPk51dGFuaXg8L1JlZ2lzdGVyZWRPcmdhbml6YXRpb24+DQogICAgICAgICA8UmVnaXN0ZXJlZE93bmVyPkFjcm9wb2xpczwvUmVnaXN0ZXJlZE93bmVyPg0KICAgICAgICAgPFRpbWVab25lPlVUQzwvVGltZVpvbmU+DQogICAgICA8L2NvbXBvbmVudD4NCiAgICAgIDxjb21wb25lbnQgbmFtZT0iTWljcm9zb2Z0LVdpbmRvd3MtVGVybWluYWxTZXJ2aWNlcy1Mb2NhbFNlc3Npb25NYW5hZ2VyIiB4bWxucz0iIiBwdWJsaWNLZXlUb2tlbj0iMzFiZjM4NTZhZDM2NGUzNSIgbGFuZ3VhZ2U9Im5ldXRyYWwiIHZlcnNpb25TY29wZT0ibm9uU3hTIiBwcm9jZXNzb3JBcmNoaXRlY3R1cmU9ImFtZDY0Ij4NCiAgICAgICAgIDxmRGVueVRTQ29ubmVjdGlvbnM+ZmFsc2U8L2ZEZW55VFNDb25uZWN0aW9ucz4NCiAgICAgIDwvY29tcG9uZW50Pg0KICAgICAgPGNvbXBvbmVudCBuYW1lPSJNaWNyb3NvZnQtV2luZG93cy1UZXJtaW5hbFNlcnZpY2VzLVJEUC1XaW5TdGF0aW9uRXh0ZW5zaW9ucyIgeG1sbnM9IiIgcHVibGljS2V5VG9rZW49IjMxYmYzODU2YWQzNjRlMzUiIGxhbmd1YWdlPSJuZXV0cmFsIiB2ZXJzaW9uU2NvcGU9Im5vblN4UyIgcHJvY2Vzc29yQXJjaGl0ZWN0dXJlPSJhbWQ2NCI+DQogICAgICAgICA8VXNlckF1dGhlbnRpY2F0aW9uPjA8L1VzZXJBdXRoZW50aWNhdGlvbj4NCiAgICAgIDwvY29tcG9uZW50Pg0KICAgICAgPGNvbXBvbmVudCBuYW1lPSJOZXR3b3JraW5nLU1QU1NWQy1TdmMiIHhtbG5zOndjbT0iaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS9XTUlDb25maWcvMjAwMi9TdGF0ZSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgcHJvY2Vzc29yQXJjaGl0ZWN0dXJlPSJhbWQ2NCIgcHVibGljS2V5VG9rZW49IjMxYmYzODU2YWQzNjRlMzUiIGxhbmd1YWdlPSJuZXV0cmFsIiB2ZXJzaW9uU2NvcGU9Im5vblN4UyI+DQogICAgICAgICA8RmlyZXdhbGxHcm91cHM+DQogICAgICAgICAgICA8RmlyZXdhbGxHcm91cCB3Y206YWN0aW9uPSJhZGQiIHdjbTprZXlWYWx1ZT0iUmVtb3RlRGVza3RvcCI+DQogICAgICAgICAgICAgICA8QWN0aXZlPnRydWU8L0FjdGl2ZT4NCiAgICAgICAgICAgICAgIDxQcm9maWxlPmFsbDwvUHJvZmlsZT4NCiAgICAgICAgICAgICAgIDxHcm91cD5ARmlyZXdhbGxBUEkuZGxsLC0yODc1MjwvR3JvdXA+DQogICAgICAgICAgICA8L0ZpcmV3YWxsR3JvdXA+DQogICAgICAgICA8L0ZpcmV3YWxsR3JvdXBzPg0KICAgICAgPC9jb21wb25lbnQ+DQogICA8L3NldHRpbmdzPg0KPC91bmF0dGVuZD4="
+                }
+            },
+            "disk_list": [
+                {
+                    "device_properties": {
+                        "device_type": "DISK",
+                        "disk_address": {
+                            "device_index": 0,
+                            "adapter_type": "SCSI"
+                        }
+                    },
+                    "data_source_reference": {
+                        "kind": "image",
+                        "uuid": "${_windows2016_uuid}"
+                    }
+                },
+                {
+                    "device_properties": {
+                        "device_type": "CDROM"
+                    }
+                }
+            ],
+            "nic_list": [
+                {
+                    "nic_type": "NORMAL_NIC",
+                    "is_connected": true,
+                    "ip_endpoint_list": [
+                        {
+                            "ip_type": "DHCP"
+                        }
+                    ],
+                    "subnet_reference": {
+                        "kind": "subnet",
+                        "name": "Primary",
+                        "uuid": "${_nw_uuid}"
+                    }
+                }
+            ]
         }
     }
 }
@@ -997,9 +1063,9 @@ EOF
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
-    "api_version": "3.0",
+    "api_version": "3.1.0",
     "metadata": {
-        "categories": { },
+        "categories": {},
         "kind": "vm"
     },
     "spec": {
@@ -1010,11 +1076,51 @@ HTTP_JSON_BODY=$(cat <<EOF
         "name": "${VMName}",
         "resources": {
             "memory_size_mib": 4096,
-            "nic_list": [
-            ],
             "num_sockets": 2,
             "num_vcpus_per_socket": 1,
-            "power_state": "ON"
+            "power_state": "ON",
+            "guest_customization": {
+                "sysprep": {
+                    "install_type": "PREPARED",
+                    "unattend_xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjx1bmF0dGVuZCB4bWxucz0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp1bmF0dGVuZCI+DQogICA8c2V0dGluZ3MgcGFzcz0ib29iZVN5c3RlbSI+DQogICAgICA8Y29tcG9uZW50IG5hbWU9Ik1pY3Jvc29mdC1XaW5kb3dzLVNoZWxsLVNldHVwIiB4bWxuczp3Y209Imh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vV01JQ29uZmlnLzIwMDIvU3RhdGUiIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHByb2Nlc3NvckFyY2hpdGVjdHVyZT0iYW1kNjQiIHB1YmxpY0tleVRva2VuPSIzMWJmMzg1NmFkMzY0ZTM1IiBsYW5ndWFnZT0ibmV1dHJhbCIgdmVyc2lvblNjb3BlPSJub25TeFMiPg0KICAgICAgICAgPE9PQkU+DQogICAgICAgICAgICA8SGlkZUVVTEFQYWdlPnRydWU8L0hpZGVFVUxBUGFnZT4NCiAgICAgICAgICAgIDxIaWRlT0VNUmVnaXN0cmF0aW9uU2NyZWVuPnRydWU8L0hpZGVPRU1SZWdpc3RyYXRpb25TY3JlZW4+DQogICAgICAgICAgICA8SGlkZU9ubGluZUFjY291bnRTY3JlZW5zPnRydWU8L0hpZGVPbmxpbmVBY2NvdW50U2NyZWVucz4NCiAgICAgICAgICAgIDxIaWRlV2lyZWxlc3NTZXR1cEluT09CRT50cnVlPC9IaWRlV2lyZWxlc3NTZXR1cEluT09CRT4NCiAgICAgICAgICAgIDxOZXR3b3JrTG9jYXRpb24+V29yazwvTmV0d29ya0xvY2F0aW9uPg0KICAgICAgICAgICAgPFNraXBNYWNoaW5lT09CRT50cnVlPC9Ta2lwTWFjaGluZU9PQkU+DQogICAgICAgICA8L09PQkU+DQogICAgICAgICA8VXNlckFjY291bnRzPg0KICAgICAgICAgICAgPEFkbWluaXN0cmF0b3JQYXNzd29yZD4NCiAgICAgICAgICAgICAgIDxWYWx1ZT5udXRhbml4LzR1PC9WYWx1ZT4NCiAgICAgICAgICAgICAgIDxQbGFpblRleHQ+dHJ1ZTwvUGxhaW5UZXh0Pg0KICAgICAgICAgICAgPC9BZG1pbmlzdHJhdG9yUGFzc3dvcmQ+DQogICAgICAgICA8L1VzZXJBY2NvdW50cz4NCiAgICAgICAgIDxGaXJzdExvZ29uQ29tbWFuZHM+DQogICAgICAgICAgICA8U3luY2hyb25vdXNDb21tYW5kIHdjbTphY3Rpb249ImFkZCI+DQogICAgICAgICAgICAgICA8Q29tbWFuZExpbmU+Y21kLmV4ZSAvYyBuZXRzaCBmaXJld2FsbCBhZGQgcG9ydG9wZW5pbmcgVENQIDU5ODUgIlBvcnQgNTk4NSI8L0NvbW1hbmRMaW5lPg0KICAgICAgICAgICAgICAgPERlc2NyaXB0aW9uPldpbiBSTSBwb3J0IG9wZW48L0Rlc2NyaXB0aW9uPg0KICAgICAgICAgICAgICAgPE9yZGVyPjE8L09yZGVyPg0KICAgICAgICAgICAgICAgPFJlcXVpcmVzVXNlcklucHV0PnRydWU8L1JlcXVpcmVzVXNlcklucHV0Pg0KICAgICAgICAgICAgPC9TeW5jaHJvbm91c0NvbW1hbmQ+DQogICAgICAgICAgICA8U3luY2hyb25vdXNDb21tYW5kIHdjbTphY3Rpb249ImFkZCI+DQogICAgICAgICAgICAgICA8Q29tbWFuZExpbmU+cG93ZXJzaGVsbCAtQ29tbWFuZCAiRW5hYmxlLVBTUmVtb3RpbmcgLVNraXBOZXR3b3JrUHJvZmlsZUNoZWNrIC1Gb3JjZSI8L0NvbW1hbmRMaW5lPg0KICAgICAgICAgICAgICAgPERlc2NyaXB0aW9uPkVuYWJsZSBQUy1SZW1vdGluZzwvRGVzY3JpcHRpb24+DQogICAgICAgICAgICAgICA8T3JkZXI+MjwvT3JkZXI+DQogICAgICAgICAgICAgICA8UmVxdWlyZXNVc2VySW5wdXQ+dHJ1ZTwvUmVxdWlyZXNVc2VySW5wdXQ+DQogICAgICAgICAgICA8L1N5bmNocm9ub3VzQ29tbWFuZD4NCiAgICAgICAgICAgIDxTeW5jaHJvbm91c0NvbW1hbmQgd2NtOmFjdGlvbj0iYWRkIj4NCiAgICAgICAgICAgICAgIDxDb21tYW5kTGluZT5wb3dlcnNoZWxsIC1Db21tYW5kICJTZXQtRXhlY3V0aW9uUG9saWN5IC1FeGVjdXRpb25Qb2xpY3kgUmVtb3RlU2lnbmVkIjwvQ29tbWFuZExpbmU+DQogICAgICAgICAgICAgICA8RGVzY3JpcHRpb24+RW5hYmxlIFJlbW90ZS1TaWduaW5nPC9EZXNjcmlwdGlvbj4NCiAgICAgICAgICAgICAgIDxPcmRlcj4zPC9PcmRlcj4NCiAgICAgICAgICAgICAgIDxSZXF1aXJlc1VzZXJJbnB1dD5mYWxzZTwvUmVxdWlyZXNVc2VySW5wdXQ+DQogICAgICAgICAgICA8L1N5bmNocm9ub3VzQ29tbWFuZD4NCiAgICAgICAgIDwvRmlyc3RMb2dvbkNvbW1hbmRzPiAgIA0KICAgICAgPC9jb21wb25lbnQ+DQogICAgICA8Y29tcG9uZW50IG5hbWU9Ik1pY3Jvc29mdC1XaW5kb3dzLUludGVybmF0aW9uYWwtQ29yZSIgeG1sbnM6d2NtPSJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL1dNSUNvbmZpZy8yMDAyL1N0YXRlIiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiBwcm9jZXNzb3JBcmNoaXRlY3R1cmU9ImFtZDY0IiBwdWJsaWNLZXlUb2tlbj0iMzFiZjM4NTZhZDM2NGUzNSIgbGFuZ3VhZ2U9Im5ldXRyYWwiIHZlcnNpb25TY29wZT0ibm9uU3hTIj4NCiAgICAgICAgIDxJbnB1dExvY2FsZT5lbi1VUzwvSW5wdXRMb2NhbGU+DQogICAgICAgICA8U3lzdGVtTG9jYWxlPmVuLVVTPC9TeXN0ZW1Mb2NhbGU+DQogICAgICAgICA8VUlMYW5ndWFnZUZhbGxiYWNrPmVuLXVzPC9VSUxhbmd1YWdlRmFsbGJhY2s+DQogICAgICAgICA8VUlMYW5ndWFnZT5lbi1VUzwvVUlMYW5ndWFnZT4NCiAgICAgICAgIDxVc2VyTG9jYWxlPmVuLVVTPC9Vc2VyTG9jYWxlPg0KICAgICAgPC9jb21wb25lbnQ+DQogICA8L3NldHRpbmdzPg0KICAgPHNldHRpbmdzIHBhc3M9InNwZWNpYWxpemUiPg0KICAgICAgPGNvbXBvbmVudCBuYW1lPSJNaWNyb3NvZnQtV2luZG93cy1TaGVsbC1TZXR1cCIgeG1sbnM6d2NtPSJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL1dNSUNvbmZpZy8yMDAyL1N0YXRlIiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiBwcm9jZXNzb3JBcmNoaXRlY3R1cmU9ImFtZDY0IiBwdWJsaWNLZXlUb2tlbj0iMzFiZjM4NTZhZDM2NGUzNSIgbGFuZ3VhZ2U9Im5ldXRyYWwiIHZlcnNpb25TY29wZT0ibm9uU3hTIj4NCiAgICAgICAgIDxDb21wdXRlck5hbWU+V2luZG93czIwMTY8L0NvbXB1dGVyTmFtZT4NCiAgICAgICAgIDxSZWdpc3RlcmVkT3JnYW5pemF0aW9uPk51dGFuaXg8L1JlZ2lzdGVyZWRPcmdhbml6YXRpb24+DQogICAgICAgICA8UmVnaXN0ZXJlZE93bmVyPkFjcm9wb2xpczwvUmVnaXN0ZXJlZE93bmVyPg0KICAgICAgICAgPFRpbWVab25lPlVUQzwvVGltZVpvbmU+DQogICAgICA8L2NvbXBvbmVudD4NCiAgICAgIDxjb21wb25lbnQgbmFtZT0iTWljcm9zb2Z0LVdpbmRvd3MtVGVybWluYWxTZXJ2aWNlcy1Mb2NhbFNlc3Npb25NYW5hZ2VyIiB4bWxucz0iIiBwdWJsaWNLZXlUb2tlbj0iMzFiZjM4NTZhZDM2NGUzNSIgbGFuZ3VhZ2U9Im5ldXRyYWwiIHZlcnNpb25TY29wZT0ibm9uU3hTIiBwcm9jZXNzb3JBcmNoaXRlY3R1cmU9ImFtZDY0Ij4NCiAgICAgICAgIDxmRGVueVRTQ29ubmVjdGlvbnM+ZmFsc2U8L2ZEZW55VFNDb25uZWN0aW9ucz4NCiAgICAgIDwvY29tcG9uZW50Pg0KICAgICAgPGNvbXBvbmVudCBuYW1lPSJNaWNyb3NvZnQtV2luZG93cy1UZXJtaW5hbFNlcnZpY2VzLVJEUC1XaW5TdGF0aW9uRXh0ZW5zaW9ucyIgeG1sbnM9IiIgcHVibGljS2V5VG9rZW49IjMxYmYzODU2YWQzNjRlMzUiIGxhbmd1YWdlPSJuZXV0cmFsIiB2ZXJzaW9uU2NvcGU9Im5vblN4UyIgcHJvY2Vzc29yQXJjaGl0ZWN0dXJlPSJhbWQ2NCI+DQogICAgICAgICA8VXNlckF1dGhlbnRpY2F0aW9uPjA8L1VzZXJBdXRoZW50aWNhdGlvbj4NCiAgICAgIDwvY29tcG9uZW50Pg0KICAgICAgPGNvbXBvbmVudCBuYW1lPSJOZXR3b3JraW5nLU1QU1NWQy1TdmMiIHhtbG5zOndjbT0iaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS9XTUlDb25maWcvMjAwMi9TdGF0ZSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgcHJvY2Vzc29yQXJjaGl0ZWN0dXJlPSJhbWQ2NCIgcHVibGljS2V5VG9rZW49IjMxYmYzODU2YWQzNjRlMzUiIGxhbmd1YWdlPSJuZXV0cmFsIiB2ZXJzaW9uU2NvcGU9Im5vblN4UyI+DQogICAgICAgICA8RmlyZXdhbGxHcm91cHM+DQogICAgICAgICAgICA8RmlyZXdhbGxHcm91cCB3Y206YWN0aW9uPSJhZGQiIHdjbTprZXlWYWx1ZT0iUmVtb3RlRGVza3RvcCI+DQogICAgICAgICAgICAgICA8QWN0aXZlPnRydWU8L0FjdGl2ZT4NCiAgICAgICAgICAgICAgIDxQcm9maWxlPmFsbDwvUHJvZmlsZT4NCiAgICAgICAgICAgICAgIDxHcm91cD5ARmlyZXdhbGxBUEkuZGxsLC0yODc1MjwvR3JvdXA+DQogICAgICAgICAgICA8L0ZpcmV3YWxsR3JvdXA+DQogICAgICAgICA8L0ZpcmV3YWxsR3JvdXBzPg0KICAgICAgPC9jb21wb25lbnQ+DQogICA8L3NldHRpbmdzPg0KPC91bmF0dGVuZD4="
+                }
+            },
+            "disk_list": [
+                {
+                    "device_properties": {
+                        "device_type": "DISK",
+                        "disk_address": {
+                            "device_index": 0,
+                            "adapter_type": "SCSI"
+                        }
+                    },
+                    "data_source_reference": {
+                        "kind": "image",
+                        "uuid": "${_windows2016_uuid}"
+                    }
+                },
+                {
+                    "device_properties": {
+                        "device_type": "CDROM"
+                    }
+                }
+            ],
+            "nic_list": [
+                {
+                    "nic_type": "NORMAL_NIC",
+                    "is_connected": true,
+                    "ip_endpoint_list": [
+                        {
+                            "ip_type": "DHCP"
+                        }
+                    ],
+                    "subnet_reference": {
+                        "kind": "subnet",
+                        "name": "Primary",
+                        "uuid": "${_nw_uuid}"
+                    }
+                }
+            ]
         }
     }
 }
@@ -1045,9 +1151,9 @@ EOF
 
 HTTP_JSON_BODY=$(cat <<EOF
 {
-    "api_version": "3.0",
+    "api_version": "3.1.0",
     "metadata": {
-        "categories": { },
+        "categories": {},
         "kind": "vm"
     },
     "spec": {
@@ -1058,11 +1164,45 @@ HTTP_JSON_BODY=$(cat <<EOF
         "name": "${VMName}",
         "resources": {
             "memory_size_mib": 4096,
-            "nic_list": [
-            ],
             "num_sockets": 2,
             "num_vcpus_per_socket": 1,
-            "power_state": "ON"
+            "power_state": "ON",
+            "disk_list": [
+                {
+                    "device_properties": {
+                        "device_type": "DISK",
+                        "disk_address": {
+                            "device_index": 0,
+                            "adapter_type": "SCSI"
+                        }
+                    },
+                    "data_source_reference": {
+                        "kind": "image",
+                        "uuid": "${_centos7_uuid}"
+                    }
+                },
+                {
+                    "device_properties": {
+                        "device_type": "CDROM"
+                    }
+                }
+            ],
+            "nic_list": [
+                {
+                    "nic_type": "NORMAL_NIC",
+                    "is_connected": true,
+                    "ip_endpoint_list": [
+                        {
+                            "ip_type": "DHCP"
+                        }
+                    ],
+                    "subnet_reference": {
+                        "kind": "subnet",
+                        "name": "Primary",
+                        "uuid": "${_nw_uuid}"
+                    }
+                }
+            ]
         }
     }
 }
