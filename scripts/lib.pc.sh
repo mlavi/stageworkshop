@@ -917,6 +917,8 @@ function deploy_pocworkshop_vms() {
 
   log "Starting SE POC Guide Base VM Deployments"
   log "PE Cluster IP |${PE_HOST}|"
+  log "PE Cluster IP |${PC_HOST}|"
+  log "Cluster Name |${CLUSTER_NAME}|"
 
   ## Get Cluster UUID ##
   log "-------------------------------------"
@@ -938,7 +940,7 @@ function deploy_pocworkshop_vms() {
   log "-------------------------------------"
   log "Get Windows Image UUID"
 
-  _windows2016_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==Windows2016.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  _windows2016_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/images/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==Windows2016.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   log "Windows Image UUID |${_windows2016_uuid}|"
 
@@ -946,7 +948,7 @@ function deploy_pocworkshop_vms() {
   log "-------------------------------------"
   log "Get CentOS7 Image UUID"
 
-  _centos7_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==CentOS7.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  _centos7_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/images/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==CentOS7.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   log "CentOS7 Image UUID |${_centos7_uuid}|"
 
