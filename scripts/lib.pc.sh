@@ -518,11 +518,15 @@ function pc_cluster_img_import() {
   local      _uuid
   local CURL_HTTP_OPTS=" --max-time 25 --silent --header Content-Type:application/json --header Accept:application/json  --insecure "
 
-  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER_NAME "$CLUSTER_NAME" '.entities[]|select (.status.name==$CLUSTER_NAME)| .metadata.uuid' | tr -d \")
+  log "Cluster Name |${CLUSTER_NAME}|"
 
-  #_cluster_uuid=$(curl ${CURL_HTTP_OPTS} --request POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  ## Get Cluster UUID ##
+  log "-------------------------------------"
+  log "Get Cluster UUID"
 
-  log "Cluster UUID is ${_cluster_uuid}"
+  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER "${CLUSTER_NAME}" '.entities[]|select (.status.name==$CLUSTER)| .metadata.uuid' | tr -d \")
+
+  log "Cluster UUID |${_cluster_uuid}|"
 
 _http_body=$(cat <<EOF
 {
