@@ -922,13 +922,13 @@ function deploy_pocworkshop_vms() {
   log "Starting SE POC Guide Base VM Deployments"
   log "PE Cluster IP |${PE_HOST}|"
   log "PE Cluster IP |${PC_HOST}|"
-  log "Cluster Name |${CLUSTER_NAME}|"
+  log "Cluster Name |${PE_CLUSTER_NAME}|"
 
   ## Get Cluster UUID ##
   log "-------------------------------------"
   log "Get Cluster UUID"
 
-  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER "${CLUSTER_NAME}" '.entities[]|select (.status.name==$CLUSTER)| .metadata.uuid' | tr -d \")
+  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER "${PE_CLUSTER_NAME}" '.entities[]|select (.status.name==$CLUSTER)| .metadata.uuid' | tr -d \")
 
   log "Cluster UUID |${_cluster_uuid}|"
 

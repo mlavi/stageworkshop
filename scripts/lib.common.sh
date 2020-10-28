@@ -908,6 +908,7 @@ function pe_determine() {
       PE | pe )
         CLUSTER_NAME=$(echo ${_hold} | jq -r .data.name)
              PE_HOST=$(echo ${_hold} | jq -r .data.clusterExternalIPAddress)
+        PE_CLUSTER_NAME=$(echo ${_hold} | jq -r .data.name)
         ;;
       PC | Pc | pc )
         CLUSTER_NAME=$(echo ${_hold} | jq -r .name)
