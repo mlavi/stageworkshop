@@ -99,7 +99,7 @@ case ${1} in
       Nutanix-VirtIO-1.1.5.iso \
       Windows2016.iso \
       FrameCCA-3.0.0.iso \
-      FrameGuestAgentInstaller_1.0.2.7.iso \
+      FrameGuestAgentInstaller_1.0.2.8.iso \
       Nutanix-VirtIO-1.1.5.iso \
       veeam/VBR_10.0.0.4442.iso \
     )
