@@ -122,7 +122,7 @@ function stage_clusters() {
     _pe_launch='calm_bootcamp.sh'
     _pc_launch=${_pe_launch}
   fi
-  if (( $(echo ${_workshop} | grep -i "^Calm IaaS Bootcamp" | wc ${WC_ARG}) > 0 )); then
+  if (( $(echo ${_workshop} | grep -i "^Calm IaaS" | wc ${WC_ARG}) > 0 )); then
     _libraries+='lib.pe.sh lib.pc.sh'
     _pe_launch='calm_iaas_bootcamp.sh'
     _pc_launch=${_pe_launch}

@@ -671,7 +671,7 @@ function ssp_auth() {
   local _ssp_connect
 
   log "Find ${AUTH_SERVER} uuid"
-  _ldap_uuid=$(PATH=${PATH}:${HOME}; curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{ "kind": "directory_service" }' https://localhost:9440/api/nutanix/v3/directory_services/list | jq -r .entities[0].metadata.uuid)
+  _ldap_uuid=$(PATH=${PATH}:${HOME}; curl ${CURL_POST_OPTS} --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{ "kind": "directory_service" }' 'https://localhost:9440/api/nutanix/v3/directory_services/list' | jq -r .entities[0].metadata.uuid)
   log "_ldap_uuid=|${_ldap_uuid}|"
 
   # TODO:110 get directory service name _ldap_name
@@ -938,7 +938,7 @@ function deploy_pocworkshop_vms() {
   log "-------------------------------------"
   log "Get Windows Image UUID"
 
-  _windows2016_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==Windows2016.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  _windows2016_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/images/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==Windows2016.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   log "Windows Image UUID |${_windows2016_uuid}|"
 
@@ -946,7 +946,7 @@ function deploy_pocworkshop_vms() {
   log "-------------------------------------"
   log "Get CentOS7 Image UUID"
 
-  _centos7_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==CentOS7.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
+  _centos7_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/images/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{"kind":"image","filter":"name==CentOS7.qcow2"}' | jq -r '.entities[] | .metadata.uuid' | tr -d \")
 
   log "CentOS7 Image UUID |${_centos7_uuid}|"
 
