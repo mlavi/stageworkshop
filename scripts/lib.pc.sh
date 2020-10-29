@@ -928,8 +928,7 @@ function deploy_pocworkshop_vms() {
   log "-------------------------------------"
   log "Get Cluster UUID"
 
-  #_cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER "${CLUSTER_NAME}" '.entities[]|select (.status.name==$CLUSTER)| .metadata.uuid' | tr -d \")
-  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq -r '.entities[]|select (.status.name!=Unnamed)| .metadata.uuid' | tr -d \")
+  _cluster_uuid=$(curl ${CURL_HTTP_OPTS} -X POST 'https://localhost:9440/api/nutanix/v3/clusters/list' --user ${PRISM_ADMIN}:${PE_PASSWORD} --data '{}' | jq --arg CLUSTER "Unnamed" '.entities[]|select (.status.name==$CLUSTER)| .metadata.uuid' | tr -d \")
 
   log "Cluster UUID |${_cluster_uuid}|"
 
