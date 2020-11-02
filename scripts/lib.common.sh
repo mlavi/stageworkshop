@@ -853,14 +853,14 @@ function ntnx_download() {
          file-path="$(pwd)/${_source_url##*/}" \
     meta-file-path="$(pwd)/${_meta_url##*/}"
 
-  if (( $? == 0 )) ; then
-    log "Success! Delete ${_ncli_softwaretype} sources to free CVM space..."
-    rm -fr ${_source_url##*/} ${_meta_url##*/}
-  else
-    _error=3
-    log "Error ${_error}: failed ncli upload of ${_ncli_softwaretype}."
-    exit ${_error}
-  fi
+  #if (( $? == 0 )) ; then
+  #  log "Success! Delete ${_ncli_softwaretype} sources to free CVM space..."
+  #  rm -fr ${_source_url##*/} ${_meta_url##*/}
+  #else
+  #  _error=3
+  #  log "Error ${_error}: failed ncli upload of ${_ncli_softwaretype}."
+  #  exit ${_error}
+  #fi
 }
 
 ##################################################################################
