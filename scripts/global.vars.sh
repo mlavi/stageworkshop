@@ -5,8 +5,8 @@ RELEASE='release.json'
 PC_DEV_VERSION='pc.2020.9'
 PC_CURRENT_VERSION='pc.2020.9'
 PC_STABLE_VERSION='5.17.0.3'
-FILES_VERSION='3.7.0'
-FILE_ANALYTICS_VERSION='2.1.1.1'
+FILES_VERSION='3.7.1'
+FILE_ANALYTICS_VERSION='2.2.0'
 NTNX_INIT_PASSWORD='nutanix/4u'
 PRISM_ADMIN='admin'
 SSH_PUBKEY="${HOME}/.ssh/id_rsa.pub"
@@ -303,10 +303,10 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_CURRENT_URL='http://10.55.251.38/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.17.0.3.json'
     PC_STABLE_URL='http://10.55.251.38/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
-    FILES_METAURL='http://10.55.251.38/workshop_staging/afs-3.7.0.json'
-    FILES_URL='http://10.55.251.38/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.0-stable.qcow2'
-    FILE_ANALYTICS_METAURL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1-metadata.json'
-    FILE_ANALYTICS_URL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1.qcow2'
+    FILES_METAURL='http://10.55.251.38/workshop_staging/afs-3.7.1.json'
+    FILES_URL='http://10.55.251.38/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.1-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0-metadata.json'
+    FILE_ANALYTICS_URL='http://10.55.251.38/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0.qcow2'
     JQ_REPOS=(\
          'http://10.55.251.38/workshop_staging/jq-linux64.dms' \
          'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
@@ -342,10 +342,10 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.3.json'
     PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
-    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.7.0.json'
-    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.0-stable.qcow2'
-    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1-metadata.json'
-    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1.qcow2'
+    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.7.1.json'
+    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.1-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0-metadata.json'
+    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0.qcow2'
     JQ_REPOS=(\
          'http://10.42.194.11/workshop_staging/jq-linux64.dms' \
          'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
@@ -381,10 +381,10 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.3.json'
     PC_STABLE_URL='http://10.42.194.11/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
-    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.7.0.json'
-    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.0-stable.qcow2'
-    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1-metadata.json'
-    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1.qcow2'
+    FILES_METAURL='http://10.42.194.11/workshop_staging/afs-3.7.1.json'
+    FILES_URL='http://10.42.194.11/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.1-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0-metadata.json'
+    FILE_ANALYTICS_URL='http://10.42.194.11/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0.qcow2'
     JQ_REPOS=(\
            'http://10.42.194.11/workshop_staging/jq-linux64.dms' \
            'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
@@ -425,10 +425,10 @@ case "${OCTET[0]}.${OCTET[1]}" in
     PC_CURRENT_URL='http://10.136.239.13/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.17.0.3.json'
     PC_STABLE_URL='http://10.136.239.13/workshop_staging/euphrates-5.17.0.3-stable-prism_central.tar'
-    FILES_METAURL='http://10.136.239.13/workshop_staging/afs-3.7.0.json'
-    FILES_URL='http://10.136.239.13/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.0-stable.qcow2'
-    FILE_ANALYTICS_METAURL='http://10.136.239.13/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1-metadata.json'
-    FILE_ANALYTICS_URL='http://10.136.239.13/workshop_staging/nutanix-file_analytics-el7.7-release-2.1.1.1.qcow2'
+    FILES_METAURL='http://10.136.239.13/workshop_staging/afs-3.7.1.json'
+    FILES_URL='http://10.136.239.13/workshop_staging/nutanix-afs-el7.3-release-afs-3.7.1-stable.qcow2'
+    FILE_ANALYTICS_METAURL='http://10.136.239.13/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0-metadata.json'
+    FILE_ANALYTICS_URL='http://10.136.239.13/workshop_staging/nutanix-file_analytics-el7.7-release-2.2.0.qcow2'
     JQ_REPOS=(\
          'http://10.136.239.13/workshop_staging/jq-linux64.dms' \
          'https://s3.amazonaws.com/get-ahv-images/jq-linux64.dms' \
