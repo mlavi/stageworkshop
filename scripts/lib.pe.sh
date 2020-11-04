@@ -689,6 +689,7 @@ function cluster_check() {
    # Let's sleep a few seconds before moving on
    sleep 5
 
+   # Checking if the registration has worked
    _pc_ip_addr=$(curl $CURL_HTTP_OPTS --user ${PRISM_ADMIN}:${PE_PASSWORD} https://localhost:9440/PrismGateway/services/rest/v1/multicluster/cluster_external_state | jq '.[].clusterDetails.ipAddresses[0]' | tr -d \")
    while [[ -z $_pc_ip_addr ]]
    do
