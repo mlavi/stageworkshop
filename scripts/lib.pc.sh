@@ -1366,7 +1366,7 @@ EOF
 
 log "Created Primary-MSSQL-NETWORK Network Profile with ID |${_primary_network_profile_id}|"
 
-##  Create the Primary_ORACLE_NETWORKNetwork Profile inside Era ##
+##  Create the Primary_ORACLE_NETWORK Network Profile inside Era ##
 log "Create the Primary_PGSQL_NETWORK Network Profile"
 
 HTTP_JSON_BODY=$(cat <<EOF
