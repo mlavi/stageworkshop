@@ -61,8 +61,8 @@ ERA_NETWORK="Secondary"
 ERA_Container_RF="2"
 
 MSSQL_SourceVM="MSSQLSourceVM"
-MSSQL_SourceVM_Image1="MSSQL_1_11162020"
-MSSQL_SourceVM_Image2="MSSQL_2_11162020"
+MSSQL_SourceVM_Image1="MSSQL_1_12102020"
+MSSQL_SourceVM_Image2="MSSQL_2_12102020"
 
 Oracle_12c_SourceVM="Oracle12cSource"
 Oracle_12c_SourceVM_BootImage="12c_bootdisk"
