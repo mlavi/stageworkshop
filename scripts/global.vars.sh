@@ -2,10 +2,10 @@
 
 # shellcheck disable=SC2034
 RELEASE='release.json'
-PC_DEV_VERSION='pc.2020.9'
+PC_DEV_VERSION='pc.2020.11'
 PC_CURRENT_VERSION='pc.2020.9'
 PC_STABLE_VERSION='5.17.0.3'
-FILES_VERSION='3.7.1'
+FILES_VERSION='3.7.2.1'
 FILE_ANALYTICS_VERSION='2.2.0'
 NTNX_INIT_PASSWORD='nutanix/4u'
 PRISM_ADMIN='admin'
@@ -17,7 +17,7 @@ STORAGE_ERA='Era'
 ATTEMPTS=40
 SLEEP=60
 PrismOpsServer='PrismOpsLabUtilityServer'
-SeedPC='seedPC.zip'
+SeedPC='seedPC202011.zip'
 BasicUnattend='basic_unattend.xml'
 CALM_RSA_KEY_FILE='calm_rsa_key.env'
 
@@ -297,8 +297,8 @@ AUTH_ADMIN_GROUP='SSP Admins'
 case "${OCTET[0]}.${OCTET[1]}" in
 
   10.55 ) # HPOC us-east = DUR
-    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-pc.2020.9.json'
-    PC_DEV_URL='http://10.55.251.38/workshop_staging/pc.2020.9.tar'
+    PC_DEV_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-pc.2020.11.json'
+    PC_DEV_URL='http://10.55.251.38/workshop_staging/pc.2020.11.tar'
     PC_CURRENT_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-pc.2020.9.json'
     PC_CURRENT_URL='http://10.55.251.38/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.55.251.38/workshop_staging/pcdeploy-5.17.0.3.json'
@@ -336,8 +336,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
 	  OBJECTS_OFFLINE_REPO='http://10.55.251.38/workshop_staging/objects'
     ;;
   10.42 ) # HPOC us-west = PHX
-    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-pc.2020.9.json'
-    PC_DEV_URL='http://10.42.194.11/workshop_staging/pc.2020.9.tar'
+    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-pc.2020.11.json'
+    PC_DEV_URL='http://10.42.194.11/workshop_staging/pc.2020.11.tar'
     PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-pc.2020.9.json'
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.3.json'
@@ -375,8 +375,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
     OBJECTS_OFFLINE_REPO='http://10.42.194.11/workshop_staging/objects'
     ;;
   10.38 ) # HPOC us-west = PHX 1-Node Clusters
-    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-pc.2020.9.json'
-    PC_DEV_URL='http://10.42.194.11/workshop_staging/pc.2020.9.tar'
+    PC_DEV_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-pc.2020.11.json'
+    PC_DEV_URL='http://10.42.194.11/workshop_staging/pc.2020.11.tar'
     PC_CURRENT_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-pc.2020.9.json'
     PC_CURRENT_URL='http://10.42.194.11/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.42.194.11/workshop_staging/pcdeploy-5.17.0.3.json'
@@ -419,8 +419,8 @@ case "${OCTET[0]}.${OCTET[1]}" in
     fi
       ;;
   10.136 ) # HPOC us-west = BLR
-    PC_DEV_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-pc.2020.9.json'
-    PC_DEV_URL='http://10.136.239.13/workshop_staging/pc.2020.9.tar'
+    PC_DEV_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-pc.2020.11.json'
+    PC_DEV_URL='http://10.136.239.13/workshop_staging/pc.2020.11.tar'
     PC_CURRENT_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-pc.2020.9.json'
     PC_CURRENT_URL='http://10.136.239.13/workshop_staging/pc.2020.9.tar'
     PC_STABLE_METAURL='http://10.136.239.13/workshop_staging/pcdeploy-5.17.0.3.json'
