@@ -51,7 +51,7 @@ USERS=(\
 ###################################################
 
 ERA_Blueprint='EraServerDeployment.json'
-ERAServerImage='ERA-Server-build-2.0.0.qcow2'
+ERAServerImage='ERA-Server-build-2.1.0.qcow2'
 ERAServerName='EraServer'
 ERA_USER="admin"
 #ERA_PASSWORD="nutanix/4u"
