@@ -22,7 +22,7 @@ case ${1} in
     # Networking needs for Era Bootcamp
 	  #export NW2_NAME='EraManaged'
     export NW2_DHCP_START="${IPV4_PREFIX}.132"
-    export NW2_DHCP_END="${IPV4_PREFIX}.219"
+    export NW2_DHCP_END="${IPV4_PREFIX}.209"
 
     args_required 'PE_HOST PC_LAUNCH'
     ssh_pubkey & # non-blocking, parallel suitable
